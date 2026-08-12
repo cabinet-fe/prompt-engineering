@@ -1,6 +1,6 @@
 ---
 name: vue-best-practices
-description: Vue 3 开发最佳实践，适用于任何 Vue 3 项目。在编辑`.vue`文件，`.tsx`或`.jsx`形式的 Vue3 组件，相关的`.ts`或`.js`文件时必须使用。
+description: Vue 3 开发最佳实践，适用于任何 Vue 3 项目。在编辑`.vue`文件，`.tsx`或`.jsx`形式的 Vue3 组件，编写 Vue3 组合式函数时使用。
 ---
 
 # Vue 3 开发最佳实践
