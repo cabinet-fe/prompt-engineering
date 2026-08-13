@@ -1,7 +1,7 @@
 ---
 name: git-commit
 description: >
-  当用户要求提交代码、编写 commit message、执行 git commit/push/amend，或提到
+  使用 git 提交当前仓库代码。当用户要求提交代码、编写 commit message、执行 git commit/push/amend，或提到
   提交、commit、推送、push、暂存并提交、保存更改、创建提交 时使用。
 ---
 
