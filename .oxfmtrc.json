@@ -1,6 +1,0 @@
-{
-  "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "singleQuote": true,
-  "semi": false,
-  "ignorePatterns": ["dist/", "node_modules/", ".agents/", ".claude/", ".agent-context/"]
-}
