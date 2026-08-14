@@ -21,7 +21,7 @@
 
 ## 参数：cooking 标识
 
-标识 = `.agents/cooking/<feature>/` 的目录名。解析规则见 `references/cooking-id.md`。
+标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 技能名之后参数的第一段（按空白拆）等于某个已有子目录名；只把这一段当标识，其余留给当前技能。未命中不要按参数去 cooking 下新建目录（`to-spec` / `rush` 从需求描述新开除外）。列出已有标识时只枚举子目录名。
 
 `to-spec` / `to-tasks` / `implement` / `review` / `archive`（以及 `rush`）都可以带标识。
 

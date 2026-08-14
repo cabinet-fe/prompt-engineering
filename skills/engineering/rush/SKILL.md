@@ -23,7 +23,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 参数
 
-解析标识见 [cooking-id.md](../references/cooking-id.md)。一次 rush 只推进一个 cooking 单位。
+标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。列出已有标识时只枚举子目录名，不要读目录正文。一次 rush 只推进一个 cooking 单位。
 
 - **命中标识**：只推进该单位。
 - **参数为空**：已有可推进单位 0 个则按用户需求新开；1 个则用它；多个则问。

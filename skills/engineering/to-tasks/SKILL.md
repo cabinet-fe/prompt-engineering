@@ -23,7 +23,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 参数
 
-解析标识见 [cooking-id.md](../references/cooking-id.md)。
+标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。列出已有标识时只枚举子目录名，不要读目录正文。
 
 - **命中标识**：拆该单位。
 - **参数为空**：有 spec 的 cooking 0 个则停止，告诉用户先 `to-spec`；1 个则用它；多个则问。
