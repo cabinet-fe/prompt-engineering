@@ -1,19 +1,19 @@
 ---
 name: review
 description: >
-  只评不改：指定 cooking 标识（可带 Pn）或只给 Pn 时评审对应阶段并写 reviews/Pn.md；否则按 git diff 评审，不写 cooking。
-  用户提到 review、阶段评审、代码审核、评审当前改动、git review，或 implement 刚结束时使用。
+  只评不改：阶段路径评审 Pn 并写 reviews/Pn.md；git 路径按 git diff 评审，只在对话输出。
+  仅用户显式调用 review，或由 implement/rush 按流程触发时使用。
 ---
 
 # review
 
-只评不改。两条路径不要混用。
+只评不改。两条路径不要混用。触发来源：用户显式调用；或由 `implement`（阶段/直写完成后）、`rush` 按流程触发。不要因用户提到 review 相关词自动进入本技能。
 
 ## 前置检查
 
 未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
 
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
 
 ## 使用工具
 
@@ -32,14 +32,14 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ### 选阶段
 
-用户指定 Pn 则评它。未指定标识、只给了 `P<n>`：0 个含该阶段的单位则停；1 个则用；多个则问。用户没指定 Pn：实现为「完成」且评审不是「通过」的阶段；多个则问。没有可评阶段则停止并说明。
+调用方指定 Pn（用户显式，或 implement/rush 传入）则评它。未指定标识、只给了 `P<n>`：0 个含该阶段的单位则停；1 个则用；多个则问。调用方没指定 Pn：实现为「完成」且评审不是「通过」的阶段；多个则问。没有可评阶段则停止并说明。
 
 ### 评审轴
 
 对照当前 diff / 相关文件，两条轴都要写：
 
 1. **Spec**：`spec.md` + 该 `Pn.md` 的完成标准是否都满足；有没有做范围外的事。
-2. **Standards**：是否遵守 `DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新。
+2. **Standards**：是否遵守 `DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新（只检索相关模块，不全文加载）；若已触发 `sync-spec`，检查 `files-index.json` 和 spec 更新记录是否与改动一致。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。
 
@@ -67,7 +67,8 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 ### 评审轴
 
 1. **Standards**：`DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新。
-2. **正确性**：改动是否自洽、有无明显 bug、是否和提交说明 / 本对话意图一致。没有 cooking spec 就不要假装有 Spec 轴，也不要去翻 `SPECS/` 硬找一篇来评。
+2. **正确性**：改动是否自洽、有无明显 bug、是否和提交说明 / 本对话意图一致。没有 cooking spec 就不要假装有 Spec 轴。
+3. **规格影响**：运行 `node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动文件...>`；命中才打开对应 spec，检查是否破坏已归档功能或已经由 `sync-spec` 同步；未同步则列为阻塞项，提示用户调用 `sync-spec`。只读，不自动改规格。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。只评不改。
 
@@ -87,6 +88,9 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 ## 正确性
 - 通过 / 不通过
 - <证据>
+
+## 规格影响
+- 无命中 / 命中条目与结论
 
 ## 阻塞项
 - 无 / 必须修的条目

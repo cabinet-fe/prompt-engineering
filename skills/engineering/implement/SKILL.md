@@ -1,19 +1,19 @@
 ---
 name: implement
 description: >
-  实现代码：命中 cooking 标识或参数仅为 Pn 时，按 tasks 完成一个未阻塞阶段；跟随实现内容且未命中标识时直写，不读 spec/tasks、不写 cooking。
-  用户提到 implement、做任务、实现阶段、开发 Pn，或 implement 后描述要改什么时使用。
+  实现代码：命中 cooking 标识（可带 Pn）或参数仅为 Pn 时，按 tasks 完成一个未阻塞阶段；跟随实现内容且未命中标识时直写，不读 spec/tasks、不写 cooking。
+  仅用户显式调用 implement，或由 rush 编排触发时使用；用户直接调用完成后自动触发 sync-spec 和 review，rush 派发时由 rush 统一触发。
 ---
 
 # implement
 
-两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。
+仅在用户显式调用或 rush 派发时执行；不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。
 
 ## 前置检查
 
 未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
 
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
 
 ## 使用工具
 
@@ -42,12 +42,12 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准、`DEV-STANDARDS.md`、`CODE-MAP.md` 里相关模块。可能撞已有功能时先看 `SPECS/index.md` 再打开对应 spec。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准、`DEV-STANDARDS.md`。先用脚本按预计改动路径查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <预计改动路径...>`。命中才打开对应 spec，确认不会破坏已归档功能；可能破坏时停止，让用户决定更新规格还是调整方案。未命中不要打开任何 spec。需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
 2. 把该阶段「实现」改为 `进行中`。
 3. 只做清单项。遵守 docs 与根 `AGENTS.md` 短注。小 diff，不顺手重构。
 4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 5. 勾选已完成的清单项。
-6. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（树、模块表、依赖图）。不要为了对齐而去改 `ARCHITECTURE.md`。
+6. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（树、模块表、依赖图；不写规格链接，文件反查在 `SPECS/files-index.json`）。不要为了对齐而去改 `ARCHITECTURE.md`。
 7. 「实现」改为 `完成`。「评审」保持 `未开始`（或从 `不通过` 改回 `未开始` 若这是返工）。
 
 ## 直写路径
@@ -55,11 +55,11 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 读 `DEV-STANDARDS.md`、`CODE-MAP.md` 相关模块、根 `AGENTS.md` 短注。可能撞已有功能时先看 `SPECS/index.md`。
+2. 读 `DEV-STANDARDS.md`、根 `AGENTS.md` 短注；先用脚本查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动路径...>`。命中才打开对应 spec，确认不破坏已归档功能；未命中不要打开任何 spec。需要定位模块/路径时，再检索 `CODE-MAP.md` 相关行，不要全文加载。
 3. 小 diff，不顺手重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
-4. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`。不要改 `ARCHITECTURE.md`。
+4. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（不写规格链接，文件反查在 `SPECS/files-index.json`）。不要改 `ARCHITECTURE.md`。
 
 ## 结束
 
-- **阶段路径**：立刻告诉用户执行 `review <feature> <Pn>`。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
-- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新。提示可用不带标识的 `review`（git 评审）。不要写 `reviews/`，不要说「对本阶段执行 review」。
+- **阶段路径**：用户直接调用时，完成后先触发 `sync-spec <本阶段改动文件>`，再触发 `review <feature> <Pn>`，不要等用户再下指令；由 rush 派发时只汇报，sync-spec 和 review 由 rush 统一派发。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
+- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后先触发 `sync-spec <改动文件>`，再触发不带标识的 `review`（git 评审）。不要写 `reviews/`，不要说「对本阶段执行 review」。

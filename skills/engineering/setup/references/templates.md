@@ -17,12 +17,15 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 | --- | --- |
 | `.agents/docs/ARCHITECTURE.md` | 业务/技术架构、技术栈。架构大变时由 setup 更新 |
 | `.agents/docs/DEV-STANDARDS.md` | 写代码、做 review |
-| `.agents/docs/CODE-MAP.md` | 定位模块。模块增删改后必须更新 |
-| `.agents/docs/SPECS/index.md` | 先读索引，再打开当前需要的规格。禁止加载整个 SPECS |
+| `.agents/docs/CODE-MAP.md` | 定位模块。模块增删改后必须更新；文件可能很大，按模块/路径检索 |
+| `.agents/docs/SPECS/index.md` | 先读模块索引，再打开当前需要的规格。禁止加载整个 SPECS |
+| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格 |
 
-## 进行中的需求
+## 进行中的需求（可选，复杂需求才走）
 
-工作区：`.agents/cooking/`（已 gitignore）。目录名即 cooking 标识。流程：explore（可选）→ to-spec → to-tasks → implement（每阶段后 review）→ archive。直写 implement 与不带标识的 review（git）不走本目录。
+工作区：`.agents/cooking/`（已 gitignore）。目录名即 cooking 标识。流程：explore（可选）→ to-spec → to-tasks → implement（每阶段后 sync-spec → review）→ archive。
+
+简单改动不要建 cooking：直接 `implement` 直写 + 不带标识的 `review`（git）；若改动命中已归档规格，先跑 `sync-spec`。技能默认不自动触发，需用户显式调用；`implement` 完成后触发 `sync-spec` 和 `review`，`rush` 调用后按流程触发其余技能。
 
 ## 项目短注
 
@@ -106,7 +109,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## `.agents/docs/CODE-MAP.md`
 
-这是地图，不是文件清单。只到模块级。有模块增删改时必须更新。
+这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。有模块增删改时必须更新。规格→文件的反查不写在本文件，统一放在 `SPECS/files-index.json`，用 `.agents/scripts/spec-files.mjs` 查询。
 
 依赖图用 mermaid `graph TD`，模块作节点、依赖作边。
 
@@ -140,6 +143,8 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 # SPECS 索引
 
 已归档的功能规格。**先读本文件，再按需打开具体 spec。禁止一次加载本目录全部文件。**
+
+文件级反查不放在本文件：用 `.agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json` 按变更文件提取命中的 spec。
 
 ## 模块
 

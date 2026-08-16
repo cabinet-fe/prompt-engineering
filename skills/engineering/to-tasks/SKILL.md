@@ -2,7 +2,7 @@
 name: to-tasks
 description: >
   把 cooking/<feature>/spec.md 拆成 tasks/Pn.md 阶段文件并标明前置任务；无前置或依赖同一已完成前置的阶段可并行。
-  用户提到 to-tasks、拆任务、开发阶段、任务清单时使用；无 spec.md 先 to-spec。
+  仅用户显式调用 to-tasks，或由 rush 编排触发时使用；无 spec.md 时停止，建议先 to-spec。
 ---
 
 # to-tasks
@@ -13,7 +13,7 @@ description: >
 
 未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
 
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
 
 ## 使用工具
 
@@ -47,4 +47,4 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 结束
 
-指出哪些阶段现在就能 implement（前置为无的）。下一步是对其中一个未阻塞阶段跑 `implement <feature>`（或带上 Pn）。
+指出哪些阶段现在就能 implement（前置为无的）。下一步：请用户显式调用 `implement <feature>`（或带上 Pn），不要自动继续。
