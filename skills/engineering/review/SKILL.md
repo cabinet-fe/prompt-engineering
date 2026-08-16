@@ -1,10 +1,8 @@
 ---
 name: review
 description: >
-  指定 cooking 标识（可再跟 Pn）时评审该单位一个阶段，写入 reviews/Pn.md；
-  未指定标识则按 git diff 评审，不写 cooking 文件、不自动选阶段。
-  当用户提到 review、阶段评审、代码审核、评审当前改动、git review，或 implement 刚结束时使用。
-  只评不改。未 setup 时先让用户跑 setup。
+  只评不改：指定 cooking 标识（可带 Pn）或只给 Pn 时评审对应阶段并写 reviews/Pn.md；否则按 git diff 评审，不写 cooking。
+  用户提到 review、阶段评审、代码审核、评审当前改动、git review，或 implement 刚结束时使用。
 ---
 
 # review

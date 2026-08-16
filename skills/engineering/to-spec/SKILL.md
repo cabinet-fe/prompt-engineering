@@ -1,8 +1,8 @@
 ---
 name: to-spec
 description: >
-  把明确需求写成 cooking/<feature>/spec.md。可指定 cooking 标识，也可直接跟随需求描述。
-  当用户提到 to-spec、写规格、规格基线、验收标准时使用。需求含糊时先 explore。未 setup 时先跑 setup。
+  把明确需求写成 cooking/<feature>/spec.md；可指定 cooking 标识或直接跟随需求描述。
+  用户提到 to-spec、写规格、规格基线、验收标准时使用；需求含糊先 explore。
 ---
 
 # to-spec

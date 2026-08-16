@@ -1,10 +1,8 @@
 ---
 name: setup
 description: >
-  为仓库做一次性工程初始化：确定工作目录，创建 `.agents/docs` 与 `.agents/cooking`，
-  把 cooking 写入 .gitignore，写精简根目录 AGENTS.md，并生成 ARCHITECTURE.md、
-  DEV-STANDARDS.md、CODE-MAP.md。架构/技术栈/规范大变时也用本技能更新，不另设 architecture。
-  当用户提到 setup、初始化、工程底座、AGENTS.md、架构文档、技术栈梳理，或首次使用其它工程技能时使用。
+  初始化或更新仓库工程底座：创建 .agents/docs 与 .agents/cooking，写 .gitignore 和精简根 AGENTS.md，并生成/刷新架构、规范、代码地图三份文档。
+  用户提到 setup、初始化、工程底座、AGENTS.md、架构/技术栈梳理，或首次使用其它工程技能时使用。
 ---
 
 # setup

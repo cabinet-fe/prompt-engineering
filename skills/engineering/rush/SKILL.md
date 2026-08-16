@@ -1,9 +1,8 @@
 ---
 name: rush
 description: >
-  编排同一套工程流程并尽量用子代理执行：主代理做 explore，然后 to-spec → to-tasks，
-  对可并行阶段同时 implement，每阶段完成后 review，全部通过后 archive。可指定 cooking 标识。
-  当用户提到 rush、快速推进、一口气做完、子代理跑流程时使用。未 setup 时先让用户跑 setup。
+  编排完整工程流程：需求含糊时主代理先 explore，其余步骤尽量派子代理执行 to-spec → to-tasks → 并行 implement/review → archive。
+  用户提到 rush、快速推进、一口气做完、子代理跑流程时使用。
 ---
 
 # rush

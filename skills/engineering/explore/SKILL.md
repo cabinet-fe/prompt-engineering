@@ -1,7 +1,8 @@
 ---
 name: explore
 description: >
-  用决策树把含糊需求收敛成 cooking/<feature>/goal.md。当用户提到 explore、需求研讨、澄清需求、改需求时使用。
+  用决策树把含糊需求收敛成 cooking/<feature>/goal.md；不写 spec、不改代码。
+  需求含糊，或用户提到 explore、需求研讨、澄清需求、改需求时使用。
 ---
 
 # explore

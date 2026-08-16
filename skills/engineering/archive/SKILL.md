@@ -1,9 +1,8 @@
 ---
 name: archive
 description: >
-  功能全部阶段实现且 review 通过后，把 spec.md 迁到 .agents/docs/SPECS/<模块>/，
-  更新 index.md，删除该 cooking/<feature> 目录。可指定 cooking 标识。
-  当用户提到 archive、归档规格、收掉 cooking 时使用。未 setup 时先让用户跑 setup。
+  归档已完成功能：把 spec.md 迁入 .agents/docs/SPECS/<模块>/，更新 index.md，删除 cooking/<feature>/。
+  用户提到 archive、归档规格、收掉 cooking 时使用。
 ---
 
 # archive

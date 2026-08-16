@@ -1,10 +1,8 @@
 ---
 name: to-tasks
 description: >
-  把 spec.md 拆成 cooking/<feature>/tasks 下的阶段文件（P1.md、P2.md…），标明前置；
-  可指定 cooking 标识。无前置或依赖同一已完成前置的阶段可并行。
-  当用户提到 to-tasks、拆任务、开发阶段、任务清单时使用。
-  没有 spec.md 时先跑 to-spec；未 setup 时先跑 setup。
+  把 cooking/<feature>/spec.md 拆成 tasks/Pn.md 阶段文件并标明前置任务；无前置或依赖同一已完成前置的阶段可并行。
+  用户提到 to-tasks、拆任务、开发阶段、任务清单时使用；无 spec.md 先 to-spec。
 ---
 
 # to-tasks

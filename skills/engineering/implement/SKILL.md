@@ -1,10 +1,8 @@
 ---
 name: implement
 description: >
-  实现代码。指定 cooking 标识（可再跟 Pn）时按该单位 tasks 做一个未阻塞阶段；
-  未指定标识但跟随了实现内容时按这句话直写，不读 spec、不写 cooking。
-  当用户提到 implement、做任务、实现阶段、开发 Pn，或在 implement 后描述要改什么时使用。
-  阶段路径完成后必须跑 review。未 setup 时停止。
+  实现代码：命中 cooking 标识或参数仅为 Pn 时，按 tasks 完成一个未阻塞阶段；跟随实现内容且未命中标识时直写，不读 spec/tasks、不写 cooking。
+  用户提到 implement、做任务、实现阶段、开发 Pn，或 implement 后描述要改什么时使用。
 ---
 
 # implement
