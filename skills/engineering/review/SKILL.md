@@ -39,7 +39,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 对照当前 diff / 相关文件，两条轴都要写：
 
 1. **Spec**：`spec.md` + 该 `Pn.md` 的完成标准是否都满足；有没有做范围外的事。
-2. **Standards**：是否遵守 `DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新（只检索相关模块，不全文加载）；若已触发 `sync-spec`，检查 `files-index.json` 和 spec 更新记录是否与改动一致。
+2. **Standards**：是否遵守 `DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新（只检索相关模块，不全文加载）；若已触发 `sync-spec`，检查命中 spec 的「影响文件」与更新记录是否与改动一致（索引由 rebuild 从 spec 生成，不要手改 `files-index.json`）。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。
 
@@ -68,7 +68,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 1. **Standards**：`DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新。
 2. **正确性**：改动是否自洽、有无明显 bug、是否和提交说明 / 本对话意图一致。没有 cooking spec 就不要假装有 Spec 轴。
-3. **规格影响**：运行 `node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动文件...>`；命中才打开对应 spec，检查是否破坏已归档功能或已经由 `sync-spec` 同步；未同步则列为阻塞项，提示用户调用 `sync-spec`。只读，不自动改规格。
+3. **规格影响**：运行 `node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动文件...>`（会先扫描归档 spec 重建索引）；命中才打开对应 spec，检查是否破坏已归档功能或已经由 `sync-spec` 同步；未同步则列为阻塞项，提示用户调用 `sync-spec`。只读，不自动改规格。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。只评不改。
 

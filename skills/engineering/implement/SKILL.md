@@ -42,7 +42,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准、`DEV-STANDARDS.md`。先用脚本按预计改动路径查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <预计改动路径...>`。命中才打开对应 spec，确认不会破坏已归档功能；可能破坏时停止，让用户决定更新规格还是调整方案。未命中不要打开任何 spec。需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准、`DEV-STANDARDS.md`。先用脚本按预计改动路径查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <预计改动路径...>`。`query` 会先扫描归档 spec 重建索引。命中才打开对应 spec，确认不会破坏已归档功能；可能破坏时停止，让用户决定更新规格还是调整方案。未命中不要打开任何 spec。需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
 2. 把该阶段「实现」改为 `进行中`。
 3. 只做清单项。遵守 docs 与根 `AGENTS.md` 短注。小 diff，不顺手重构。
 4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
@@ -55,7 +55,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 读 `DEV-STANDARDS.md`、根 `AGENTS.md` 短注；先用脚本查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动路径...>`。命中才打开对应 spec，确认不破坏已归档功能；未命中不要打开任何 spec。需要定位模块/路径时，再检索 `CODE-MAP.md` 相关行，不要全文加载。
+2. 读 `DEV-STANDARDS.md`、根 `AGENTS.md` 短注；先用脚本查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动路径...>`。`query` 会先扫描归档 spec 重建索引。命中才打开对应 spec，确认不破坏已归档功能；未命中不要打开任何 spec。需要定位模块/路径时，再检索 `CODE-MAP.md` 相关行，不要全文加载。
 3. 小 diff，不顺手重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 4. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（不写规格链接，文件反查在 `SPECS/files-index.json`）。不要改 `ARCHITECTURE.md`。
 

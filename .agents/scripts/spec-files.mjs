@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// 规格-文件索引工具：维护和查询「规格 -> 影响文件/glob」。
+// 规格-文件索引工具：从已归档 spec 的「影响文件」章节生成并查询索引。
 // 用法：
 //   node spec-files.mjs init <index-file>
-//   node spec-files.mjs set <index-file> <spec-path> --module <name> --files <pattern...>
-//   node spec-files.mjs remove <index-file> <spec-path>
+//   node spec-files.mjs rebuild <index-file>
+//   node spec-files.mjs parse <spec.md> [--json]
 //   node spec-files.mjs query <index-file> [--json] [--stdin] <file...>
 //   node spec-files.mjs list <index-file>
 
@@ -11,15 +11,27 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const VERSION = 1;
+const PATH_CHARS = /^[A-Za-z0-9@._+*?/-]+$/;
+const ACTION_LINE = /^- (新增|删除|修改)：`([^`]+)`$/;
+const ACTION_KEY = { 新增: 'added', 删除: 'removed', 修改: 'modified' };
+
+process.stdout.on('error', (err) => {
+  if (err.code === 'EPIPE') process.exit(0);
+});
 
 function usage() {
   process.stderr.write(`usage:
   node spec-files.mjs init <index-file>
-  node spec-files.mjs set <index-file> <spec-path> --module <name> --files <pattern...>
-  node spec-files.mjs remove <index-file> <spec-path>
+  node spec-files.mjs rebuild <index-file>
+  node spec-files.mjs parse <spec.md> [--json]
   node spec-files.mjs query <index-file> [--json] [--stdin] <file...>
   node spec-files.mjs list <index-file>
 `);
+}
+
+function specError(specPath, lineNo, msg) {
+  const loc = lineNo != null ? `${specPath}:${lineNo}` : specPath;
+  return new Error(`${loc}: ${msg}`);
 }
 
 function resolveIndex(file) {
@@ -53,7 +65,11 @@ function readIndex(file) {
 function writeIndex(file, data) {
   const abs = resolveIndex(file);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
-  fs.writeFileSync(abs, `${JSON.stringify({ version: VERSION, specs: data.specs }, null, 2)}\n`);
+  const specs = {};
+  for (const key of Object.keys(data.specs).sort((a, b) => a.localeCompare(b))) {
+    specs[key] = data.specs[key];
+  }
+  fs.writeFileSync(abs, `${JSON.stringify({ version: VERSION, specs }, null, 2)}\n`);
   return abs;
 }
 
@@ -61,10 +77,6 @@ function normalizeRel(file) {
   let rel = path.relative(process.cwd(), path.resolve(process.cwd(), file));
   if (rel === '') return '';
   return rel.split(path.sep).join('/').replace(/^\.\//, '');
-}
-
-function normalizeSpec(spec) {
-  return spec.split(path.sep).join('/').replace(/^\.\//, '').replace(/^\/+/, '');
 }
 
 function escapeRegex(ch) {
@@ -96,18 +108,15 @@ function globToRegex(pattern) {
   out += '$';
   const re = new RegExp(out);
   if (hasWildcard) return re;
-  // 无通配符时同时支持精确文件和目录前缀。
   const prefix = new RegExp(`^${p.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&')}/`);
   return { test: (file) => re.test(file) || prefix.test(file) };
 }
 
 function matchesPattern(file, pattern) {
-  const matcher = globToRegex(pattern);
-  return matcher.test(file);
+  return globToRegex(pattern).test(file);
 }
 
 function matchesInput(file, pattern) {
-  // 输入可能是文件，也可能是目录/模块路径；目录输入允许命中 `dir/**` 这类 glob。
   return matchesPattern(file, pattern) || matchesPattern(`${file}/__spec_probe__`, pattern);
 }
 
@@ -122,18 +131,171 @@ function readSpecTitle(indexAbs, specRel) {
   }
 }
 
+function validatePathPattern(p, specPath, lineNo) {
+  if (p.endsWith('/')) {
+    throw specError(specPath, lineNo, '路径不要以 / 结尾，目录写成 glob，例如 foo/**');
+  }
+  if (p.includes('\\') || p.includes('//')) {
+    throw specError(specPath, lineNo, '必须是仓库相对路径或 glob，禁止反斜杠、空段');
+  }
+  if (!PATH_CHARS.test(p)) {
+    throw specError(specPath, lineNo, '路径含非法字符；禁止空白、未闭合反引号、注释');
+  }
+  for (const seg of p.split('/')) {
+    if (seg === '' || seg === '.' || seg === '..') {
+      throw specError(specPath, lineNo, '路径段不能是空、. 或 ..');
+    }
+  }
+}
+
+function normalizeSpecPath(raw, specPath, lineNo) {
+  let p = raw.trim();
+  if (p.startsWith('/')) p = p.slice(1);
+  if (p.startsWith('/')) {
+    throw specError(specPath, lineNo, '禁止绝对路径');
+  }
+  validatePathPattern(p, specPath, lineNo);
+  return p;
+}
+
+function parseImpactFiles(markdown, specPath) {
+  const lines = markdown.split(/\r?\n/);
+  let headingAt = -1;
+  for (let i = 0; i < lines.length; i += 1) {
+    const trimmed = lines[i].trim();
+    if (trimmed === '## 影响面') {
+      throw specError(specPath, i + 1, '章节已改名为「影响文件」，不要再用「影响面」');
+    }
+    if (trimmed.startsWith('## ') && /^##\s+影响文件/.test(trimmed) && trimmed !== '## 影响文件') {
+      throw specError(specPath, i + 1, '标题必须恰好是「## 影响文件」');
+    }
+    if (trimmed === '## 影响文件') {
+      if (headingAt !== -1) throw specError(specPath, i + 1, '「影响文件」章节重复');
+      headingAt = i;
+    }
+  }
+  if (headingAt === -1) {
+    throw specError(specPath, null, '缺少「## 影响文件」章节');
+  }
+
+  let end = lines.length;
+  for (let i = headingAt + 1; i < lines.length; i += 1) {
+    if (/^##\s/.test(lines[i])) {
+      end = i;
+      break;
+    }
+  }
+
+  const body = [];
+  for (let i = headingAt + 1; i < end; i += 1) {
+    if (lines[i].trim() === '') continue;
+    body.push({ lineNo: i + 1, text: lines[i] });
+  }
+  if (body.length === 0) {
+    throw specError(specPath, headingAt + 1, '「影响文件」章节为空');
+  }
+
+  const added = [];
+  const removed = [];
+  const modified = [];
+  const seen = new Map();
+  const buckets = { added, removed, modified };
+
+  for (const { lineNo, text } of body) {
+    if (/^- (模块|新增模块|路径)：/.test(text)) {
+      throw specError(specPath, lineNo, '不要写模块 / 新增模块 / 路径；只写「- 新增|删除|修改：`路径`」');
+    }
+    const match = text.match(ACTION_LINE);
+    if (!match) {
+      throw specError(specPath, lineNo, '每行必须是「- 新增|删除|修改：`路径`」，全角冒号，路径用反引号包裹');
+    }
+    const action = match[1];
+    const file = normalizeSpecPath(match[2], specPath, lineNo);
+    if (seen.has(file)) {
+      throw specError(specPath, lineNo, `路径重复：${file}（已出现在「${seen.get(file)}」）`);
+    }
+    seen.set(file, action);
+    buckets[ACTION_KEY[action]].push(file);
+  }
+
+  const files = [...added, ...modified];
+  if (files.length === 0) {
+    throw specError(specPath, headingAt + 1, '至少一条「新增」或「修改」；「删除」不进入反查索引');
+  }
+  return { added, removed, modified, files };
+}
+
+function parseSpecFile(file) {
+  const abs = path.resolve(process.cwd(), file);
+  if (!fs.existsSync(abs)) throw new Error(`找不到 spec: ${abs}`);
+  const label = normalizeRel(abs) || abs;
+  return parseImpactFiles(fs.readFileSync(abs, 'utf8'), label);
+}
+
+function collectArchivedSpecs(specsDir) {
+  const out = [];
+  if (!fs.existsSync(specsDir)) return out;
+  function walk(dir) {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const abs = path.join(dir, ent.name);
+      if (ent.isDirectory()) {
+        walk(abs);
+      } else if (ent.isFile() && ent.name.endsWith('.md') && ent.name !== 'index.md') {
+        out.push(abs);
+      }
+    }
+  }
+  walk(specsDir);
+  return out.sort((a, b) => a.localeCompare(b));
+}
+
+function rebuildIndex(indexFile) {
+  const indexAbs = resolveIndex(indexFile);
+  const specsDir = path.dirname(indexAbs);
+  const specs = {};
+  for (const abs of collectArchivedSpecs(specsDir)) {
+    const rel = path.relative(specsDir, abs).split(path.sep).join('/');
+    const parts = rel.split('/');
+    if (parts.length !== 2) {
+      throw new Error(`${rel}: 归档 spec 必须位于 SPECS/<模块>/<feature>.md`);
+    }
+    const parsed = parseSpecFile(abs);
+    specs[rel] = { module: parts[0], files: parsed.files };
+  }
+  const abs = writeIndex(indexAbs, { version: VERSION, specs });
+  return { abs, count: Object.keys(specs).length };
+}
+
+function printParse(result, json) {
+  if (json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    return;
+  }
+  for (const [label, key] of [['added', 'added'], ['removed', 'removed'], ['modified', 'modified']]) {
+    process.stdout.write(`${label}:\n`);
+    if (result[key].length === 0) {
+      process.stdout.write('  (none)\n');
+      continue;
+    }
+    for (const file of result[key]) {
+      process.stdout.write(`  ${file}\n`);
+    }
+  }
+}
+
 function queryIndex(file, files, { json = false } = {}) {
-  const indexAbs = resolveIndex(file);
+  const rebuilt = rebuildIndex(file);
+  const indexAbs = rebuilt.abs;
   const data = readIndex(indexAbs);
   const normalized = [...new Set(files.map(normalizeRel).filter(Boolean))];
   const matches = [];
   for (const [spec, entry] of Object.entries(data.specs ?? {})) {
     const patterns = Array.isArray(entry?.files) ? entry.files : [];
     const hit = [];
-    for (const file of normalized) {
+    for (const changed of normalized) {
       for (const pattern of patterns) {
-        if (matchesInput(file, pattern)) {
-          hit.push({ file, pattern });
+        if (matchesInput(changed, pattern)) {
+          hit.push({ file: changed, pattern });
         }
       }
     }
@@ -162,24 +324,8 @@ function queryIndex(file, files, { json = false } = {}) {
   }
 }
 
-function setEntry(file, spec, module, patterns) {
-  const { data } = ensureIndex(file);
-  const key = normalizeSpec(spec);
-  data.specs[key] = {
-    module: module || data.specs[key]?.module || '',
-    files: patterns.map(normalizeRel),
-  };
-  return writeIndex(file, data);
-}
-
-function removeEntry(file, spec) {
-  const { data } = ensureIndex(file);
-  const key = normalizeSpec(spec);
-  delete data.specs[key];
-  return writeIndex(file, data);
-}
-
 function listIndex(file) {
+  rebuildIndex(file);
   const data = readIndex(file);
   const entries = Object.entries(data.specs ?? {});
   if (entries.length === 0) {
@@ -194,16 +340,37 @@ function listIndex(file) {
 
 function main() {
   const args = process.argv.slice(2);
-  const [cmd, indexFile, ...rest] = args;
-  if (!cmd || !indexFile) {
+  const [cmd, ...rest] = args;
+  if (!cmd) {
     usage();
     process.exit(2);
   }
 
   try {
+    if (cmd === 'parse') {
+      const json = rest.includes('--json');
+      const spec = rest.find((x) => x !== '--json');
+      if (!spec) throw new Error('parse 需要 spec 路径');
+      printParse(parseSpecFile(spec), json);
+      return;
+    }
+
+    const indexFile = rest[0];
+    if (!indexFile) {
+      usage();
+      process.exit(2);
+    }
+    const extra = rest.slice(1);
+
     if (cmd === 'init') {
       const { abs } = ensureIndex(indexFile);
       process.stdout.write(`${abs}\n`);
+      return;
+    }
+
+    if (cmd === 'rebuild') {
+      const { abs, count } = rebuildIndex(indexFile);
+      process.stdout.write(`${count} specs -> ${abs}\n`);
       return;
     }
 
@@ -212,41 +379,10 @@ function main() {
       return;
     }
 
-    if (cmd === 'remove') {
-      const spec = rest[0];
-      if (!spec) throw new Error('remove 需要 spec 路径');
-      const abs = removeEntry(indexFile, spec);
-      process.stdout.write(`${abs}\n`);
-      return;
-    }
-
-    if (cmd === 'set') {
-      const spec = rest[0];
-      if (!spec) throw new Error('set 需要 spec 路径');
-      let module = '';
-      const patterns = [];
-      let i = 1;
-      while (i < rest.length) {
-        if (rest[i] === '--module') {
-          module = rest[i + 1] ?? '';
-          i += 2;
-        } else if (rest[i] === '--files') {
-          patterns.push(...rest.slice(i + 1));
-          i = rest.length;
-        } else {
-          i += 1;
-        }
-      }
-      if (patterns.length === 0) throw new Error('set 需要 --files 和至少一个路径/glob');
-      const abs = setEntry(indexFile, spec, module, patterns);
-      process.stdout.write(`${abs}\n`);
-      return;
-    }
-
     if (cmd === 'query') {
-      const json = rest.includes('--json');
-      const stdin = rest.includes('--stdin');
-      const files = rest.filter((x) => x !== '--json' && x !== '--stdin');
+      const json = extra.includes('--json');
+      const stdin = extra.includes('--stdin');
+      const files = extra.filter((x) => x !== '--json' && x !== '--stdin');
       if (stdin) {
         const input = fs.readFileSync(0, 'utf8');
         files.push(...input.split(/\r?\n/).map((x) => x.trim()).filter(Boolean));

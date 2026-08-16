@@ -21,6 +21,7 @@
 - YAML `description` 除术语外尽量中文，不超过 512 字符，必须同时写「做什么」和「何时使用」
 - `SKILL.md` 不得超过 500 行，200 行内最佳
 - `spec-files.mjs`：2 空格缩进、注释中文、Node ESM、`import ... from 'node:fs'`
+- 归档 spec 与 cooking `spec.md` 必须含可被 `spec-files.mjs parse` 通过的「影响文件」章节；`files-index.json` 只用 `rebuild`/`query` 从 spec 生成，不要手写
 - 无 prettier / eslint / editorconfig；不要为此仓库新加格式化配置，除非用户要求
 
 ## 提交
@@ -34,3 +35,4 @@
 - 不要发明 `state.md` 之类的额外流程标记
 - 写库技能或框架 API 时禁止凭训练数据补事实；以源码、类型、lockfile、官方 changelog 为准
 - 其它工程技能发现未 setup 只提示并停止，禁止代跑 `setup`
+- 手写 `SPECS/files-index.json`；规格→文件映射必须从「影响文件」章节 rebuild

@@ -33,7 +33,7 @@
 | frameworks | `skills/frameworks/` | 框架专项；现仅 Vue 3，按 minor 读 reference | `vue/SKILL.md` |
 | roles | `skills/roles/` | 角色约束；frontend-expert 有正文，backend-expert 为空 | `frontend-expert/SKILL.md` |
 | tools | `skills/tools/` | git-commit；为库生成伴生技能 build-lib-skill | 各 `SKILL.md` |
-| spec-index | `skills/engineering/sync-spec/scripts/spec-files.mjs` | 规格→文件索引的 init/set/query/list | `spec-files.mjs` |
+| spec-index | `skills/engineering/sync-spec/scripts/spec-files.mjs` | 从 spec「影响文件」的新增/修改 rebuild 索引，再 parse/query/list | `spec-files.mjs` |
 | agents-docs | `.agents/docs/` | 本仓库架构、规范、代码地图、已归档 SPECS | `ARCHITECTURE.md` |
 | agents-skills | `.agents/skills/` | 指向 engineering 与 git-commit 的软链接 | 各 symlink |
 
@@ -54,4 +54,4 @@ graph TD
 
 - **本仓库改技能**：改 `skills/<category>/<name>/`；`.agents/skills/` 已有对应链接则不必动链接。
 - **目标仓库 setup**：读 `skills/engineering/setup/`，在目标根写入 `.agents/docs`、`.agents/cooking`、复制 `spec-files.mjs`、精简 `AGENTS.md`。
-- **规格反查**：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <变更文件...>`，命中再打开对应 spec。
+- **规格反查**：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <变更文件...>`（会先扫描归档 spec 重建索引），命中再打开对应 spec。

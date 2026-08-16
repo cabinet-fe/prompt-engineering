@@ -2,6 +2,8 @@
 
 路径：`.agents/cooking/<feature>/spec.md`。只使用这些标题。
 
+「影响文件」格式与强规则见 [impact-files.md](../../sync-spec/references/impact-files.md)。写完必须 `node .agents/scripts/spec-files.mjs parse <本文件>` 通过。
+
 ```markdown
 # <标题>
 
@@ -22,11 +24,11 @@
 
 - <明确不做。有 goal.md 则与「不包含」对齐；无 goal 则只写用户已排除的。>
 
-## 影响面
+## 影响文件
 
-- 模块：<CODE-MAP 中的模块名，逗号分隔>
-- 新增模块：<无 / 名称。若会改变分层或技术栈，提示用户先跑 setup 更新 ARCHITECTURE.md>
-- 路径/glob：<各模块对应路径或 glob，如 `src/auth/**`；不确定时写模块名，归档时再补>
+- 新增：`<仓库相对路径或 glob>`
+- 删除：`<仓库相对路径或 glob>`
+- 修改：`<仓库相对路径或 glob>`
 
 ## 更新记录
 

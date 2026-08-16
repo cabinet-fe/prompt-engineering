@@ -19,7 +19,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 | `.agents/docs/DEV-STANDARDS.md` | 写代码、做 review |
 | `.agents/docs/CODE-MAP.md` | 定位模块。模块增删改后必须更新；文件可能很大，按模块/路径检索 |
 | `.agents/docs/SPECS/index.md` | 先读模块索引，再打开当前需要的规格。禁止加载整个 SPECS |
-| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格 |
+| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格（会先扫描归档 spec 重建索引） |
 
 ## 进行中的需求（可选，复杂需求才走）
 
@@ -104,12 +104,15 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## 明确禁止
 
-<本仓库不要做的事。没有则删。>
+- 归档 spec / cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
+- 手写 `SPECS/files-index.json`
+- <其它本仓库不要做的事。没有则只保留上两条。>
+
 ```
 
 ## `.agents/docs/CODE-MAP.md`
 
-这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。有模块增删改时必须更新。规格→文件的反查不写在本文件，统一放在 `SPECS/files-index.json`，用 `.agents/scripts/spec-files.mjs` 查询。
+这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。有模块增删改时必须更新。规格→文件的反查不写在本文件，统一放在 `SPECS/files-index.json`，由 `spec-files.mjs rebuild/query` 从各 spec 的「影响文件」生成。
 
 依赖图用 mermaid `graph TD`，模块作节点、依赖作边。
 
@@ -144,7 +147,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 已归档的功能规格。**先读本文件，再按需打开具体 spec。禁止一次加载本目录全部文件。**
 
-文件级反查不放在本文件：用 `.agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json` 按变更文件提取命中的 spec。
+文件级反查不放在本文件：用 `.agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json` 按变更文件提取命中的 spec。`query` 会先扫描全部归档 spec 的「影响文件」重建索引。
 
 ## 模块
 

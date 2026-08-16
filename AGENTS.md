@@ -10,7 +10,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 | `.agents/docs/DEV-STANDARDS.md` | 写代码、做 review |
 | `.agents/docs/CODE-MAP.md` | 定位模块。模块增删改后必须更新；文件可能很大，按模块/路径检索 |
 | `.agents/docs/SPECS/index.md` | 先读模块索引，再打开当前需要的规格。禁止加载整个 SPECS |
-| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格 |
+| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格（会先扫描归档 spec 重建索引） |
 
 ## 进行中的需求（可选，复杂需求才走）
 
