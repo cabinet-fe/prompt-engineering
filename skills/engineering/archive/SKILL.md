@@ -2,6 +2,7 @@
 name: archive
 description: >
   归档已完成功能：把 spec.md 迁入 .agents/docs/SPECS/<模块>/、更新索引并删除 cooking/<feature>/。
+  结束后按 git-commit auto 提交新入库规格（本地、不 push）。
   仅用户显式调用 archive，或由 rush 编排触发时使用。
 ---
 
@@ -52,4 +53,4 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 结束
 
-给出 spec 的新路径、两级索引里加了哪几条，以及 `rebuild` 后的 spec→文件条目。
+给出 spec 的新路径、两级索引里加了哪几条，以及 `rebuild` 后的 spec→文件条目。然后执行 `git-commit` auto：提交新入库的 `SPECS/` 与索引；若工作区还有未提交代码则一并提交。不要 push。无改动则说明无提交。

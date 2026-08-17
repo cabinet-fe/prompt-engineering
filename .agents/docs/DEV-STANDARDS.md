@@ -30,9 +30,10 @@
 
 ## 明确禁止
 
-- 技能默认不自动触发；用户只是聊到相关概念时不要展开流程（`implement` 完成后的 sync-spec/review、以及 `rush` 编排除外）
+- 技能默认不自动触发；用户只是聊到相关概念时不要展开流程（`implement` 完成后的 sync-spec/review、`review` 通过后的 git-commit auto、以及 `rush` 编排除外）
 - 不要把规范全文、技术栈清单、目录树写进根 `AGENTS.md`
 - 不要发明 `state.md` 之类的额外流程标记
 - 写库技能或框架 API 时禁止凭训练数据补事实；以源码、类型、lockfile、官方 changelog 为准
 - 其它工程技能发现未 setup 只提示并停止，禁止代跑 `setup`
 - 手写 `SPECS/files-index.json`；规格→文件映射必须从「影响文件」章节 rebuild
+- 在主对话做 `review`（必须派子代理；没有子代理工具则停止，禁止降级代评）

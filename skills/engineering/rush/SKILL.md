@@ -18,7 +18,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 ## 使用工具
 
 - **<@交互式提问>**：扫描当前工具清单，语义命中「提问 / 选择 / 确认」的即调用；没有则用文本提问。禁止伪造工具调用。
-- **<@子代理>**：扫描工具清单，语义命中「启动子代理 / Task / 独立 agent」的即调用。子代理没有本对话历史，**只靠磁盘文件**。禁止伪造子代理调用。没有子代理工具时：主代理按同一顺序亲自执行各技能，能并行的阶段改为串行。
+- **<@子代理>**：扫描工具清单，语义命中「启动子代理 / Task / 独立 agent」的即调用。子代理没有本对话历史，**只靠磁盘文件**。禁止伪造子代理调用。没有子代理工具时：除 **review 必须停止、不得在主对话代评** 外，主代理按同一顺序亲自执行其余技能，能并行的阶段改为串行。
 
 ## 参数
 
@@ -31,7 +31,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 ## 主代理做什么
 
 1. **需求含糊才 explore，且必须留在主代理。** 需求已明确或已有 `spec.md`：跳过 explore，从 `to-spec` 或 `to-tasks` 接着跑。否则执行 `explore/SKILL.md`，直到这一个 feature 的 `goal.md` 为 `已确认`。查事实派子代理。
-2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `sync-spec` → `review`）→ 全通过后 `archive`。
+2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `sync-spec` → `review`）→ 全通过后 `archive`。最后一轮 review 若评完会使全部阶段通过：派 review 时带 `defer-commit`，archive 后再触发一次 `git-commit` auto（最后阶段代码 + 新入库 SPECS 一次提交）。中间阶段的 review 自行 auto 提交。
 3. 主代理只读：`goal.md` 需求目标、各 `tasks/P*.md` 的「前置任务 / 状态」、`reviews/Pn.md` 的结论。不要把 spec 全文和所有任务清单加载进主对话。
 4. 子代理失败或 review 不通过：把阻塞项给用户，**不要自动再开一轮修复**。用户要求修，再派 `implement` 子代理返工该阶段，然后重新 `review`。
 5. 架构级变更（子代理报告需要更新 `ARCHITECTURE.md`）：停下来让用户跑 `setup` 更新模式，不要在 rush 里改架构文档。
@@ -43,8 +43,10 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 某个阶段的 implement 子代理返回后，先派 **该阶段** 的 `sync-spec` 子代理，再派 **该阶段** 的 `review` 子代理。不要等所有并行阶段都实现完再评审。
 
+派 review 前看其它阶段是否都已「评审：通过」：是，则本阶段是收尾，prompt 里写明 `defer-commit`。该 review 通过后立刻 archive，再执行 `git-commit` auto；不要让 review 先交一笔、archive 再交一笔。
+
 依赖未通过评审的阶段，不得进入 implement。
 
 ## 结束
 
-汇报：feature 路径、各阶段 sync-spec 命中的规格、评审结论、若已 archive 则给 SPECS 路径。中途停下时写明卡在哪一阶段、缺什么。
+汇报：feature 路径、各阶段 sync-spec 命中的规格、评审结论、是否已本地提交、若已 archive 则给 SPECS 路径。中途停下时写明卡在哪一阶段、缺什么。

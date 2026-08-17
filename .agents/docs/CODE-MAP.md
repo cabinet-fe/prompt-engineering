@@ -32,7 +32,7 @@
 | langs | `skills/langs/` | 语言专项技能；go/node/rust/typescript 目前为空 | 各 `SKILL.md` |
 | frameworks | `skills/frameworks/` | 框架专项；现仅 Vue 3，按 minor 读 reference | `vue/SKILL.md` |
 | roles | `skills/roles/` | 角色约束；frontend-expert 有正文，backend-expert 为空 | `frontend-expert/SKILL.md` |
-| tools | `skills/tools/` | git-commit；为库生成伴生技能 build-lib-skill | 各 `SKILL.md` |
+| tools | `skills/tools/` | git-commit（交互提交 / review·archive 的 auto 本地提交）；为库生成伴生技能 build-lib-skill | 各 `SKILL.md` |
 | spec-index | `skills/engineering/sync-spec/scripts/spec-files.mjs` | 从 spec「影响文件」的新增/修改 rebuild 索引，再 parse/query/list | `spec-files.mjs` |
 | agents-docs | `.agents/docs/` | 本仓库架构、规范、代码地图、已归档 SPECS | `ARCHITECTURE.md` |
 | agents-skills | `.agents/skills/` | 指向 engineering 与 git-commit 的软链接 | 各 symlink |
@@ -43,6 +43,7 @@
 graph TD
   engineering --> agents-docs
   engineering --> spec-index
+  engineering --> tools
   agents-skills --> engineering
   agents-skills --> tools
   frameworks --> roles

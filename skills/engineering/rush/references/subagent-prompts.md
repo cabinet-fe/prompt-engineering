@@ -46,12 +46,9 @@
 
 ## review（每个刚完成实现的阶段单独一个子代理）
 
-```text
-你在仓库 <repo> 中工作。cooking 标识：<feature>。只评审该单位的阶段 <Pn>（阶段路径，不要走 git 评审）。
-先读 <engineering>/review/SKILL.md 并完整执行。
-只评不改代码。用 .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json 按改动文件查文件反查索引（query 会先扫描归档 spec 重建索引），命中时检查 sync-spec 是否已同步对应规格；未同步则列为阻塞项。写 .agents/cooking/<feature>/reviews/<Pn>.md，并回写该 Pn 的评审状态。
-完成后只汇报：结论（通过/不通过）、阻塞项原文。
-```
+任务书权威源：`<engineering>/review/references/subagent-prompt.md`（阶段评审模板）。第一行必须是 `【review-exec】`。中间阶段 `<defer-commit 行>` 留空；收尾阶段写成 `调用方：defer-commit。通过后不要提交。`
+
+不要把主会话实现过程写进 prompt。子代理只汇报结论、阻塞项、是否已提交。
 
 ## archive
 
@@ -59,5 +56,6 @@
 你在仓库 <repo> 中工作。cooking 标识：<feature>。归档该单位。
 先读 <engineering>/archive/SKILL.md 并完整执行。
 若有阶段未 review 通过则不要归档，汇报缺什么。
-完成后只汇报：spec 新路径、两级索引改动、rebuild 写入的 files-index 条目、cooking 目录是否已删。
+归档成功后触发 git-commit auto：新入库的 SPECS 与索引；若工作区还有本轮未提交代码（rush defer-commit）则一并提交。不要 push。
+完成后只汇报：spec 新路径、两级索引改动、rebuild 写入的 files-index 条目、cooking 目录是否已删、git-commit auto 的 hash（未 push）。
 ```

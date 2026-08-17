@@ -14,9 +14,9 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## 进行中的需求（可选，复杂需求才走）
 
-工作区：`.agents/cooking/`（已 gitignore）。目录名即 cooking 标识。流程：explore（可选）→ to-spec → to-tasks → implement（每阶段后 sync-spec → review）→ archive。
+工作区：`.agents/cooking/`（已 gitignore）。目录名即 cooking 标识。流程：explore（可选）→ to-spec → to-tasks → implement（每阶段后 sync-spec → review → 通过则本地 commit）→ archive。
 
-简单改动不要建 cooking：直接 `implement` 直写 + 不带标识的 `review`（git）；若改动命中已归档规格，先跑 `sync-spec`。技能默认不自动触发，需用户显式调用；`implement` 完成后触发 `sync-spec` 和 `review`，`rush` 调用后按流程触发其余技能。
+简单改动不要建 cooking：直接 `implement` 直写 + 不带标识的 `review`（git）；若改动命中已归档规格，先跑 `sync-spec`。技能默认不自动触发，需用户显式调用；`implement` 完成后触发 `sync-spec` 和 `review`（review 必须派子代理），`review` 通过后本地提交（不 push），`rush` 调用后按流程触发其余技能。
 
 ## 项目短注
 

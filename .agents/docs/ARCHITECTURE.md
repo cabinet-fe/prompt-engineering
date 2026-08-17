@@ -6,7 +6,7 @@
 
 核心域：
 
-1. **工程工作流**（`skills/engineering`）：在目标仓库落地 `.agents/docs` / `.agents/cooking`，用磁盘文件交接 explore → spec → tasks → implement → sync-spec → review → archive；`rush` 编排。技能之间不靠对话传话。
+1. **工程工作流**（`skills/engineering`）：在目标仓库落地 `.agents/docs` / `.agents/cooking`，用磁盘文件交接 explore → spec → tasks → implement → sync-spec → review（必须子代理；通过则本地 commit）→ archive；`rush` 编排。技能之间不靠对话传话。
 2. **语言 / 框架 / 角色 / 工具**：给目标项目写代码或维护技能时用的专项手册（Vue、前端专家、git-commit、为库生成伴生技能等）。
 
 主要流程：作者在 `skills/<category>/<name>/` 编写技能 → 本仓库通过 `.agents/skills/` 软链接让本地 Agent 发现工程技能 → 目标仓库显式调用 `setup` 后才能跑其余工程技能。

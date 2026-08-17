@@ -18,6 +18,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 ## 使用工具
 
 - **<@交互式提问>**：扫描当前工具清单，语义命中「提问 / 选择 / 确认」的即调用；没有则用文本提问。禁止伪造工具调用。
+- **<@子代理>**：用户直接调用本技能、收尾要触发 review 时必须用。语义命中「启动子代理 / Task / 独立 agent」即调用。禁止伪造。
 
 ## 选路径
 
@@ -61,5 +62,5 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 结束
 
-- **阶段路径**：用户直接调用时，完成后先触发 `sync-spec <本阶段改动文件>`，再触发 `review <feature> <Pn>`，不要等用户再下指令；由 rush 派发时只汇报，sync-spec 和 review 由 rush 统一派发。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
-- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后先触发 `sync-spec <改动文件>`，再触发不带标识的 `review`（git 评审）。不要写 `reviews/`，不要说「对本阶段执行 review」。
+- **阶段路径**：用户直接调用时，完成后先触发 `sync-spec <本阶段改动文件>`，再 **派 review 子代理**（按 `review/references/subagent-prompt.md` 阶段模板，带上改动路径）。本对话不要做评审、不要读 reviews 正文。由 rush 派发时只汇报，sync-spec 和 review 由 rush 统一派子代理。不要在本技能里提交。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
+- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后先触发 `sync-spec <改动文件>`，再 **派 review 子代理**（git 评审模板，不要走阶段路径）。不要写 `reviews/`，不要说「对本阶段执行 review」，不要在本技能里提交，不要在本对话做评审。
