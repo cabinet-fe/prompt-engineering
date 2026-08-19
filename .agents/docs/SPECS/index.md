@@ -6,11 +6,6 @@
 
 ## 模块
 
-暂无已归档规格。归档后在此增加（模块名与 `CODE-MAP.md` 对齐）：
+暂无。归档后在此增加：
 
-- engineering — 工程工作流技能
-- langs — 语言技能
-- frameworks — 框架技能
-- roles — 角色技能
-- tools — 工具技能
-- spec-index — 规格→文件索引脚本
+- [<模块>](<模块>/index.md) — <一句话>
