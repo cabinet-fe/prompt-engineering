@@ -1,16 +1,14 @@
 #!/usr/bin/env node
-// 规格-文件索引工具：从已归档 spec 的「影响文件」章节生成并查询索引。
+// 扫描已归档 spec 的「影响文件」，按变更路径定位相关规格。
 // 用法：
-//   node spec-files.mjs init <index-file>
-//   node spec-files.mjs rebuild <index-file>
 //   node spec-files.mjs parse <spec.md> [--json]
-//   node spec-files.mjs query <index-file> [--json] [--stdin] <file...>
-//   node spec-files.mjs list <index-file>
+//   node spec-files.mjs query [--json] [--stdin] [--dir <SPECS目录>] <file...>
+//   node spec-files.mjs list [--json] [--dir <SPECS目录>]
 
 import fs from 'node:fs';
 import path from 'node:path';
 
-const VERSION = 1;
+const DEFAULT_SPECS_DIR = '.agents/docs/SPECS';
 const PATH_CHARS = /^[A-Za-z0-9@._+*?/-]+$/;
 const ACTION_LINE = /^- (新增|删除|修改)：`([^`]+)`$/;
 const ACTION_KEY = { 新增: 'added', 删除: 'removed', 修改: 'modified' };
@@ -21,56 +19,15 @@ process.stdout.on('error', (err) => {
 
 function usage() {
   process.stderr.write(`usage:
-  node spec-files.mjs init <index-file>
-  node spec-files.mjs rebuild <index-file>
   node spec-files.mjs parse <spec.md> [--json]
-  node spec-files.mjs query <index-file> [--json] [--stdin] <file...>
-  node spec-files.mjs list <index-file>
+  node spec-files.mjs query [--json] [--stdin] [--dir <SPECS目录>] <file...>
+  node spec-files.mjs list [--json] [--dir <SPECS目录>]
 `);
 }
 
 function specError(specPath, lineNo, msg) {
   const loc = lineNo != null ? `${specPath}:${lineNo}` : specPath;
   return new Error(`${loc}: ${msg}`);
-}
-
-function resolveIndex(file) {
-  return path.resolve(process.cwd(), file);
-}
-
-function ensureIndex(file) {
-  const abs = resolveIndex(file);
-  if (fs.existsSync(abs)) return { abs, data: readIndex(abs) };
-  fs.mkdirSync(path.dirname(abs), { recursive: true });
-  const data = { version: VERSION, specs: {} };
-  fs.writeFileSync(abs, `${JSON.stringify(data, null, 2)}\n`);
-  return { abs, data };
-}
-
-function readIndex(file) {
-  const abs = resolveIndex(file);
-  if (!fs.existsSync(abs)) return { version: VERSION, specs: {} };
-  const raw = fs.readFileSync(abs, 'utf8');
-  try {
-    const data = JSON.parse(raw);
-    return {
-      version: data.version ?? VERSION,
-      specs: data.specs && typeof data.specs === 'object' ? data.specs : {},
-    };
-  } catch (err) {
-    throw new Error(`无法解析索引 ${abs}: ${err.message}`);
-  }
-}
-
-function writeIndex(file, data) {
-  const abs = resolveIndex(file);
-  fs.mkdirSync(path.dirname(abs), { recursive: true });
-  const specs = {};
-  for (const key of Object.keys(data.specs).sort((a, b) => a.localeCompare(b))) {
-    specs[key] = data.specs[key];
-  }
-  fs.writeFileSync(abs, `${JSON.stringify({ version: VERSION, specs }, null, 2)}\n`);
-  return abs;
 }
 
 function normalizeRel(file) {
@@ -120,9 +77,8 @@ function matchesInput(file, pattern) {
   return matchesPattern(file, pattern) || matchesPattern(`${file}/__spec_probe__`, pattern);
 }
 
-function readSpecTitle(indexAbs, specRel) {
+function readSpecTitle(specAbs) {
   try {
-    const specAbs = path.resolve(path.dirname(indexAbs), specRel);
     const head = fs.readFileSync(specAbs, 'utf8').slice(0, 1000);
     const match = head.match(/^#\s+(.+)$/m);
     return match ? match[1].trim() : '';
@@ -220,7 +176,7 @@ function parseImpactFiles(markdown, specPath) {
 
   const files = [...added, ...modified];
   if (files.length === 0) {
-    throw specError(specPath, headingAt + 1, '至少一条「新增」或「修改」；「删除」不进入反查索引');
+    throw specError(specPath, headingAt + 1, '至少一条「新增」或「修改」；「删除」不参与 query 匹配');
   }
   return { added, removed, modified, files };
 }
@@ -249,21 +205,50 @@ function collectArchivedSpecs(specsDir) {
   return out.sort((a, b) => a.localeCompare(b));
 }
 
-function rebuildIndex(indexFile) {
-  const indexAbs = resolveIndex(indexFile);
-  const specsDir = path.dirname(indexAbs);
-  const specs = {};
-  for (const abs of collectArchivedSpecs(specsDir)) {
-    const rel = path.relative(specsDir, abs).split(path.sep).join('/');
+function resolveSpecsDir(dir) {
+  return path.resolve(process.cwd(), dir || DEFAULT_SPECS_DIR);
+}
+
+function loadArchivedSpecs(specsDir) {
+  const dir = resolveSpecsDir(specsDir);
+  if (!fs.existsSync(dir)) {
+    throw new Error(`找不到 SPECS 目录: ${normalizeRel(dir) || dir}`);
+  }
+  const out = [];
+  for (const abs of collectArchivedSpecs(dir)) {
+    const rel = path.relative(dir, abs).split(path.sep).join('/');
     const parts = rel.split('/');
     if (parts.length !== 2) {
       throw new Error(`${rel}: 归档 spec 必须位于 SPECS/<模块>/<feature>.md`);
     }
     const parsed = parseSpecFile(abs);
-    specs[rel] = { module: parts[0], files: parsed.files };
+    out.push({
+      spec: rel,
+      module: parts[0],
+      files: parsed.files,
+      title: readSpecTitle(abs),
+    });
   }
-  const abs = writeIndex(indexAbs, { version: VERSION, specs });
-  return { abs, count: Object.keys(specs).length };
+  return out;
+}
+
+function takeFlags(args) {
+  const flags = { json: false, stdin: false, dir: DEFAULT_SPECS_DIR };
+  const rest = [];
+  for (let i = 0; i < args.length; i += 1) {
+    const a = args[i];
+    if (a === '--json') flags.json = true;
+    else if (a === '--stdin') flags.stdin = true;
+    else if (a === '--dir') {
+      const dir = args[i + 1];
+      if (!dir) throw new Error('--dir 需要目录');
+      flags.dir = dir;
+      i += 1;
+    } else {
+      rest.push(a);
+    }
+  }
+  return { flags, rest };
 }
 
 function printParse(result, json) {
@@ -283,14 +268,12 @@ function printParse(result, json) {
   }
 }
 
-function queryIndex(file, files, { json = false } = {}) {
-  const rebuilt = rebuildIndex(file);
-  const indexAbs = rebuilt.abs;
-  const data = readIndex(indexAbs);
+function querySpecs(specsDir, files, { json = false } = {}) {
+  const specs = loadArchivedSpecs(specsDir);
   const normalized = [...new Set(files.map(normalizeRel).filter(Boolean))];
   const matches = [];
-  for (const [spec, entry] of Object.entries(data.specs ?? {})) {
-    const patterns = Array.isArray(entry?.files) ? entry.files : [];
+  for (const entry of specs) {
+    const patterns = Array.isArray(entry.files) ? entry.files : [];
     const hit = [];
     for (const changed of normalized) {
       for (const pattern of patterns) {
@@ -301,9 +284,9 @@ function queryIndex(file, files, { json = false } = {}) {
     }
     if (hit.length > 0) {
       matches.push({
-        spec,
-        module: entry?.module ?? '',
-        title: readSpecTitle(indexAbs, spec),
+        spec: entry.spec,
+        module: entry.module,
+        title: entry.title,
         hit,
       });
     }
@@ -324,17 +307,19 @@ function queryIndex(file, files, { json = false } = {}) {
   }
 }
 
-function listIndex(file) {
-  rebuildIndex(file);
-  const data = readIndex(file);
-  const entries = Object.entries(data.specs ?? {});
-  if (entries.length === 0) {
+function listSpecs(specsDir, { json = false } = {}) {
+  const specs = loadArchivedSpecs(specsDir);
+  if (json) {
+    process.stdout.write(`${JSON.stringify(specs, null, 2)}\n`);
+    return;
+  }
+  if (specs.length === 0) {
     process.stdout.write('EMPTY\n');
     return;
   }
-  for (const [spec, entry] of entries.sort(([a], [b]) => a.localeCompare(b))) {
-    const files = Array.isArray(entry?.files) ? entry.files.join(', ') : '';
-    process.stdout.write(`${spec}\t${entry?.module ?? ''}\t${files}\n`);
+  for (const entry of specs) {
+    const files = Array.isArray(entry.files) ? entry.files.join(', ') : '';
+    process.stdout.write(`${entry.spec}\t${entry.module}\t${files}\n`);
   }
 }
 
@@ -355,40 +340,20 @@ function main() {
       return;
     }
 
-    const indexFile = rest[0];
-    if (!indexFile) {
-      usage();
-      process.exit(2);
-    }
-    const extra = rest.slice(1);
-
-    if (cmd === 'init') {
-      const { abs } = ensureIndex(indexFile);
-      process.stdout.write(`${abs}\n`);
-      return;
-    }
-
-    if (cmd === 'rebuild') {
-      const { abs, count } = rebuildIndex(indexFile);
-      process.stdout.write(`${count} specs -> ${abs}\n`);
-      return;
-    }
-
     if (cmd === 'list') {
-      listIndex(indexFile);
+      const { flags } = takeFlags(rest);
+      listSpecs(flags.dir, { json: flags.json });
       return;
     }
 
     if (cmd === 'query') {
-      const json = extra.includes('--json');
-      const stdin = extra.includes('--stdin');
-      const files = extra.filter((x) => x !== '--json' && x !== '--stdin');
-      if (stdin) {
+      const { flags, rest: files } = takeFlags(rest);
+      if (flags.stdin) {
         const input = fs.readFileSync(0, 'utf8');
         files.push(...input.split(/\r?\n/).map((x) => x.trim()).filter(Boolean));
       }
       if (files.length === 0) throw new Error('query 需要至少一个文件路径，或用 --stdin 传入');
-      queryIndex(indexFile, files, { json });
+      querySpecs(flags.dir, files, { json: flags.json });
       return;
     }
 

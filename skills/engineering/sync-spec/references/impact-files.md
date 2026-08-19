@@ -1,6 +1,6 @@
 # 影响文件章节
 
-归档 spec 与 cooking `spec.md` 都必须含本节。脚本只认这个格式；`parse` 失败则 to-spec / archive / rebuild / query 一律停止。
+归档 spec 与 cooking `spec.md` 都必须含本节。脚本只认这个格式；`parse` 失败则 to-spec / archive / query 一律停止。
 
 权威校验：`node .agents/scripts/spec-files.mjs parse <spec.md>`。
 
@@ -24,15 +24,15 @@
 4. `path` 是仓库相对路径或 glob。行首可以写 `/`，脚本会去掉这一层（`/src/a.ts` 等于 `src/a.ts`）。禁止：
    - 绝对路径、`..`、`.` 段、反斜杠、空白、行内注释、末尾 `/`
    - 同一路径出现两次（含跨 新增/删除/修改）
-5. 索引只收录 **新增** 和 **修改**。「删除」只留在 spec 里给人看，`rebuild` / `query` 不扫它。
+5. `query` 只匹配 **新增** 和 **修改**。「删除」只留在 spec 里给人看。
 6. 空行可以出现在条目之间；非空行必须符合第 2 条。
 
 ## 命令
 
 ```bash
 node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md
-node .agents/scripts/spec-files.mjs rebuild .agents/docs/SPECS/files-index.json
-node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <变更文件...>
+node .agents/scripts/spec-files.mjs query <变更文件...>
+git diff --name-only | node .agents/scripts/spec-files.mjs query --stdin
 ```
 
-`query` / `list` 会先 `rebuild`：扫描全部已归档 spec 的「新增」「修改」，重写 `files-index.json`，再按变更路径匹配。不要手写索引。
+`query` 当场扫描 `.agents/docs/SPECS/` 已归档 spec，按变更路径定位相关规格。

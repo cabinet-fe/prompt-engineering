@@ -11,7 +11,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则停止，告诉用户先执行 `setup`，不要代跑。判定与其它工程技能相同。
+未完成 setup 则停止，告诉用户先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。
 
 ## 使用工具
 

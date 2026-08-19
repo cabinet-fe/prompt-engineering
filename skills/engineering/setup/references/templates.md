@@ -4,39 +4,32 @@
 
 ## 根目录 `AGENTS.md`
 
-保持短。禁止把规范全文、技术栈清单、目录树塞进来。
+按类别**原样复制**对应模板，禁止追加短注、流程章、项目特例。不要把规范全文、技术栈清单、目录树塞进来。
+
+- 代码类：[root-agents-code.md](root-agents-code.md)
+- 非代码：[root-agents-non-code.md](root-agents-non-code.md)
+
+## `.agents/docs/PROJECT.md`
+
+始终写入。只留这几项。禁止塞规范、流程、目录树。
 
 ```markdown
-# AGENTS
+# 项目
 
-Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止一次加载全部**。
-
-## 文档
-
-| 文件 | 何时读 |
-| --- | --- |
-| `.agents/docs/ARCHITECTURE.md` | 业务/技术架构、技术栈。架构大变时由 setup 更新 |
-| `.agents/docs/DEV-STANDARDS.md` | 写代码、做 review |
-| `.agents/docs/CODE-MAP.md` | 定位模块。模块增删改后必须更新；文件可能很大，按模块/路径检索 |
-| `.agents/docs/SPECS/index.md` | 先读模块索引，再打开当前需要的规格。禁止加载整个 SPECS |
-| `.agents/docs/SPECS/files-index.json` | 不要直接读；用 `.agents/scripts/spec-files.mjs query` 按变更文件提取相关规格（会先扫描归档 spec 重建索引） |
-
-## 进行中的需求（可选，复杂需求才走）
-
-工作区：`.agents/cooking/`（已 gitignore）。目录名即 cooking 标识。流程：explore（可选）→ to-spec → to-tasks → implement（每阶段后 sync-spec → review → 通过则本地 commit）→ archive。
-
-简单改动不要建 cooking：直接 `implement` 直写 + 不带标识的 `review`（git）；若改动命中已归档规格，先跑 `sync-spec`。技能默认不自动触发，需用户显式调用；`implement` 完成后触发 `sync-spec` 和 `review`（review 必须派子代理），`review` 通过后本地提交（不 push），`rush` 调用后按流程触发其余技能。
-
-## 项目短注
-
-- <最多 5 条「永远要记住」的项目特例。没有则写「无」。>
+- 是什么：<一句话>
+- 类别：<前端项目 | 后端项目 | 前端库 | 后端库 | 全栈项目 | 非代码项目>
+- 组织结构：<单包仓库 | 多包单体仓库（包路径：`a`、`b`）>
 ```
 
-若用户坚持把某条偏好留在 `AGENTS.md`，也只能是短注，完整规则仍写入 docs 并在短注里引用。
+仅全栈再加一行，非全栈不要写「架构形态」：
+
+```markdown
+- 架构形态：<前后端分离（独立前端 + REST/gRPC 等 API）| 一体化（Next/Nuxt SSR 等）| 其它：<用户原句>>
+```
 
 ## `.agents/docs/ARCHITECTURE.md`
 
-由 setup 首次生成，架构大变时由 setup 更新。模块增删若未改变业务/技术架构，不要改本文件（改 `CODE-MAP.md`）。
+仅代码类。由 setup 首次生成，架构大变时由 setup 更新。implement 禁止改本文件。模块表行变更若未换栈/改分层/加应用边界，不要改本文件（改 `CODE-MAP.md`，见 [code-map-update.md](code-map-update.md)）。
 
 ```markdown
 # 架构
@@ -47,7 +40,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## 技术架构
 
-<系统如何分层、进程/服务边界、数据存哪、关键集成。>
+<系统如何分层、进程/服务边界、数据存哪、关键集成。全栈写明与 PROJECT.md 一致的架构形态。>
 
 ### 技术栈
 
@@ -69,7 +62,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## `.agents/docs/DEV-STANDARDS.md`
 
-只写本仓库真正执行的规范。现有项目以代码和配置为准；新项目以用户回答为准。没有的章节整节删除，不要保留空标题。
+仅代码类。只写本仓库真正执行的规范。现有项目以代码和配置为准；新项目以用户回答为准。没有的章节整节删除，不要保留空标题。
 
 ```markdown
 # 开发规范
@@ -105,14 +98,14 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 ## 明确禁止
 
 - 归档 spec / cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
-- 手写 `SPECS/files-index.json`
+- 一次加载整个 `SPECS/`；按变更路径用 `spec-files.mjs query` 扫描归档 spec 定位相关规格
 - <其它本仓库不要做的事。没有则只保留上两条。>
 
 ```
 
 ## `.agents/docs/CODE-MAP.md`
 
-这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。有模块增删改时必须更新。规格→文件的反查不写在本文件，统一放在 `SPECS/files-index.json`，由 `spec-files.mjs rebuild/query` 从各 spec 的「影响文件」生成。
+仅代码类。这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。何时改、改哪、何时停见 [code-map-update.md](code-map-update.md)。规格→文件的反查不写在本文件：运行 `node .agents/scripts/spec-files.mjs query <变更路径...>`，脚本扫描归档 spec 的「影响文件」。
 
 依赖图用 mermaid `graph TD`，模块作节点、依赖作边。
 
@@ -121,7 +114,7 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## 树
 
-<3～5 层目录树，标注每个目录职责。忽略 dist、node_modules、vendor、.git。>
+<3～5 层目录树，标注每个目录职责。忽略 dist、node_modules、vendor、.git。新项目尚未建目录则标明「规划」。>
 
 ## 模块
 
@@ -140,14 +133,14 @@ Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止�
 
 ## `.agents/docs/SPECS/index.md`
 
-首次只建空索引。archive 才会往里填。
+各类都要有。首次只建空索引。archive 才会往里填。
 
 ```markdown
 # SPECS 索引
 
 已归档的功能规格。**先读本文件，再按需打开具体 spec。禁止一次加载本目录全部文件。**
 
-文件级反查不放在本文件：用 `.agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json` 按变更文件提取命中的 spec。`query` 会先扫描全部归档 spec 的「影响文件」重建索引。
+按变更路径定位规格：运行 `node .agents/scripts/spec-files.mjs query <变更文件...>`。脚本扫描本目录已归档 spec 的「影响文件」（只匹配新增和修改）。禁止一次加载整个 SPECS。
 
 ## 模块
 

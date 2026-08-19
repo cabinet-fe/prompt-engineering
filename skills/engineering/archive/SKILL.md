@@ -12,9 +12,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
-
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 使用工具
 
@@ -43,14 +41,16 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 布局见 [specs-layout.md](references/specs-layout.md)。
 
-1. 定 `<feature>`。先跑 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`。失败则停止，让用户改到「影响文件」可通过再归档；不要补路径、不要改写成脚本认的格式以外的东西。用 parse 得到的新增/修改路径，按路径前缀在 `CODE-MAP.md` 模块表里检索对应模块（不要全文加载 CODE-MAP），决定 `SPECS/<模块>/`。命中多个模块：放匹配路径最多的主模块，在其它模块的 `index.md` 里加一条指向。对不上任何模块则问。路径落在 CODE-MAP 还没有的目录且会改变分层或技术栈时，提醒先跑 `setup`。
+1. 定 `<feature>`。先跑 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`。失败则停止，让用户改到「影响文件」可通过再归档；不要补路径、不要改写成脚本认的格式以外的东西。
+   - **代码类**：用 parse 得到的新增/修改路径，按路径前缀在 `CODE-MAP.md` 模块表里检索对应模块（不要全文加载 CODE-MAP），决定 `SPECS/<模块>/`。命中多个模块：放匹配路径最多的主模块，在其它模块的 `index.md` 里加一条指向。对不上任何模块则问。路径落在 CODE-MAP 还没有的目录且等于新分层：停止并让用户先 `setup`。
+   - **非代码**：按 `SPECS/index.md` 的模块名归档，不要打开 CODE-MAP。对不上则问。
 2. 目标路径：`.agents/docs/SPECS/<模块>/<feature>.md`。已存在则问覆盖还是换名。
 3. **移动**（不是复制）`spec.md` 到该路径。文件顶上补一行：`归档自 cooking/<feature>`。
 4. 更新 `<模块>/index.md`（没有就建）和 `SPECS/index.md` 的「模块」部分。索引只写标题、一句话、链接。不要把规格正文贴进 index。
-5. 从 spec 重建文件反查索引：`node .agents/scripts/spec-files.mjs rebuild .agents/docs/SPECS/files-index.json`。不要手写 `files-index.json`。
-6. 删除整个 `.agents/cooking/<feature>/`（含 goal、tasks、reviews）。删除前确认 spec 已出现在两级索引，且 `rebuild` 成功。
-7. 若本次引入了架构级变化但 `ARCHITECTURE.md` 没更新：提醒用户跑 `setup` 更新模式。`CODE-MAP.md` 其余内容在 implement 里应该已经更新；发现明显过期则补更新。
+5. 可用 `node .agents/scripts/spec-files.mjs query <本 spec 新增或修改路径...>` 确认能扫到刚入库的 spec。
+6. 删除整个 `.agents/cooking/<feature>/`（含 goal、tasks、reviews）。删除前确认 spec 已出现在两级索引。
+7. 若本次引入了架构级变化但 `ARCHITECTURE.md` 没更新：停止并让用户先 `setup`。代码类：归档时地图明显过期则按契约补相关行；若新目录等于新分层，停止并让用户先 setup。非代码不要改 CODE-MAP。
 
 ## 结束
 
-给出 spec 的新路径、两级索引里加了哪几条，以及 `rebuild` 后的 spec→文件条目。然后执行 `git-commit` auto：提交新入库的 `SPECS/` 与索引；若工作区还有未提交代码则一并提交。不要 push。无改动则说明无提交。
+给出 spec 的新路径、两级索引里加了哪几条。然后执行 `git-commit` auto：提交新入库的 `SPECS/` 与索引；若工作区还有未提交代码则一并提交。不要 push。无改动则说明无提交。

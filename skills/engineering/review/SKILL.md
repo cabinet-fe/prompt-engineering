@@ -34,9 +34,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
-
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定与读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 阻塞规则见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 选路径
 
@@ -52,7 +50,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 两条路径都要做。只读，不改 spec、不代跑 `sync-spec`。
 
 1. 收集本轮改动路径：调用方传入的文件，否则 `git status --porcelain` / `git diff --name-only` 与 `git diff --cached --name-only` 的并集。忽略 `.agents/cooking/`。
-2. 运行 `node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动文件...>`。`query` 会先扫描全部归档 spec 重建索引，**只匹配各 spec「影响文件」里的新增和修改**；删除行不参与反查。
+2. 运行 `node .agents/scripts/spec-files.mjs query <改动文件...>`。脚本扫描归档 spec，**只匹配各 spec「影响文件」里的新增和修改**；删除行不参与反查。
 3. 未命中：规格影响记「无命中」，不要打开任何归档 spec。
 4. 命中：只打开命中的归档 spec。检查：
    - `parse` 能通过；仍写「模块 / 新增模块 / 路径」或「影响面」则阻塞。
@@ -73,14 +71,14 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 对照当前 diff / 相关文件，三条轴都要写：
 
 1. **Spec**：`spec.md` + 该 `Pn.md` 的完成标准是否都满足；有没有做范围外的事。
-2. **Standards**：是否遵守 `DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新（只检索相关模块，不全文加载）。
+2. **Standards**：代码类只评 `DEV-STANDARDS.md`（根 `AGENTS.md` 无短注）。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。代码类且本 diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的 1～6、但 CODE-MAP 对应行没改：阻塞。非代码不要要求 CODE-MAP。
 3. **规格影响**：按上面「规格检查」。归档 spec 未同步、cooking「影响文件」过时或无法 parse，都是阻塞项。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。
 
 ### 工作流
 
-1. 读 `Pn.md`、`spec.md` 相关段、`DEV-STANDARDS.md`，以及本阶段改动的文件。做规格检查。
+1. 读 `Pn.md`、`spec.md` 相关段；代码类读 `DEV-STANDARDS.md`，非代码对照 `PROJECT.md`。以及本阶段改动的文件。做规格检查。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
 3. 回写 `Pn.md` 的「评审」为 `通过` 或 `不通过`。
 4. 不通过：列出阻塞项，告诉用户用 `implement <feature> <Pn>` 返工。不要自己改代码。不要提交。
@@ -101,7 +99,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ### 评审轴
 
-1. **Standards**：`DEV-STANDARDS.md` 与根 `AGENTS.md` 短注。模块有变时 `CODE-MAP.md` 是否已更新。
+1. **Standards**：代码类只评 `DEV-STANDARDS.md`。非代码对照 `PROJECT.md`。CODE-MAP 阻塞规则同阶段评审。
 2. **正确性**：改动是否自洽、有无明显 bug、是否和提交说明 / 本对话意图一致。没有 cooking spec 就不要假装有 Spec 轴。
 3. **规格影响**：按上面「规格检查」。未同步则阻塞，提示调用 `sync-spec`。只读，不自动改规格。
 

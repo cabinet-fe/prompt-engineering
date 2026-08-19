@@ -11,7 +11,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则停止，告诉用户先执行 `setup`，不要代跑。
+未完成 setup 则停止，告诉用户先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。
 
 需求还写不成可判定的验收标准：停止，建议用户先 `explore`，不要在本技能里开决策树。
 
@@ -32,7 +32,7 @@ description: >
 
 1. 定 `<feature>`。新开时只读其它 cooking 的 `goal.md`（没有则看 `spec.md` 标题）做冲突检查。
 2. 输入优先级：本次需求描述 > 已确认的 `goal.md` > 本对话已说清的需求。不要扩大这些来源里没有的范围。
-3. 需要时读 `ARCHITECTURE.md`、`DEV-STANDARDS.md`；`CODE-MAP.md` 可能很大，只按模块名/路径检索，不要全文加载。用脚本按预计影响路径查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <预计路径或目录...>`（会先扫描归档 spec 重建索引）；命中才打开对应 spec 做撞车检查。不确定路径时先读 `SPECS/index.md` 的模块列表（很小）。禁止一次加载整个 `SPECS/`。
+3. 按 [complete.md](../setup/references/complete.md) 读 docs：代码类需要时读 `ARCHITECTURE.md`、`DEV-STANDARDS.md`，并按模块名/路径检索 `CODE-MAP.md`，不要全文加载；非代码不要打开这三份。运行 `node .agents/scripts/spec-files.mjs query <预计路径或目录...>`（脚本扫描归档 spec）；命中才打开对应 spec 做撞车检查。不确定路径时先读 `SPECS/index.md` 的模块列表（很小）。禁止一次加载整个 `SPECS/`。
 4. 按 [spec-template.md](references/spec-template.md) 写 `spec.md`。不得增删标题。
 5. 验收标准必须可判定。禁止「体验好」「尽量完善」。
 6. 「影响文件」按 [impact-files.md](../sync-spec/references/impact-files.md) 写：只列本规格 **新增 / 删除 / 修改** 的仓库相对路径（每行一条，反引号包裹）。至少一条新增或修改；没有删除就省略删除行。不要写模块名。写完运行 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`，失败则改到通过再结束。

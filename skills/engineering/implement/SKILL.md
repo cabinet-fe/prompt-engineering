@@ -11,9 +11,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
-
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定与读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 使用工具
 
@@ -43,12 +41,12 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准、`DEV-STANDARDS.md`。先用脚本按预计改动路径查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <预计改动路径...>`。`query` 会先扫描归档 spec 重建索引。命中才打开对应 spec，确认不会破坏已归档功能；可能破坏时停止，让用户决定更新规格还是调整方案。未命中不要打开任何 spec。需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准。代码类读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。先运行 `node .agents/scripts/spec-files.mjs query <预计改动路径...>`（脚本扫描归档 spec，只匹配「影响文件」里的新增和修改）。命中才打开对应 spec，确认不会破坏已归档功能；可能破坏时停止，让用户决定更新规格还是调整方案。未命中不要打开任何 spec。代码类需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
 2. 把该阶段「实现」改为 `进行中`。
-3. 只做清单项。遵守 docs 与根 `AGENTS.md` 短注。小 diff，不顺手重构。
-4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
+3. 只做清单项。小 diff，不顺手重构。
+4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 5. 勾选已完成的清单项。
-6. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（树、模块表、依赖图；不写规格链接，文件反查在 `SPECS/files-index.json`）。不要为了对齐而去改 `ARCHITECTURE.md`。
+6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。
 7. 「实现」改为 `完成`。「评审」保持 `未开始`（或从 `不通过` 改回 `未开始` 若这是返工）。
 
 ## 直写路径
@@ -56,9 +54,9 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 读 `DEV-STANDARDS.md`、根 `AGENTS.md` 短注；先用脚本查文件反查索引：`node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <改动路径...>`。`query` 会先扫描归档 spec 重建索引。命中才打开对应 spec，确认不破坏已归档功能；未命中不要打开任何 spec。需要定位模块/路径时，再检索 `CODE-MAP.md` 相关行，不要全文加载。
-3. 小 diff，不顺手重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
-4. 模块有增删改：更新 `.agents/docs/CODE-MAP.md`（不写规格链接，文件反查在 `SPECS/files-index.json`）。不要改 `ARCHITECTURE.md`。
+2. 代码类读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`。先运行 `node .agents/scripts/spec-files.mjs query <改动路径...>`。命中才打开对应 spec；未命中不要打开任何 spec。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。
+3. 小 diff，不顺手重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
+4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。
 
 ## 结束
 

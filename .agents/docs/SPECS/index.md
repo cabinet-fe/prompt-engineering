@@ -2,7 +2,7 @@
 
 已归档的功能规格。**先读本文件，再按需打开具体 spec。禁止一次加载本目录全部文件。**
 
-文件级反查不放在本文件：用 `.agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json` 按变更文件提取命中的 spec。`query` 会先扫描全部归档 spec 的「影响文件」重建索引。
+按变更路径定位规格：运行 `node .agents/scripts/spec-files.mjs query <变更文件...>`。脚本扫描本目录已归档 spec 的「影响文件」（只匹配新增和修改）。禁止一次加载整个 SPECS。
 
 ## 模块
 

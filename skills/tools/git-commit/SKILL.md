@@ -35,7 +35,7 @@ description: >
 1. `git status`：没有已跟踪变更且没有应入库的新文件 → 汇报「无提交」，结束。
 2. 发现 `.env`、密钥、凭证、明显不该入库的文件 → **停止，不要提交**，列给用户。不要用提问把风险问过去。
 3. 不要 add `.agents/cooking/`（已被 gitignore；不要强制加）。
-4. 只暂存本轮应入库文件：业务代码、`CODE-MAP.md`、sync-spec / archive 改过的 `SPECS/` 与 `files-index.json`。不要顺手塞进无关脏文件。
+4. 只暂存本轮应入库文件：业务代码、`CODE-MAP.md`、sync-spec / archive 改过的 `SPECS/`。不要顺手塞进无关脏文件。
 5. 一个逻辑提交；按 [提交规范](#提交规范) 写中文信息（review 触发写清本阶段/本改动；archive 触发用 `docs(specs): 归档 <feature>`，若同一次还带未提交代码则按代码意图选类型，正文说明含归档规格）。
 6. `git add` 指定路径 + `git commit`。不要 `--no-verify`。不要 `git push`。
 7. 汇报 commit hash，并写明未推送。

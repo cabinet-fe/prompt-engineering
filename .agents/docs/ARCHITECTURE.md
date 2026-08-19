@@ -18,7 +18,7 @@
 - **源码**：`skills/` 按 category 分子目录，每个技能一个文件夹，入口固定为 `SKILL.md`。
 - **本仓库发现**：`.agents/skills/<name>` 软链接到 `skills/engineering/<name>` 或 `skills/tools/git-commit`。
 - **目标仓库产物**（由本仓库的 `setup` 技能写入对方仓库）：`.agents/docs/`（可提交）、`.agents/cooking/`（gitignore）、`.agents/scripts/spec-files.mjs`。
-- **规格反查**：`spec-files.mjs` 扫描已归档 spec「影响文件」里的 **新增** 和 **修改** 路径，生成 `SPECS/files-index.json`，再用 `query` 按变更路径取命中 spec。删除路径不进入索引。禁止把整个 SPECS 加载进模型上下文。
+- **规格反查**：`spec-files.mjs query` 扫描已归档 spec「影响文件」里的 **新增** 和 **修改** 路径，按变更路径取命中 spec。删除路径不参与匹配。禁止把整个 SPECS 加载进模型上下文。
 
 `sync-spec` 脚本的权威源在 `skills/engineering/sync-spec/scripts/spec-files.mjs`；`setup` 把它复制到目标仓库的 `.agents/scripts/`。本仓库 setup 后同样有一份副本。
 

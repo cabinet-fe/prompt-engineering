@@ -1,7 +1,7 @@
 ---
 name: sync-spec
 description: >
-  把已归档规格与当前代码变更同步：脚本扫描全部归档 spec 的「影响文件」重建索引，再按变更文件提取命中项并更新过时内容。
+  把已归档规格与当前代码变更同步：脚本扫描全部归档 spec 的「影响文件」，再按变更路径提取命中项并更新过时内容。
   仅用户显式调用 sync-spec，或由 implement/rush 按流程触发时使用；用户绕过工作流直接改代码后，也应显式调用本技能。
 ---
 
@@ -15,9 +15,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则停止，告诉用户先执行 `setup`；如果只缺 `SPECS/files-index.json` 或 `.agents/scripts/spec-files.mjs`，执行 `setup` 更新模式。不要代跑。
-
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+未完成 setup 则停止，告诉用户先执行 `setup`；如果只缺 `.agents/scripts/spec-files.mjs`，告诉用户跑 `setup` 更新模式。不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 使用工具
 
@@ -32,19 +30,19 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 1. 用户给了路径：只处理这些路径。
 2. 否则用 git 取工作区和暂存区变更文件，例如 `git status --porcelain` 里的路径，加上 `git diff --name-only` 与 `git diff --cached --name-only` 的并集；去重。
-3. 忽略 `.agents/cooking/` 和 `.agents/docs/SPECS/files-index.json` 本身，除非用户明确要求同步索引结构。
+3. 忽略 `.agents/cooking/`。
 4. 工作区和暂存区都没有变更时：用 <@交互式提问> 问用户要同步哪次提交或哪些文件，不要自动取最近一次提交。
 
 ## 查询相关规格
 
 脚本源在本技能的 `scripts/spec-files.mjs`；`setup` 会把它复制到目标仓库的 `.agents/scripts/spec-files.mjs`，后续统一调用后者。
 
-索引的唯一来源是各归档 spec 的「影响文件」章节。`query` 会先扫描全部归档 spec 并重写 `files-index.json`，不要手写索引。
+`query` 当场扫描 `.agents/docs/SPECS/` 下已归档 spec 的「影响文件」（只匹配新增和修改）。
 
 ```bash
-node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json <文件1> <文件2>...
+node .agents/scripts/spec-files.mjs query <文件1> <文件2>...
 # 或从 git 输出传入：
-git diff --name-only | node .agents/scripts/spec-files.mjs query .agents/docs/SPECS/files-index.json --stdin
+git diff --name-only | node .agents/scripts/spec-files.mjs query --stdin
 ```
 
 - 某份 spec 无法 parse：停止，先修好「影响文件」，不要跳过。
@@ -57,7 +55,7 @@ git diff --name-only | node .agents/scripts/spec-files.mjs query .agents/docs/SP
 
 1. 对照当前代码与 spec 的「需求 / 验收标准 / 影响文件」，找出已经过时的部分。
 2. 做最小更新：只改被本次变更推翻的句子或验收标准，不重写全文，不扩大范围。
-3. 「影响文件」里的新增 / 删除 / 修改列表若已变化，按 [impact-files.md](references/impact-files.md) 同步更新，并 `parse` 该文件确认通过。索引只跟新增和修改走，删除行不必为了反查而保留过时路径以外的文件。
+3. 「影响文件」里的新增 / 删除 / 修改列表若已变化，按 [impact-files.md](references/impact-files.md) 同步更新，并 `parse` 该文件确认通过。查询只跟新增和修改走，删除行不必为了反查而保留过时路径以外的文件。
 4. 在 `## 更新记录` 里追加一条：`- <日期>: <一句话说明本次变更>；涉及：<文件路径>`。不要补旧账。
 5. 若一个 spec 是否仍然有效、是否应合并/废弃拿不准：用 <@交互式提问> 问用户，不要猜。
 6. 改动会影响多个 spec 时逐个同步；不同 spec 之间不要串味。
@@ -65,15 +63,7 @@ git diff --name-only | node .agents/scripts/spec-files.mjs query .agents/docs/SP
 
 不写代码，不改 cooking，不代替 `setup` 更新 `ARCHITECTURE.md`。发现架构级变化时停止，让用户跑 `setup` 更新模式。
 
-## 回写索引
-
-同步结束后重建索引（改没改「影响文件」都跑，保证派生数据与 spec 一致）：
-
-```bash
-node .agents/scripts/spec-files.mjs rebuild .agents/docs/SPECS/files-index.json
-```
-
-若模块路径或模块职责变了，同步更新 `CODE-MAP.md`（只检索相关模块行，不要全文加载）。
+代码类：同步规格时若发现路径或职责已被代码推翻，按 [code-map-update.md](../setup/references/code-map-update.md) 更新 `CODE-MAP.md`（只改相关行）。非代码不要打开 CODE-MAP。
 
 ## 结束
 
@@ -81,5 +71,5 @@ node .agents/scripts/spec-files.mjs rebuild .agents/docs/SPECS/files-index.json
 
 - 本次扫描的文件数和命中的 spec 列表。
 - 每个 spec 改了哪些段落、追加了哪条更新记录。
-- `files-index.json` / `CODE-MAP.md` 是否更新。
+- `CODE-MAP.md` 是否更新。
 - 是否发现架构级变化需要 `setup`。

@@ -11,9 +11,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。
-
-setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.agents/docs/` 下有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SPECS/index.md`、`SPECS/files-index.json`、`.agents/scripts/spec-files.mjs`；`.agents/cooking/` 存在；`.gitignore` 含 `.agents/cooking/`。
+未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。
 
 ## 使用工具
 
@@ -40,7 +38,7 @@ setup 完成 = 同时满足：根目录 `AGENTS.md` 引用 `.agents/docs/`；`.a
 
 ## 工作流
 
-1. 定 `<feature>`。读 `spec.md`（验收标准是切分依据），需要时读 `CODE-MAP.md`、`DEV-STANDARDS.md`。
+1. 定 `<feature>`。读 `spec.md`（验收标准是切分依据）。代码类需要时检索 `CODE-MAP.md`、读 `DEV-STANDARDS.md`；非代码不要打开那三份，对照 `PROJECT.md`。
 2. 画依赖：先能做的、可并行的、必须收口的。
 3. 按 [task-template.md](references/task-template.md) 写每个 `tasks/Pn.md`。不得增删标题。不要写 `README.md` 或其它索引文件。
 4. 后续技能枚举 `tasks/P*.md`，只读「前置任务 / 状态」，再打开当前要做的那一份。
