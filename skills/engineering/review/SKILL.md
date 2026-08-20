@@ -8,7 +8,7 @@ description: >
 
 # review
 
-只评不改代码。两条路径不要混用。触发来源：用户显式调用；或由 `implement`（阶段/直写完成后）、`rush` 按流程触发。不要因用户提到 review 相关词自动进入本技能。
+只评不改代码。两条路径不要混用。触发来源：用户显式调用；或由 `implement`（阶段/直写完成后）、`rush` 按流程触发。不要因用户提到 review 相关词自动进入本技能。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 **评审必须在子代理里做。** 主会话只派发、只听结论，不读 diff、不写 `reviews/`、不 `git-commit`。
 
@@ -34,7 +34,7 @@ description: >
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 阻塞规则见 [code-map-update.md](../setup/references/code-map-update.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。CODE-MAP 阻塞规则见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 选路径
 
@@ -47,15 +47,15 @@ description: >
 
 ## 规格检查
 
-两条路径都要做。只读，不改 spec、不代跑 `sync-spec`。
+两条路径都要做。只读，不改 CONTEXT、不代跑 `sync-context`。
 
 1. 收集本轮改动路径：调用方传入的文件，否则 `git status --porcelain` / `git diff --name-only` 与 `git diff --cached --name-only` 的并集。忽略 `.agents/cooking/`。
-2. 运行 `node .agents/scripts/spec-files.mjs query <改动文件...>`。脚本扫描归档 spec，**只匹配各 spec「影响文件」里的新增和修改**；删除行不参与反查。
-3. 未命中：规格影响记「无命中」，不要打开任何归档 spec。
-4. 命中：只打开命中的归档 spec。检查：
+2. 运行 `node .agents/scripts/spec-files.mjs query <改动文件...>`。脚本扫描归档条目，**只匹配各条目「影响文件」里的新增和修改**；删除行不参与反查。
+3. 未命中：规格影响记「无命中」，不要打开任何归档条目。
+4. 命中：只打开命中的 CONTEXT 条目。检查：
    - `parse` 能通过；仍写「模块 / 新增模块 / 路径」或「影响面」则阻塞。
    - 「新增」「修改」是否覆盖本次改动里仍然存在的文件；该列入「删除」的不要指望能被 query 命中。
-   - `## 更新记录` 是否有本次。缺同步则阻塞，提示用户调用 `sync-spec`。
+   - `## 更新记录` 是否有本次。缺同步则阻塞，提示用户调用 `sync-context`。
 5. **阶段路径额外**：对 cooking `spec.md` 跑 `parse`。失败则阻塞。对照本阶段实际增删改，检查「新增 / 删除 / 修改」是否过时（多了、少了、动词不对）。
 
 ## 阶段评审
@@ -72,7 +72,7 @@ description: >
 
 1. **Spec**：`spec.md` + 该 `Pn.md` 的完成标准是否都满足；有没有做范围外的事。
 2. **Standards**：代码类只评 `DEV-STANDARDS.md`（根 `AGENTS.md` 无短注）。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。代码类且本 diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的 1～6、但 CODE-MAP 对应行没改：阻塞。非代码不要要求 CODE-MAP。
-3. **规格影响**：按上面「规格检查」。归档 spec 未同步、cooking「影响文件」过时或无法 parse，都是阻塞项。
+3. **规格影响**：按上面「规格检查」。CONTEXT 未同步、cooking「影响文件」过时或无法 parse，都是阻塞项。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。
 
@@ -101,7 +101,7 @@ description: >
 
 1. **Standards**：代码类只评 `DEV-STANDARDS.md`。非代码对照 `PROJECT.md`。CODE-MAP 阻塞规则同阶段评审。
 2. **正确性**：改动是否自洽、有无明显 bug、是否和提交说明 / 本对话意图一致。没有 cooking spec 就不要假装有 Spec 轴。
-3. **规格影响**：按上面「规格检查」。未同步则阻塞，提示调用 `sync-spec`。只读，不自动改规格。
+3. **规格影响**：按上面「规格检查」。未同步则阻塞，提示调用 `sync-context`。只读，不自动改 CONTEXT。
 
 结论只能是「通过」或「不通过」。有任何阻塞项就是不通过。建议项不阻塞。只评不改代码。
 
@@ -142,5 +142,5 @@ description: >
 先读并执行 `git-commit` 技能的 **auto** 模式（本集合源：`skills/tools/git-commit/SKILL.md`）。没有该技能则停止，说明无法自动提交，不要另写一套提交流程。
 
 - 不通过、`defer-commit`、工作区没有可提交改动：跳过。
-- 只交应入库文件（代码、`CODE-MAP.md`、已被 sync-spec 更新的 `SPECS/`）。不要 add `.agents/cooking/`。
+- 只交应入库文件（代码、`CODE-MAP.md`、已被 sync-context 更新的 `CONTEXT/`）。不要 add `.agents/cooking/`。
 - 禁止 push。

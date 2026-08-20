@@ -29,19 +29,19 @@
 ```text
 你在仓库 <repo> 中工作。cooking 标识：<feature>。只实现该单位的阶段 <Pn>（阶段路径，不要走直写）。
 先读 <engineering>/implement/SKILL.md 并完整执行。
-只打开 tasks/<Pn>.md、spec 中相关段；代码类打开 DEV-STANDARDS.md，CODE-MAP 只检索相关模块行/路径，不全文加载；非代码对照 PROJECT.md，不要打开那三份。用 .agents/scripts/spec-files.mjs query 按预计改动路径扫描归档 spec，命中才打开对应 spec，未命中不要打开任何 spec。
-不要实现其它阶段。不要自行触发 sync-spec / review（由主代理统一派发）。代码类触及 CODE-MAP 契约要改项则只改相关行。
+只打开 tasks/<Pn>.md、spec 中相关段；代码类打开 DEV-STANDARDS.md，CODE-MAP 只检索相关模块行/路径，不全文加载；非代码对照 PROJECT.md，不要打开那三份。用 .agents/scripts/spec-files.mjs query 按预计改动路径扫描归档 CONTEXT，命中才打开对应条目，未命中不要打开任何条目。
+不要实现其它阶段。不要自行触发 sync-context / review（由主代理统一派发）。代码类触及 CODE-MAP 契约要改项则只改相关行。
 不要改 ARCHITECTURE.md；若发现架构级变更，停止编码并在汇报里说明。
 完成后只汇报：改了哪些路径、清单是否全部勾选、CODE-MAP 是否更新、是否需要 setup 更新架构。
 ```
 
-## sync-spec（每个刚完成实现的阶段单独一个子代理）
+## sync-context（每个刚完成实现的阶段单独一个子代理）
 
 ```text
-你在仓库 <repo> 中工作。cooking 标识：<feature>。只同步该阶段改动影响的已归档规格。
-先读 <engineering>/sync-spec/SKILL.md 并完整执行。
+你在仓库 <repo> 中工作。cooking 标识：<feature>。只同步该阶段改动影响的已归档 CONTEXT。
+先读 <engineering>/sync-context/SKILL.md 并完整执行。
 输入：该阶段 implement 汇报的改动文件路径。
-不要改业务代码、不要改 cooking。完成后只汇报：命中的 spec、每个 spec 的更新记录、CODE-MAP 是否更新。
+不要改业务代码、不要改 cooking。完成后只汇报：命中的条目、每个条目的更新记录、是否新建条目、CODE-MAP 是否更新。
 ```
 
 ## review（每个刚完成实现的阶段单独一个子代理）
@@ -56,6 +56,6 @@
 你在仓库 <repo> 中工作。cooking 标识：<feature>。归档该单位。
 先读 <engineering>/archive/SKILL.md 并完整执行。
 若有阶段未 review 通过则不要归档，汇报缺什么。
-归档成功后触发 git-commit auto：新入库的 SPECS 与索引；若工作区还有本轮未提交代码（rush defer-commit）则一并提交。不要 push。
-完成后只汇报：spec 新路径、两级索引改动、cooking 目录是否已删、git-commit auto 的 hash（未 push）。
+归档成功后触发 git-commit auto：新入库的 CONTEXT 与索引；若工作区还有本轮未提交代码（rush defer-commit）则一并提交。不要 push。
+完成后只汇报：CONTEXT 新路径、两级索引改动、cooking 目录是否已删、git-commit auto 的 hash（未 push）。
 ```

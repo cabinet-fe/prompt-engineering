@@ -7,11 +7,11 @@ description: >
 
 # to-tasks
 
-把规格拆成可编码的阶段。不写代码。
+把规格拆成可编码的阶段。不写代码。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。
 
 ## 使用工具
 

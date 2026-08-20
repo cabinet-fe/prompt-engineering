@@ -7,11 +7,11 @@ description: >
 
 # to-spec
 
-把明确需求写成可执行规格。不拆任务、不改业务代码。explore 不是前置：没有 `goal.md` 也可以写 spec。
+把明确需求写成可执行规格。不拆任务、不改业务代码。explore 不是前置：没有 `goal.md` 也可以写 spec。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。
 
 需求还写不成可判定的验收标准：停止，建议用户先 `explore`，不要在本技能里开决策树。
 
@@ -32,10 +32,10 @@ description: >
 
 1. 定 `<feature>`。新开时只读其它 cooking 的 `goal.md`（没有则看 `spec.md` 标题）做冲突检查。
 2. 输入优先级：本次需求描述 > 已确认的 `goal.md` > 本对话已说清的需求。不要扩大这些来源里没有的范围。
-3. 按 [complete.md](../setup/references/complete.md) 读 docs：代码类需要时读 `ARCHITECTURE.md`、`DEV-STANDARDS.md`，并按模块名/路径检索 `CODE-MAP.md`，不要全文加载；非代码不要打开这三份。运行 `node .agents/scripts/spec-files.mjs query <预计路径或目录...>`（脚本扫描归档 spec）；命中才打开对应 spec 做撞车检查。不确定路径时先读 `SPECS/index.md` 的模块列表（很小）。禁止一次加载整个 `SPECS/`。
+3. 按根 AGENTS.md 读 docs：代码类需要时读 `ARCHITECTURE.md`、`DEV-STANDARDS.md`，并按模块名/路径检索 `CODE-MAP.md`，不要全文加载；非代码不要打开这三份。运行 `node .agents/scripts/spec-files.mjs query <预计路径或目录...>`；命中才打开对应 CONTEXT 条目做撞车检查。不确定路径时先读 `CONTEXT/index.md` 的模块列表（很小）。禁止一次加载整个 `CONTEXT/`。
 4. 按 [spec-template.md](references/spec-template.md) 写 `spec.md`。不得增删标题。
 5. 验收标准必须可判定。禁止「体验好」「尽量完善」。
-6. 「影响文件」按 [impact-files.md](../sync-spec/references/impact-files.md) 写：只列本规格 **新增 / 删除 / 修改** 的仓库相对路径（每行一条，反引号包裹）。至少一条新增或修改；没有删除就省略删除行。不要写模块名。写完运行 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`，失败则改到通过再结束。
+6. 「影响文件」按 [impact-files.md](../sync-context/references/impact-files.md) 写：只列本规格 **新增 / 删除 / 修改** 的仓库相对路径（每行一条，反引号包裹）。至少一条新增或修改；没有删除就省略删除行。不要写模块名。写完运行 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`，失败则改到通过再结束。
 7. 该单位已有 `tasks/`：写完后提醒重新 `to-tasks`。不要在本技能里删 tasks。
 
 ## 结束

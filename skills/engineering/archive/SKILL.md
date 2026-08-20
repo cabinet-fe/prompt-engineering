@@ -1,18 +1,18 @@
 ---
 name: archive
 description: >
-  归档已完成功能：把 spec.md 迁入 .agents/docs/SPECS/<模块>/、更新索引并删除 cooking/<feature>/。
-  结束后按 git-commit auto 提交新入库规格（本地、不 push）。
+  归档已完成功能：把 cooking spec 蒸馏为 CONTEXT 条目、更新索引并删除 cooking/<feature>/。
+  结束后按 git-commit auto 提交新入库上下文（本地、不 push）。
   仅用户显式调用 archive，或由 rush 编排触发时使用。
 ---
 
 # archive
 
-归档一个已完成功能。只迁 `spec.md`，然后删掉该 feature 的整个 cooking 目录。
+归档一个已完成功能。把 cooking `spec.md` **蒸馏**成 CONTEXT 条目（不要整文移动），然后删掉该 feature 的整个 cooking 目录。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 使用工具
 
@@ -39,18 +39,18 @@ description: >
 
 ## 工作流
 
-布局见 [specs-layout.md](references/specs-layout.md)。
+布局见 [context-layout.md](references/context-layout.md)。模板见 [context-template.md](references/context-template.md)，不得增删标题。
 
 1. 定 `<feature>`。先跑 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md`。失败则停止，让用户改到「影响文件」可通过再归档；不要补路径、不要改写成脚本认的格式以外的东西。
-   - **代码类**：用 parse 得到的新增/修改路径，按路径前缀在 `CODE-MAP.md` 模块表里检索对应模块（不要全文加载 CODE-MAP），决定 `SPECS/<模块>/`。命中多个模块：放匹配路径最多的主模块，在其它模块的 `index.md` 里加一条指向。对不上任何模块则问。路径落在 CODE-MAP 还没有的目录且等于新分层：停止并让用户先 `setup`。
-   - **非代码**：按 `SPECS/index.md` 的模块名归档，不要打开 CODE-MAP。对不上则问。
-2. 目标路径：`.agents/docs/SPECS/<模块>/<feature>.md`。已存在则问覆盖还是换名。
-3. **移动**（不是复制）`spec.md` 到该路径。文件顶上补一行：`归档自 cooking/<feature>`。
-4. 更新 `<模块>/index.md`（没有就建）和 `SPECS/index.md` 的「模块」部分。索引只写标题、一句话、链接。不要把规格正文贴进 index。
-5. 可用 `node .agents/scripts/spec-files.mjs query <本 spec 新增或修改路径...>` 确认能扫到刚入库的 spec。
-6. 删除整个 `.agents/cooking/<feature>/`（含 goal、tasks、reviews）。删除前确认 spec 已出现在两级索引。
+   - **代码类**：用 parse 得到的新增/修改路径，按路径前缀在 `CODE-MAP.md` 模块表里检索对应模块（不要全文加载 CODE-MAP），决定 `CONTEXT/<模块>/`。命中多个模块：放匹配路径最多的主模块，在其它模块的 `index.md` 里加一条指向。对不上任何模块则问。路径落在 CODE-MAP 还没有的目录且等于新分层：停止并让用户先 `setup`。
+   - **非代码**：按 `CONTEXT/index.md` 的模块名归档，不要打开 CODE-MAP。对不上则问。
+2. 目标路径：`.agents/docs/CONTEXT/<模块>/<feature>.md`。已存在则问覆盖还是换名。
+3. **蒸馏**（不是移动 `spec.md`）：按上下文模板新写该文件。顶上补一行 `归档自 cooking/<feature>`。从 spec 的需求与已落地文件提取术语和领域；丢掉验收标准、非目标、用户故事。「影响文件」以归档时实际增删改为准，写完对该 CONTEXT 文件跑 `parse`，失败则改到通过。
+4. 更新 `<模块>/index.md`（没有就建）和 `CONTEXT/index.md` 的「模块」部分。索引只写标题、一句话、链接。不要把条目正文贴进 index。
+5. 可用 `node .agents/scripts/spec-files.mjs query <本条目新增或修改路径...>` 确认能扫到刚入库的条目。
+6. 删除整个 `.agents/cooking/<feature>/`（含 goal、spec、tasks、reviews）。删除前确认条目已出现在两级索引。
 7. 若本次引入了架构级变化但 `ARCHITECTURE.md` 没更新：停止并让用户先 `setup`。代码类：归档时地图明显过期则按契约补相关行；若新目录等于新分层，停止并让用户先 setup。非代码不要改 CODE-MAP。
 
 ## 结束
 
-给出 spec 的新路径、两级索引里加了哪几条。然后执行 `git-commit` auto：提交新入库的 `SPECS/` 与索引；若工作区还有未提交代码则一并提交。不要 push。无改动则说明无提交。
+给出条目的新路径、两级索引里加了哪几条。然后执行 `git-commit` auto：提交新入库的 `CONTEXT/` 与索引；若工作区还有未提交代码则一并提交。不要 push。无改动则说明无提交。

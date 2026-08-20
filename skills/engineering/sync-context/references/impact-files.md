@@ -1,8 +1,8 @@
 # 影响文件章节
 
-归档 spec 与 cooking `spec.md` 都必须含本节。脚本只认这个格式；`parse` 失败则 to-spec / archive / query 一律停止。
+CONTEXT 条目与 cooking `spec.md` 都必须含本节。脚本只认这个格式；`parse` 失败则 to-spec / archive / query 一律停止。
 
-权威校验：`node .agents/scripts/spec-files.mjs parse <spec.md>`。
+权威校验：`node .agents/scripts/spec-files.mjs parse <文件.md>`。
 
 ## 必须长这样
 
@@ -24,7 +24,7 @@
 4. `path` 是仓库相对路径或 glob。行首可以写 `/`，脚本会去掉这一层（`/src/a.ts` 等于 `src/a.ts`）。禁止：
    - 绝对路径、`..`、`.` 段、反斜杠、空白、行内注释、末尾 `/`
    - 同一路径出现两次（含跨 新增/删除/修改）
-5. `query` 只匹配 **新增** 和 **修改**。「删除」只留在 spec 里给人看。
+5. `query` 只匹配 **新增** 和 **修改**。「删除」只留在条目里给人看。
 6. 空行可以出现在条目之间；非空行必须符合第 2 条。
 
 ## 命令
@@ -35,4 +35,4 @@ node .agents/scripts/spec-files.mjs query <变更文件...>
 git diff --name-only | node .agents/scripts/spec-files.mjs query --stdin
 ```
 
-`query` 当场扫描 `.agents/docs/SPECS/` 已归档 spec，按变更路径定位相关规格。
+`query` 当场扫描 `.agents/docs/CONTEXT/` 已归档条目，按变更路径定位相关上下文。

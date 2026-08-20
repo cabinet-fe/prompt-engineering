@@ -18,7 +18,7 @@
 先读 <engineering>/review/SKILL.md 并完整执行。你是执行方，不要再派子代理。
 只评不改代码。
 <defer-commit 行>
-改动文件：<implement/sync-spec 给出的路径，没有则自己按 SKILL 用 git 收集>
+改动文件：<implement/sync-context 给出的路径，没有则自己按 SKILL 用 git 收集>
 完成后只汇报：结论（通过/不通过）、阻塞项原文、是否已提交。不要把评审全文写回父代理。
 ```
 

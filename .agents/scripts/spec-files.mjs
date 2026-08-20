@@ -1,14 +1,15 @@
 #!/usr/bin/env node
-// 扫描已归档 spec 的「影响文件」，按变更路径定位相关规格。
+// 扫描已归档 CONTEXT 条目的「影响文件」，按变更路径定位相关上下文。
+// parse 也用于 cooking spec.md。
 // 用法：
-//   node spec-files.mjs parse <spec.md> [--json]
-//   node spec-files.mjs query [--json] [--stdin] [--dir <SPECS目录>] <file...>
-//   node spec-files.mjs list [--json] [--dir <SPECS目录>]
+//   node spec-files.mjs parse <文件.md> [--json]
+//   node spec-files.mjs query [--json] [--stdin] [--dir <CONTEXT目录>] <file...>
+//   node spec-files.mjs list [--json] [--dir <CONTEXT目录>]
 
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DEFAULT_SPECS_DIR = '.agents/docs/SPECS';
+const DEFAULT_CONTEXT_DIR = '.agents/docs/CONTEXT';
 const PATH_CHARS = /^[A-Za-z0-9@._+*?/-]+$/;
 const ACTION_LINE = /^- (新增|删除|修改)：`([^`]+)`$/;
 const ACTION_KEY = { 新增: 'added', 删除: 'removed', 修改: 'modified' };
@@ -19,9 +20,9 @@ process.stdout.on('error', (err) => {
 
 function usage() {
   process.stderr.write(`usage:
-  node spec-files.mjs parse <spec.md> [--json]
-  node spec-files.mjs query [--json] [--stdin] [--dir <SPECS目录>] <file...>
-  node spec-files.mjs list [--json] [--dir <SPECS目录>]
+  node spec-files.mjs parse <文件.md> [--json]
+  node spec-files.mjs query [--json] [--stdin] [--dir <CONTEXT目录>] <file...>
+  node spec-files.mjs list [--json] [--dir <CONTEXT目录>]
 `);
 }
 
@@ -206,20 +207,20 @@ function collectArchivedSpecs(specsDir) {
 }
 
 function resolveSpecsDir(dir) {
-  return path.resolve(process.cwd(), dir || DEFAULT_SPECS_DIR);
+  return path.resolve(process.cwd(), dir || DEFAULT_CONTEXT_DIR);
 }
 
 function loadArchivedSpecs(specsDir) {
   const dir = resolveSpecsDir(specsDir);
   if (!fs.existsSync(dir)) {
-    throw new Error(`找不到 SPECS 目录: ${normalizeRel(dir) || dir}`);
+    throw new Error(`找不到 CONTEXT 目录: ${normalizeRel(dir) || dir}`);
   }
   const out = [];
   for (const abs of collectArchivedSpecs(dir)) {
     const rel = path.relative(dir, abs).split(path.sep).join('/');
     const parts = rel.split('/');
     if (parts.length !== 2) {
-      throw new Error(`${rel}: 归档 spec 必须位于 SPECS/<模块>/<feature>.md`);
+      throw new Error(`${rel}: 归档条目必须位于 CONTEXT/<模块>/<feature>.md`);
     }
     const parsed = parseSpecFile(abs);
     out.push({
@@ -233,7 +234,7 @@ function loadArchivedSpecs(specsDir) {
 }
 
 function takeFlags(args) {
-  const flags = { json: false, stdin: false, dir: DEFAULT_SPECS_DIR };
+  const flags = { json: false, stdin: false, dir: DEFAULT_CONTEXT_DIR };
   const rest = [];
   for (let i = 0; i < args.length; i += 1) {
     const a = args[i];
