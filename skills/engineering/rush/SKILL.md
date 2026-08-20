@@ -11,7 +11,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。
 
 ## 使用工具
 

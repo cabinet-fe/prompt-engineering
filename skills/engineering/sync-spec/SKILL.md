@@ -15,7 +15,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则停止，告诉用户先执行 `setup`；如果只缺 `.agents/scripts/spec-files.mjs`，告诉用户跑 `setup` 更新模式。不要代跑。先读 `.agents/docs/PROJECT.md`，判定见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`（只缺脚本类缺失项时走 `setup` 更新模式），不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 使用工具
 

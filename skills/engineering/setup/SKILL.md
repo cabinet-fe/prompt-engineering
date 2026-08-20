@@ -1,14 +1,12 @@
 ---
 name: setup
 description: >
-  初始化或更新仓库工程底座：分类写入 PROJECT.md，按类别覆写根 AGENTS.md；
-  代码项目多轮澄清后写架构/规范/地图，非代码跳过这三份。创建 cooking、SPECS 索引与 spec-files 脚本。
-  仅用户显式调用 setup 时使用；其它工程技能发现未 setup 只提示并停止，不自动触发、不代跑。
+  初始化或更新仓库工程底座。仅用户显式调用 setup 时使用；其它工程技能发现未 setup 只提示并停止，不自动触发、不代跑。
 ---
 
 # setup
 
-每个仓库完整执行一次。其它工程技能按 [complete.md](references/complete.md) 判断是否已 setup，缺了就停，不代跑本技能。
+每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。
 
 项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。
 
@@ -37,7 +35,7 @@ description: >
 ### 2. 目录与 gitignore
 
 - 创建 `.agents/docs/`、`.agents/docs/SPECS/`、`.agents/cooking/`（空目录即可，不要写 README）
-- 创建 `.agents/scripts/`，并把 `<engineering>/sync-spec/scripts/spec-files.mjs` 复制为 `.agents/scripts/spec-files.mjs`（`<engineering>` = 本技能包目录）
+- 创建 `.agents/scripts/`，并把 `<engineering>/sync-spec/scripts/spec-files.mjs` 复制为 `.agents/scripts/spec-files.mjs`、`<engineering>/setup/scripts/precheck.mjs` 复制为 `.agents/scripts/precheck.mjs`（`<engineering>` = 本技能包目录）
 - `.gitignore` 追加 `.agents/cooking/`（已有则跳过）
 - 若 `.gitignore` 忽略了整个 `.agents/`：改成只忽略 cooking，`.agents/docs/` 和 `.agents/scripts/` 必须能提交
 - 模板见 [templates.md](references/templates.md)
@@ -66,12 +64,12 @@ description: >
 
 **代码类**：先按 [interview.md](references/interview.md) 多轮澄清，再按 [templates.md](references/templates.md) 写：
 
-| 文件 | 现有项目 | 新项目 |
-| --- | --- | --- |
-| `ARCHITECTURE.md` | 从代码归纳草稿，访谈补空白和矛盾 | 按用户回答写 |
-| `DEV-STANDARDS.md` | 从 eslint/prettier/测试目录/现有代码归纳；无依据的章节删掉；必须人定的仍要问 | 按用户回答写 |
-| `CODE-MAP.md` | 扫真实目录；模块怎么切拿不准才问 | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
-| `SPECS/index.md` | 已有内容保留；没有则建空索引（只列模块） | 建空索引（只列模块） |
+| 文件               | 现有项目                                                                     | 新项目                                                       |
+| ------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `ARCHITECTURE.md`  | 从代码归纳草稿，访谈补空白和矛盾                                             | 按用户回答写                                                 |
+| `DEV-STANDARDS.md` | 从 eslint/prettier/测试目录/现有代码归纳；无依据的章节删掉；必须人定的仍要问 | 按用户回答写                                                 |
+| `CODE-MAP.md`      | 扫真实目录；模块怎么切拿不准才问                                             | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
+| `SPECS/index.md`   | 已有内容保留；没有则建空索引（只列模块）                                     | 建空索引（只列模块）                                         |
 
 不要覆盖 `SPECS/` 里已归档规格。CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。全栈架构形态变化时同步更新 `PROJECT.md` + `ARCHITECTURE.md` + `CODE-MAP.md`。
 
@@ -85,14 +83,15 @@ description: >
 
 docs 已存在、用户要刷新，或架构大变时：
 
-| 变更 | 做 |
-| --- | --- |
-| 类别、组织结构、全栈形态 | 更新 `PROJECT.md`；代码/非代码切换则改用对应 AGENTS 模板。从代码改为非代码不强制删旧三份文件 |
-| 换技术栈、加/删应用边界、改分层、拆/合包 | 更新 `ARCHITECTURE.md`，并同步 `CODE-MAP.md` |
-| 全栈架构形态 | 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步 `CODE-MAP.md` |
-| 触及 [code-map-update.md](references/code-map-update.md) 的要改项、但架构没变 | 只更新 `CODE-MAP.md`（implement 也会做） |
-| `.agents/scripts/spec-files.mjs` 缺失或与技能包不一致 | 从 `<engineering>/sync-spec/scripts/spec-files.mjs` 重新复制 |
-| 规范/偏好变了 | 更新 `DEV-STANDARDS.md` |
-| `AGENTS.md` 又变长了或掺了短注 | 按当前类别模板覆写 |
+| 变更                                                                          | 做                                                                                           |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 类别、组织结构、全栈形态                                                      | 更新 `PROJECT.md`；代码/非代码切换则改用对应 AGENTS 模板。从代码改为非代码不强制删旧三份文件 |
+| 换技术栈、加/删应用边界、改分层、拆/合包                                      | 更新 `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                                 |
+| 全栈架构形态                                                                  | 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                  |
+| 触及 [code-map-update.md](references/code-map-update.md) 的要改项、但架构没变 | 只更新 `CODE-MAP.md`（implement 也会做）                                                     |
+| `.agents/scripts/spec-files.mjs` 缺失或与技能包不一致                         | 从 `<engineering>/sync-spec/scripts/spec-files.mjs` 重新复制                                 |
+| `.agents/scripts/precheck.mjs` 缺失或与技能包不一致                           | 从 `<engineering>/setup/scripts/precheck.mjs` 重新复制                                       |
+| 规范/偏好变了                                                                 | 更新 `DEV-STANDARDS.md`                                                                      |
+| `AGENTS.md` 又变长了或掺了短注                                                | 按当前类别模板覆写                                                                           |
 
 禁止：清空 `SPECS/`、删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。

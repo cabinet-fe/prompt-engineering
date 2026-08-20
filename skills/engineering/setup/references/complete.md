@@ -1,5 +1,7 @@
 # setup 完成判定
 
+本清单的逐项判定由 `.agents/scripts/precheck.mjs` 执行，本文是检查项的人类可读定义。
+
 其它工程技能引用本文，不要另写一套清单。先读 `.agents/docs/PROJECT.md`（没有则未 setup），再按类别检查。
 
 ## 各类都要有

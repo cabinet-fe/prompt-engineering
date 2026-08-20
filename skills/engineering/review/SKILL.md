@@ -34,7 +34,7 @@ description: >
 
 ## 前置检查
 
-未完成 setup 则立即停止，告诉用户必须先执行 `setup`，不要代跑。先读 `.agents/docs/PROJECT.md`，判定与读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 阻塞规则见 [code-map-update.md](../setup/references/code-map-update.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别，按类别读哪些 docs 见 [complete.md](../setup/references/complete.md)。CODE-MAP 阻塞规则见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 选路径
 
