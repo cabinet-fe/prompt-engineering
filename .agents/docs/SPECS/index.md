@@ -6,6 +6,4 @@
 
 ## 模块
 
-暂无。归档后在此增加：
-
-- [<模块>](<模块>/index.md) — <一句话>
+- [engineering](engineering/index.md) — 工程流程技能包（explore / to-spec / to-tasks / implement / sync-spec / review / archive / rush / setup）的功能规格
