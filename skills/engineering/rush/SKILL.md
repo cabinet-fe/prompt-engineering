@@ -13,11 +13,6 @@ description: >
 
 运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。
 
-## 使用工具
-
-- **<@交互式提问>**：扫描当前工具清单，语义命中「提问 / 选择 / 确认」的即调用；没有则用文本提问。禁止伪造工具调用。
-- **<@子代理>**：扫描工具清单，语义命中「启动子代理 / Task / 独立 agent」的即调用。子代理没有本对话历史，**只靠磁盘文件**。禁止伪造子代理调用。没有子代理工具时：除 **review 必须停止、不得在主对话代评** 外，主代理按同一顺序亲自执行其余技能，能并行的阶段改为串行。
-
 ## 参数
 
 标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。列出已有标识时只枚举子目录名，不要读目录正文。一次 rush 只推进一个 cooking 单位。
@@ -29,7 +24,7 @@ description: >
 ## 主代理做什么
 
 1. **需求含糊才 explore，且必须留在主代理。** 需求已明确或已有 `spec.md`：跳过 explore，从 `to-spec` 或 `to-tasks` 接着跑。否则执行 `explore/SKILL.md`，直到这一个 feature 的 `goal.md` 为 `已确认`。查事实派子代理。
-2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `sync-context` → `review`）→ 全通过后 `archive`。最后一轮 review 若评完会使全部阶段通过：派 review 时带 `defer-commit`，archive 后再触发一次 `git-commit` auto（最后阶段代码 + 新入库 CONTEXT 一次提交）。中间阶段的 review 自行 auto 提交。
+2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `sync-context` → `review`）→ 全通过后 `archive`。最后一轮 review 若评完会使全部阶段通过：派 review 时带 `defer-commit`，archive 后再触发一次 `git-commit` auto（最后阶段代码 + 新入库 CONTEXT 一次提交）。中间阶段的 review 自行 auto 提交。没有子代理工具时：除 review 必须停止（不得在主对话代评）外，主代理按同一顺序亲自执行其余技能，能并行的阶段改为串行。
 3. 主代理只读：`goal.md` 需求目标、各 `tasks/P*.md` 的「前置任务 / 状态」、`reviews/Pn.md` 的结论。不要把 spec 全文和所有任务清单加载进主对话。
 4. 子代理失败或 review 不通过：把阻塞项给用户，**不要自动再开一轮修复**。用户要求修，再派 `implement` 子代理返工该阶段，然后重新 `review`。
 5. 架构级变更（子代理报告需要更新 `ARCHITECTURE.md`）：停下来让用户跑 `setup` 更新模式，不要在 rush 里改架构文档。
