@@ -1,6 +1,6 @@
 ---
 name: go
-description: Go 开发实践。按项目 go.mod 的 go 行（优先 1.24 / 1.25 / 1.26）选用该版本语言与标准库 API。在编辑 .go、go.mod、go.work、*_test.go 或处理 Go 工具链时使用。
+description: Go 开发实践。按项目 go.mod 的 go 行（优先 1.24 / 1.25 / 1.26 / 1.27）选用该版本语言与标准库 API。在编辑 .go、go.mod、go.work、*_test.go 或处理 Go 工具链时使用。
 ---
 
 # Go
@@ -20,6 +20,7 @@ description: Go 开发实践。按项目 go.mod 的 go 行（优先 1.24 / 1.25 
 | 1.24 | [references/1.24.md](references/1.24.md) |
 | 1.25 | [references/1.25.md](references/1.25.md) |
 | 1.26 | [references/1.26.md](references/1.26.md) |
+| 1.27 | [references/1.27.md](references/1.27.md) |
 
 未列出的更新 1.y：以已覆盖的最高档为底，再查官方 https://go.dev/doc/go1.N 。更旧：不要使用本技能里的新 API。
 
