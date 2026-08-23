@@ -6,7 +6,7 @@
 - **spec.md**：仅存在于 cooking，给 implement / review 用。归档时蒸馏成 CONTEXT 条目后删除。
 - **sync-context**：按变更路径更新 CONTEXT；能力被移除或整体推翻则整条删除（含两级索引清理）；未命中的新能力则新建。工作流收尾和直接对话改文件都要跑。
 - **spec-files.mjs**：parse / query / list。源在 `setup/scripts/`，setup 整目录复制到 `.agents/scripts/`。query 扫描 CONTEXT「影响文件」的新增和修改。
-- **问题类型**：explore 固定为对象、目标、边界、约束、冲突、确认。开局只定类型，具体问题分轮出现。
+- **歧义驱动**：explore 不设固定轮次和类型。开局把能想到的歧义写进 goal.md「未决问题」，逐轮钉死、清零后经用户确认才停；对象、目标、边界等只是常见自查角度。
 
 ## 领域
 
@@ -65,3 +65,4 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 
 - 2026-08-20：归档为 CONTEXT；sync-spec 改名 sync-context；脚本归 setup
 - 2026-08-23：sync-context 新增「废弃则删除」：能力被移除/推翻时整条删除条目并清理两级索引，替代则先建后删，更名则改内容并重命名条目文件；涉及：skills/engineering/sync-context/SKILL.md、skills/engineering/archive/references/context-layout.md
+- 2026-08-23：explore 取消固定问题类型，改为歧义驱动：开局把歧义列进「未决问题」，逐轮钉死、清零才停；涉及：skills/engineering/explore/SKILL.md、skills/engineering/explore/references/question-template.md、skills/engineering/explore/references/goal-template.md
