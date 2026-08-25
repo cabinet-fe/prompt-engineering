@@ -2,13 +2,14 @@
 name: review
 description: >
   只评不改代码。仅用户显式调用 review，或由 implement/rush 按流程触发时使用。
+  通过后由派发方先 sync-context 再 git-commit auto；defer-commit 仍 sync、不提交。
 ---
 
 # review
 
-只评不改。两条路径不混用。必须在子代理里评：主会话只派发、只听结论，不读 diff、不写 `reviews/`、不 `git-commit`。不要因提到 review 相关词自动进入。
+只评不改。两条路径不混用。必须在子代理里评：主会话只派发、只听结论，不读 diff、不写 `reviews/`。不要因提到 review 相关词自动进入。
 
-通过后由执行方走 `git-commit` 的 auto 模式。不通过、无改动、或 `defer-commit`：不提交。
+执行方不提交、不 sync。通过后由派发方先 `sync-context` 再 `git-commit` auto。不通过、无改动：不 sync、不提交。`defer-commit`：仍 sync，不提交。
 
 ## 1. 执行身份
 
@@ -21,7 +22,11 @@ description: >
 2. 只凭参数判定路径、标识、`Pn`、`defer-commit`、git 基点。选阶段时只读各 `P*.md` 的「前置任务 / 状态」行。
 3. 按 [subagent-prompt.md](references/subagent-prompt.md) 填任务书并启动。不要把本对话过程写进 prompt。
 4. 没有子代理工具：停止。不能在本对话降级代评。
-5. 结束后只转述：结论、阻塞项、是否已提交。
+5. 结束后只转述：结论、阻塞项。
+6. 不通过或无改动：结束。
+7. 通过：先按 [sync-context/SKILL.md](../sync-context/SKILL.md) 同步本次改动文件（派子代理；没有则亲自执行）。然后：
+   - `defer-commit`：不提交。
+   - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、已被 sync-context 更新的 `CONTEXT/`）。不要 add `.agents/cooking/`。禁止 push。没有该技能则停止，不要另写提交流程。
 
 ## 2. 前置检查
 
@@ -34,16 +39,19 @@ description: >
 - **阶段评审**：命中标识；或去掉标识后是单独的 `P<n>`。
 - **git 评审**：其余（含参数为空）。即使 cooking 有可评阶段也不自动去评。`git rev-parse` 能解析的参数当作比较基点。
 
-参数含 `defer-commit`：通过后也不提交。执行方以任务书指定的路径为准。
+参数含 `defer-commit`：通过后仍 sync，不提交。执行方以任务书指定的路径为准。
 
 ## 4. 规格检查
 
-两条路径都做。只读，不改 CONTEXT、不代跑 `sync-context`。
+两条路径都做。只读，不改 CONTEXT、不代跑 `sync-context`。对照的是尚未同步的已归档条目。
 
 1. 改动路径：调用方传入的文件，否则 `git status --porcelain`、`git diff --name-only`、`git diff --cached --name-only` 的并集。忽略 `.agents/cooking/`。
 2. `node .agents/scripts/spec-files.mjs query <改动文件...>`。只匹配条目「影响文件」的新增和修改。
 3. 未命中：规格影响记「无命中」，不要打开归档条目。
-4. 命中：只打开命中条目。`parse` 失败、仍写「模块 / 新增模块 / 路径」或「影响面」、本次仍存在的文件未被「新增/修改」覆盖、`## 更新记录` 没有本次 → 阻塞，提示 `sync-context`。
+4. 命中：只打开命中条目。
+   - `parse` 失败 → 阻塞。
+   - 对照术语 / 领域：diff 推翻了已归档能力时，阶段路径下超出本阶段 spec/任务则阻塞；git 路径下改了与本次意图无关的已归档能力则阻塞。本阶段或本次意图内的演进不阻塞，记「通过后需 sync-context」。
+   - 「更新记录没有本次」、影响文件未覆盖本次路径、条目仍用旧章节名：不阻塞。
 5. 阶段路径额外：cooking `spec.md` 跑 `parse`；对照本阶段实际增删改，「新增/删除/修改」过时则阻塞。
 
 ## 5. 评审轴
@@ -81,8 +89,8 @@ description: >
 1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件；做第 4、5 节。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
 3. 回写 `Pn.md`「评审」为通过或不通过。
-4. 不通过：列阻塞项，告诉用户 `implement <feature> <Pn>` 返工。不改代码、不提交。
-5. 通过：还有可做阶段则列出；全部阶段通过则提示可 `archive <feature>`。然后第 8 节。
+4. 不通过：列阻塞项，告诉用户 `implement <feature> <Pn>` 返工。不改代码。
+5. 通过：还有可做阶段则列出；全部阶段通过则提示可 `archive <feature>`。
 
 ## 7. git 评审
 
@@ -93,15 +101,6 @@ description: >
 1. 用户给了可解析基点：`git diff <基点>...HEAD`，工作区或暂存区还有改动则叠上。
 2. 否则工作区或暂存区有改动：`git diff` 与 `git diff --staged`。
 3. 否则相对 `@{upstream}`；无上游则相对 `main`（或 `master`）的 merge-base：`git diff <base>...HEAD`。
-4. 仍无 diff：停止。不提交。
+4. 仍无 diff：停止。
 
-做第 4、5 节。对话产出按 [review-template.md](references/review-template.md) 的 git 节。通过后第 8 节；不通过不提交。
-
-## 8. 自动提交
-
-读并执行 `git-commit` 的 auto 模式（源：`skills/tools/git-commit/SKILL.md`）。没有该技能则停止，不要另写提交流程。
-
-- 不通过、`defer-commit`、无可提交改动：跳过。
-- 只交应入库文件（代码、`CODE-MAP.md`、已被 sync-context 更新的 `CONTEXT/`）。不要 add `.agents/cooking/`。
-- 提交信息写清本阶段或本改动。
-- 禁止 push。
+做第 4、5 节。对话产出按 [review-template.md](references/review-template.md) 的 git 节。

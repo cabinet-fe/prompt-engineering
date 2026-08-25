@@ -2,7 +2,7 @@
 name: implement
 description: >
   实现代码：命中 cooking 标识（可带 Pn）或参数仅为 Pn 时，按 tasks 完成一个未阻塞阶段；跟随实现内容且未命中标识时直写，不读 spec/tasks、不写 cooking。
-  仅用户显式调用 implement，或由 rush 编排触发时使用；用户直接调用完成后自动触发 sync-context 和 review，rush 派发时由 rush 统一触发。
+  仅用户显式调用 implement，或由 rush 编排触发时使用；用户直接调用完成后派 review，通过后由 review 派发方 sync-context 再提交；rush 派发时由 rush 统一触发。
 ---
 
 # implement
@@ -59,5 +59,5 @@ description: >
 
 ## 结束
 
-- **阶段路径**：用户直接调用时，完成后先触发 `sync-context <本阶段改动文件>`，再 **派 review 子代理**（按 `review/references/subagent-prompt.md` 阶段模板，带上改动路径）。本对话不要做评审、不要读 reviews 正文。由 rush 派发时只汇报，sync-context 和 review 由 rush 统一派子代理。不要在本技能里提交。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
-- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后先触发 `sync-context <改动文件>`，再 **派 review 子代理**（git 评审模板，不要走阶段路径）。不要写 `reviews/`，不要说「对本阶段执行 review」，不要在本技能里提交，不要在本对话做评审。
+- **阶段路径**：用户直接调用时，完成后 **派 review 子代理**（按 `review/references/subagent-prompt.md` 阶段模板，带上改动路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。本对话不要做评审、不要读 reviews 正文。由 rush 派发时只汇报，review 由 rush 统一派（rush 当派发方）。不要在派 review 之前提交或 `sync-context`。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
+- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后 **派 review 子代理**（git 评审模板，不要走阶段路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。不要写 `reviews/`，不要说「对本阶段执行 review」，不要在派 review 之前提交或 `sync-context`，不要在本对话做评审。

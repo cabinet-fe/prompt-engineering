@@ -1,7 +1,7 @@
 ---
 name: rush
 description: >
-  编排完整工程流程：需求含糊时主代理先 explore，其余步骤尽量派子代理执行 to-spec → to-tasks → 并行 implement → sync-context → review → archive。
+  编排完整工程流程：需求含糊时主代理先 explore，其余步骤尽量派子代理执行 to-spec → to-tasks → 并行 implement → review →（通过后）sync-context → archive。
   仅用户显式调用 rush 时使用。
 ---
 
@@ -24,7 +24,7 @@ description: >
 ## 主代理做什么
 
 1. **需求含糊才 explore，且必须留在主代理。** 需求已明确或已有 `spec.md`：跳过 explore，从 `to-spec` 或 `to-tasks` 接着跑。否则执行 `explore/SKILL.md`，直到这一个 feature 的 `goal.md` 为 `已确认`。查事实派子代理。
-2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `sync-context` → `review`）→ 全通过后 `archive`。最后一轮 review 若评完会使全部阶段通过：派 review 时带 `defer-commit`，archive 后再触发一次 `git-commit` auto（最后阶段代码 + 新入库 CONTEXT 一次提交）。中间阶段的 review 自行 auto 提交。没有子代理工具时：除 review 必须停止（不得在主对话代评）外，主代理按同一顺序亲自执行其余技能，能并行的阶段改为串行。
+2. 之后按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 循环（可做阶段并行 `implement` → 每个阶段 `review`）→ 全通过后 `archive`。本对话当 review 派发方：通过后先 `sync-context`；中间阶段再 `git-commit` auto；收尾阶段带 `defer-commit`（仍 sync，不提交），archive 后再一次 `git-commit` auto（最后阶段代码 + 已 sync 的 CONTEXT + 新入库条目一次提交）。没有子代理工具时：除 review 必须停止（不得在主对话代评）外，主代理按同一顺序亲自执行其余技能，能并行的阶段改为串行。
 3. 主代理只读：`goal.md` 需求目标、各 `tasks/P*.md` 的「前置任务 / 状态」、`reviews/Pn.md` 的结论。不要把 spec 全文和所有任务清单加载进主对话。
 4. 子代理失败或 review 不通过：把阻塞项给用户，**不要自动再开一轮修复**。用户要求修，再派 `implement` 子代理返工该阶段，然后重新 `review`。
 5. 架构级变更（子代理报告需要更新 `ARCHITECTURE.md`）：停下来让用户跑 `setup` 更新模式，不要在 rush 里改架构文档。
@@ -34,12 +34,12 @@ description: >
 
 每轮从各 Pn 的「前置任务 / 状态」算出「现在可做」且实现未完成的阶段，**一个阶段一个 implement 子代理**，同时开。
 
-某个阶段的 implement 子代理返回后，先派 **该阶段** 的 `sync-context` 子代理，再派 **该阶段** 的 `review` 子代理。不要等所有并行阶段都实现完再评审。
+某个阶段的 implement 子代理返回后，派 **该阶段** 的 `review` 子代理（本对话当派发方）。不要先 `sync-context`。不要等所有并行阶段都实现完再评审。
 
-派 review 前看其它阶段是否都已「评审：通过」：是，则本阶段是收尾，prompt 里写明 `defer-commit`。该 review 通过后立刻 archive，再执行 `git-commit` auto；不要让 review 先交一笔、archive 再交一笔。
+派 review 前看其它阶段是否都已「评审：通过」：是，则本阶段是收尾，prompt 里写明 `defer-commit`。该 review 通过后派发方会先 sync、不提交；立刻 archive，再执行 `git-commit` auto；不要先交一笔、archive 再交一笔。
 
 依赖未通过评审的阶段，不得进入 implement。
 
 ## 结束
 
-汇报：feature 路径、各阶段 sync-context 命中的条目、评审结论、是否已本地提交、若已 archive 则给 CONTEXT 路径。中途停下时写明卡在哪一阶段、缺什么。
+汇报：feature 路径、各阶段评审结论、sync-context 命中的条目、是否已本地提交、若已 archive 则给 CONTEXT 路径。中途停下时写明卡在哪一阶段、缺什么。

@@ -8,8 +8,8 @@
 
 仓库只需 `setup` 一次，铺好 `.agents/docs/CONTEXT/`。之后**不必走 explore → rush 这条链**，CONTEXT 照样能跟着项目对齐。
 
-- **`sync-context` 可单独用。** 不绑在 cooking / `implement` / `rush` 上。人改、Agent 直写、其它技能改文件——只要可能让上下文过时，或出现尚未入库的能力，当前对话就要跑。点名调用也可以。按变更路径扫「影响文件」：命中只改被推翻的句子；没命中但构成新能力则建条目。
-- **走流程时多一步蒸馏。** 进行中的功能写在 `cooking/`；`archive` 抽成 CONTEXT 条目（术语、领域、影响哪些文件）再删掉 cooking。长期文档不是验收清单的复印件。`implement` / `rush` 收尾也会触发 `sync-context`。
+- **`sync-context` 可单独用。** 不绑在 cooking 上。人改、或不走 review 的直接改文件——只要可能让上下文过时，或出现尚未入库的能力，当前对话就要跑。点名调用也可以。走 `implement` / `rush` 时等 review 通过后再跑。按变更路径扫「影响文件」：命中只改被推翻的句子；没命中但构成新能力则建条目。
+- **走流程时多一步蒸馏。** 进行中的功能写在 `cooking/`；`archive` 抽成 CONTEXT 条目（术语、领域、影响哪些文件）再删掉 cooking。长期文档不是验收清单的复印件。`review` 通过后会触发 `sync-context`。
 - **按路径打开，不整夹加载。** Agent 先 `query` 再读命中条目，CONTEXT 与代码同为唯一事实，避免「该信文档还是该信仓库」。
 
 语言/框架技能同一思路：先读**已安装**版本，再打开对应 `references/`，不靠训练数据里的过时 API。
@@ -28,7 +28,7 @@ npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush
 npx skills add cabinet-fe/prompt-engineering -g
 ```
 
-多数工程技能**只在点名时**跑（或由 `rush` 编排）。例外是 `sync-context`：改了文件且可能让 CONTEXT 过时，当前 Agent 就要跑，不要求先走完整流程。
+多数工程技能**只在点名时**跑（或由 `rush` 编排）。例外是 `sync-context`：不走 review 时，改了文件且可能让 CONTEXT 过时，当前 Agent 就要跑。
 
 ## 目录
 
@@ -52,7 +52,7 @@ skills/
 ```text
 setup
   └─（需求含糊）explore → to-spec → to-tasks
-       → implement → sync-context → review → archive
+       → implement → review → sync-context → archive
 ```
 
 `rush` 按上面编排；含糊需求时主代理先 `explore`，其余尽量派子代理。`implement` 两条路径：命中 cooking 标识则按阶段做；否则直写，不碰 cooking。`sync-context` 也可单独调用，不依赖这条链。
@@ -65,7 +65,7 @@ setup
 | `to-tasks` | `spec.md` 拆成 `tasks/Pn.md`，可并行的阶段标出来 |
 | `implement` | 做一个未阻塞阶段，或按用户描述直写 |
 | `sync-context` | 按改动路径更新 CONTEXT；新能力则建条目。不走流程、直接改文件也要跑 |
-| `review` | 只评不改；通过后本地 `git-commit`（不 push） |
+| `review` | 只评不改；通过后先 `sync-context` 再本地 `git-commit`（不 push） |
 | `archive` | 把 cooking 蒸馏进 CONTEXT，删掉该 feature 目录 |
 | `rush` | 编排整条链；简单改动不要用 |
 

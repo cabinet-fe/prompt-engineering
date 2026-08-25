@@ -10,16 +10,16 @@
 ## 阶段评审
 
 中间阶段：`<defer-commit 行>` 留空。
-收尾阶段（评完即全部通过）：写成 `调用方：defer-commit。通过后不要提交。`
+收尾阶段（评完即全部通过）：写成 `调用方：defer-commit。通过后由派发方 sync，不要提交。`
 
 ```text
 【review-exec】
 你在仓库 <repo> 中工作。cooking 标识：<feature>。只评审该单位的阶段 <Pn>（阶段路径，不要走 git 评审）。
 先读 <engineering>/review/SKILL.md 并完整执行。你是执行方，不要再派子代理。
-只评不改代码。
+只评不改代码。不要提交、不要跑 sync-context。
 <defer-commit 行>
-改动文件：<implement/sync-context 给出的路径，没有则自己按 SKILL 用 git 收集>
-完成后只汇报：结论（通过/不通过）、阻塞项原文、是否已提交。不要把评审全文写回父代理。
+改动文件：<implement 给出的路径，没有则自己按 SKILL 用 git 收集>
+完成后只汇报：结论（通过/不通过）、阻塞项原文。不要把评审全文写回父代理。
 ```
 
 ## git 评审
@@ -28,8 +28,8 @@
 【review-exec】
 你在仓库 <repo> 中工作。走 git 评审，不要走阶段路径，不要读 cooking。
 先读 <engineering>/review/SKILL.md 并完整执行。你是执行方，不要再派子代理。
-只评不改代码。
+只评不改代码。不要提交、不要跑 sync-context。
 基点：<用户给的 git 基点；没有则按 SKILL 自定>
 改动文件：<已知路径，没有则自己按 SKILL 定 diff>
-完成后只汇报：结论（通过/不通过）、阻塞项原文、是否已提交。按 SKILL 把完整 git 评审写在你自己的对话里，不要把全文写回父代理。
+完成后只汇报：结论（通过/不通过）、阻塞项原文。按 SKILL 把完整 git 评审写在你自己的对话里，不要把全文写回父代理。
 ```

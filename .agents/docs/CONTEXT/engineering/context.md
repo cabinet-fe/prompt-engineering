@@ -4,7 +4,7 @@
 
 - **CONTEXT**：`.agents/docs/CONTEXT/`。已完成能力的可索引上下文（术语 + 领域 + 影响文件 + 更新记录）。不含验收标准、非目标、用户故事。
 - **spec.md**：仅存在于 cooking，给 implement / review 用。归档时蒸馏成 CONTEXT 条目后删除。
-- **sync-context**：按变更路径更新 CONTEXT；能力被移除或整体推翻则整条删除（含两级索引清理）；未命中的新能力则新建。工作流收尾和直接对话改文件都要跑。
+- **sync-context**：按变更路径更新 CONTEXT；能力被移除或整体推翻则整条删除（含两级索引清理）；未命中的新能力则新建。review 通过后由派发方跑；不走 review 的直接对话改文件，当前 agent 也要跑。
 - **spec-files.mjs**：parse / query / list。源在 `setup/scripts/`，setup 整目录复制到 `.agents/scripts/`。query 扫描 CONTEXT「影响文件」的新增和修改。
 - **歧义驱动**：explore 不设固定轮次和类型。开局把能想到的歧义写进 goal.md「未决问题」，逐轮钉死、清零后经用户确认才停；对象、目标、边界等只是常见自查角度。
 
@@ -14,7 +14,7 @@ cooking 写可执行 spec；归档蒸馏为 CONTEXT 条目，不整文移动 spe
 
 explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 题，只问还不清楚的；对话纪要只留已钉死结论。
 
-直接对话改文件后也必须 sync-context，避免 agent 不知道以代码还是文档为准。
+走 implement / rush 时等 review 通过后再 sync-context。不走 review 的直接对话改文件后，当前对话也必须跑，避免 agent 不知道以代码还是文档为准。
 
 ## 影响文件
 
@@ -66,3 +66,4 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 - 2026-08-23：sync-context 新增「废弃则删除」：能力被移除/推翻时整条删除条目并清理两级索引，替代则先建后删，更名则改内容并重命名条目文件；涉及：skills/engineering/sync-context/SKILL.md、skills/engineering/archive/references/context-layout.md
 - 2026-08-23：explore 取消固定问题类型，改为歧义驱动：开局把歧义列进「未决问题」，逐轮钉死、清零才停；涉及：skills/engineering/explore/SKILL.md、skills/engineering/explore/references/question-template.md、skills/engineering/explore/references/goal-template.md
 - 2026-08-25：git-commit 不再属于本能力；交哪些文件、提交文案由 archive / review 等调用方定义；涉及：skills/engineering/archive/SKILL.md
+- 2026-08-25：cooking 流程改为 review 通过后再 sync-context；不走 review 的直接改文件仍立刻跑；涉及：skills/engineering/implement/SKILL.md、skills/engineering/review/SKILL.md、skills/engineering/rush/SKILL.md、skills/engineering/sync-context/SKILL.md
