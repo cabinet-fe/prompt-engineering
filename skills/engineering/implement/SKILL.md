@@ -39,9 +39,9 @@ description: >
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准。代码类读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。先运行 `node .agents/scripts/spec-files.mjs query <预计改动路径...>`（只匹配「影响文件」里的新增和修改）。命中才打开对应 CONTEXT 条目，确认不会破坏已归档能力；可能破坏时停止，让用户决定更新上下文还是调整方案。未命中不要打开任何 CONTEXT 条目。代码类需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准。代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。先运行 `node .agents/scripts/spec-files.mjs query <预计改动路径...>`（只匹配「影响文件」里的新增和修改）。命中才打开对应 CONTEXT 条目，确认不会破坏已归档能力；可能破坏时停止，让用户决定更新上下文还是调整方案。未命中不要打开任何 CONTEXT 条目。代码类需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
 2. 把该阶段「实现」改为 `进行中`。
-3. 只做清单项。小 diff，不顺手重构。
+3. 只做清单项。小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。
 4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 5. 勾选已完成的清单项。
 6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。
@@ -52,8 +52,8 @@ description: >
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 代码类读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`。先运行 `node .agents/scripts/spec-files.mjs query <改动路径...>`。命中才打开对应 CONTEXT 条目；未命中不要打开任何条目。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。
-3. 小 diff，不顺手重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
+2. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`。先运行 `node .agents/scripts/spec-files.mjs query <改动路径...>`。命中才打开对应 CONTEXT 条目；未命中不要打开任何条目。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。
+3. 小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。
 
 ## 结束

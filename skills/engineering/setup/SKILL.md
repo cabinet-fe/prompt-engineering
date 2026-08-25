@@ -8,7 +8,7 @@ description: >
 
 每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
-项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。
+项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。
 
 ## 统一工具定义
 
@@ -60,7 +60,7 @@ description: >
 
 ### 5. 写其余 docs
 
-**非代码**：不写 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`。CONTEXT 索引仍要有。从代码改为非代码时只改 AGENTS 索引，不强制删盘上旧的三份文件。
+**非代码**：不写 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SMELLS.md`。CONTEXT 索引仍要有。从代码改为非代码时只改 AGENTS 索引，不强制删盘上旧的这些文件。
 
 **代码类**：先按 [interview.md](references/interview.md) 多轮澄清，再按 [templates.md](references/templates.md) 写：
 
@@ -69,6 +69,7 @@ description: >
 | `ARCHITECTURE.md`  | 从代码归纳草稿，访谈补空白和矛盾                                             | 按用户回答写                                                 |
 | `DEV-STANDARDS.md` | 从 eslint/prettier/测试目录/现有代码归纳；无依据的章节删掉；必须人定的仍要问 | 按用户回答写                                                 |
 | `CODE-MAP.md`      | 扫真实目录；模块怎么切拿不准才问                                             | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
+| `SMELLS.md`        | 从 [smells.md](references/smells.md) **原样复制**；已有则覆写为当前模板      | 同左。禁止按项目改写、追加或删条                             |
 | `CONTEXT/index.md` | 已有内容保留；没有则建空索引（只列模块）                                     | 建空索引（只列模块）                                         |
 
 不要覆盖 `CONTEXT/` 里已归档条目。CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。全栈架构形态变化时同步更新 `PROJECT.md` + `ARCHITECTURE.md` + `CODE-MAP.md`。
@@ -85,13 +86,14 @@ docs 已存在、用户要刷新，或架构大变时：
 
 | 变更                                                                          | 做                                                                                           |
 | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 类别、组织结构、全栈形态                                                      | 更新 `PROJECT.md`；代码/非代码切换则改用对应 AGENTS 模板。从代码改为非代码不强制删旧三份文件 |
+| 类别、组织结构、全栈形态                                                      | 更新 `PROJECT.md`；代码/非代码切换则改用对应 AGENTS 模板。从代码改为非代码不强制删旧的代码类 docs |
 | 换技术栈、加/删应用边界、改分层、拆/合包                                      | 更新 `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                                 |
 | 全栈架构形态                                                                  | 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                  |
 | 触及 [code-map-update.md](references/code-map-update.md) 的要改项、但架构没变 | 只更新 `CODE-MAP.md`（implement 也会做）                                                     |
 | `.agents/scripts/` 缺失任一脚本或与技能包不一致                               | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
 | `.agents/docs/SPECS/` 仍在而 `CONTEXT/` 不在                                  | 将 SPECS 改名为 CONTEXT，并覆写 AGENTS 模板。旧条目若仍含验收标准/非目标，不在 setup 里批量改写，等 sync-context 命中时改成上下文模板 |
 | 规范/偏好变了                                                                 | 更新 `DEV-STANDARDS.md`                                                                      |
+| `.agents/docs/SMELLS.md` 缺失或与 [smells.md](references/smells.md) 不一致     | 从技能包模板原样覆写                                                                         |
 | `AGENTS.md` 又变长了或掺了短注                                                | 按当前类别模板覆写                                                                           |
 
 禁止：清空 `CONTEXT/`、删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。

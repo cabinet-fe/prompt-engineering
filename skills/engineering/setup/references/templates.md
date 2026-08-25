@@ -103,6 +103,10 @@
 
 ```
 
+## `.agents/docs/SMELLS.md`
+
+仅代码类。从 [smells.md](smells.md) **原样复制**到 `.agents/docs/SMELLS.md`。禁止按项目改写、追加或删条。写代码时按清单边写边收；review 对照。即使仓库没写任何其它规范也适用。
+
 ## `.agents/docs/CODE-MAP.md`
 
 仅代码类。这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。何时改、改哪、何时停见 [code-map-update.md](code-map-update.md)。上下文→文件的反查不写在本文件：运行 `node .agents/scripts/spec-files.mjs query <变更路径...>`，脚本扫描归档条目的「影响文件」。

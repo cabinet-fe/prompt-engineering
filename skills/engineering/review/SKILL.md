@@ -77,7 +77,7 @@ description: >
 - 不评 setup / explore / to-spec / to-tasks / implement / review / sync-context / archive / rush / git-commit。
 - 没有对应技能不阻塞。
 
-坏味道基线（仅代码，始终适用）：对照 [smells.md](references/smells.md)。仓库已有标准覆盖它；启发式不阻塞；工具已查的跳过。
+坏味道基线（仅代码，始终适用）：对照 `.agents/docs/SMELLS.md`。仓库已有标准覆盖它；启发式不阻塞；工具已查的跳过。
 
 ## 6. 阶段评审
 
