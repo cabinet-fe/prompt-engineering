@@ -1,13 +1,12 @@
 ---
 name: rush
 description: >
-  编排完整工程流程：需求含糊时主代理先 explore，其余步骤尽量派子代理执行 to-spec → to-tasks → 并行 implement → review →（通过后）sync-context → archive。
-  仅用户显式调用 rush 时使用。
+  编排完整工程流程。仅用户显式调用 rush 时使用。
 ---
 
 # rush
 
-仅在用户显式调用时启动；简单改动不要用本技能，直接 implement 直写 + git review。编排器，不是另一套流程。产物、模板、阶段并行规则与其它技能完全相同。主代理不代替子代理读完所有技能细节，而是派子代理去执行对应 `SKILL.md`。只走 cooking 阶段路径，不走 implement 直写、不走 git review。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+简单改动不要用本技能，直接 implement 直写 + git review。编排器，不是另一套流程。产物、模板、阶段并行规则与其它技能完全相同。主代理不代替子代理读完所有技能细节，而是派子代理去执行对应 `SKILL.md`。只走 cooking 阶段路径，不走 implement 直写、不走 git review。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 

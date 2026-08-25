@@ -1,13 +1,12 @@
 ---
 name: to-tasks
 description: >
-  把 cooking/<feature>/spec.md 拆成 tasks/Pn.md 阶段文件并标明前置任务；无前置或依赖同一已完成前置的阶段可并行。
-  仅用户显式调用 to-tasks，或由 rush 编排触发时使用；无 spec.md 时停止，建议先 to-spec。
+  把 spec 拆成可编码的阶段任务。仅用户显式调用 to-tasks，或由 rush 编排触发时使用。
 ---
 
 # to-tasks
 
-把规格拆成可编码的阶段。不写代码。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+不写代码。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 

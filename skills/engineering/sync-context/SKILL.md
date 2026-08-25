@@ -1,16 +1,12 @@
 ---
 name: sync-context
 description: >
-  把已归档 CONTEXT 与仓库现状对齐：按变更路径扫描「影响文件」，更新过时条目；
-  能力被移除或整体推翻则整条删除；未命中的新能力则新建条目。用户或 agent 改了文件后，
-  凡是可能让上下文过时、或新增了尚未入库的能力，就必须使用。不限于显式调用：
-  review 通过后由派发方触发；不走 review 的直接对话改文件，当前 agent 也要跑。
-  避免 agent 不知道以代码还是文档为准。
+  把已归档 CONTEXT 与仓库现状对齐。改动可能让上下文过时或出现尚未入库的能力时必须使用（含显式调用、review 通过后、以及不走 review 的直接改文件）。
 ---
 
 # sync-context
 
-让 `.agents/docs/CONTEXT/` 与仓库现状同为唯一事实。不论改动来自 cooking 工作流还是直接对话。cooking 里的 `spec.md` 由 explore / to-spec / archive 负责，不要在这里改。禁止啰嗦和故作高深。
+cooking 里的 `spec.md` 由 explore / to-spec / archive 负责，不要在这里改。禁止啰嗦和故作高深。
 
 「影响文件」格式见 [impact-files.md](references/impact-files.md)。条目模板见 [context-template.md](../archive/references/context-template.md)。
 

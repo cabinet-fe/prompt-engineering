@@ -1,13 +1,12 @@
 ---
 name: implement
 description: >
-  实现代码：命中 cooking 标识（可带 Pn）或参数仅为 Pn 时，按 tasks 完成一个未阻塞阶段；跟随实现内容且未命中标识时直写，不读 spec/tasks、不写 cooking。
-  仅用户显式调用 implement，或由 rush 编排触发时使用；用户直接调用完成后派 review，通过后由 review 派发方 sync-context 再提交；rush 派发时由 rush 统一触发。
+  按阶段任务或按描述实现代码。仅用户显式调用 implement，或由 rush 编排触发时使用。
 ---
 
 # implement
 
-仅在用户显式调用或 rush 派发时执行；不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 

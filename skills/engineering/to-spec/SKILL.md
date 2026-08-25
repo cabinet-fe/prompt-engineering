@@ -1,13 +1,12 @@
 ---
 name: to-spec
 description: >
-  把明确需求写成 cooking/<feature>/spec.md；可指定 cooking 标识或直接跟随需求描述。
-  仅用户显式调用 to-spec，或由 rush 编排触发时使用；需求含糊时停止，建议先 explore。
+  把明确需求写成 cooking spec。仅用户显式调用 to-spec，或由 rush 编排触发时使用。
 ---
 
 # to-spec
 
-把明确需求写成可执行规格。不拆任务、不改业务代码。explore 不是前置：没有 `goal.md` 也可以写 spec。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+不拆任务、不改业务代码。explore 不是前置：没有 `goal.md` 也可以写 spec。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 

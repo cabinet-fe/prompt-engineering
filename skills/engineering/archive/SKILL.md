@@ -1,14 +1,12 @@
 ---
 name: archive
 description: >
-  归档已完成功能：把 cooking spec 蒸馏为 CONTEXT 条目、更新索引并删除 cooking/<feature>/。
-  结束后按 git-commit auto 提交新入库上下文（本地、不 push）。
-  仅用户显式调用 archive，或由 rush 编排触发时使用。
+  把已完成功能归档进 CONTEXT。仅用户显式调用 archive，或由 rush 编排触发时使用。
 ---
 
 # archive
 
-归档一个已完成功能。把 cooking `spec.md` **蒸馏**成 CONTEXT 条目（不要整文移动），然后删掉该 feature 的整个 cooking 目录。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+把 cooking `spec.md` **蒸馏**成 CONTEXT 条目（不要整文移动），然后删掉该 feature 的整个 cooking 目录。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 

@@ -2,12 +2,11 @@
 name: review
 description: >
   只评不改代码。仅用户显式调用 review，或由 implement/rush 按流程触发时使用。
-  通过后由派发方先 sync-context 再 git-commit auto；defer-commit 仍 sync、不提交。
 ---
 
 # review
 
-只评不改。两条路径不混用。必须在子代理里评：主会话只派发、只听结论，不读 diff、不写 `reviews/`。不要因提到 review 相关词自动进入。
+两条路径不混用。必须在子代理里评：主会话只派发、只听结论，不读 diff、不写 `reviews/`。不要因提到 review 相关词自动进入。
 
 执行方不提交、不 sync。通过后由派发方先 `sync-context` 再 `git-commit` auto。不通过、无改动：不 sync、不提交。`defer-commit`：仍 sync，不提交。
 

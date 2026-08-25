@@ -16,6 +16,8 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 
 走 implement / rush 时等 review 通过后再 sync-context。不走 review 的直接对话改文件后，当前对话也必须跑，避免 agent 不知道以代码还是文档为准。
 
+工程技能 YAML `description` 只写触发条件，流程细则放正文，避免挤占技能路由上下文。
+
 ## 影响文件
 
 - 新增：`skills/engineering/explore/references/question-template.md`
@@ -67,3 +69,4 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 - 2026-08-23：explore 取消固定问题类型，改为歧义驱动：开局把歧义列进「未决问题」，逐轮钉死、清零才停；涉及：skills/engineering/explore/SKILL.md、skills/engineering/explore/references/question-template.md、skills/engineering/explore/references/goal-template.md
 - 2026-08-25：git-commit 不再属于本能力；交哪些文件、提交文案由 archive / review 等调用方定义；涉及：skills/engineering/archive/SKILL.md
 - 2026-08-25：cooking 流程改为 review 通过后再 sync-context；不走 review 的直接改文件仍立刻跑；涉及：skills/engineering/implement/SKILL.md、skills/engineering/review/SKILL.md、skills/engineering/rush/SKILL.md、skills/engineering/sync-context/SKILL.md
+- 2026-08-25：工程技能 YAML description 只留触发条件；涉及：skills/engineering/archive/SKILL.md、skills/engineering/explore/SKILL.md、skills/engineering/implement/SKILL.md、skills/engineering/review/SKILL.md、skills/engineering/rush/SKILL.md、skills/engineering/setup/SKILL.md、skills/engineering/sync-context/SKILL.md、skills/engineering/to-spec/SKILL.md、skills/engineering/to-tasks/SKILL.md

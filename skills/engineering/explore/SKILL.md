@@ -1,13 +1,12 @@
 ---
 name: explore
 description: >
-  用决策树把含糊需求收敛成 cooking/<feature>/goal.md；不写 spec、不改代码。
-  仅用户显式调用 explore，或由 rush 编排触发时使用。
+  把含糊需求收敛成 cooking 目标。仅用户显式调用 explore，或由 rush 编排触发时使用。
 ---
 
 # explore
 
-需求已经明确时不要用本技能，让用户显式调用 `to-spec`。这里只处理含糊需求，或改一个尚未归档单位的需求。不写 spec、不改代码。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+需求已经明确时不要用本技能，让用户显式调用 `to-spec`。也可改一个尚未归档单位的需求。不写 spec、不改代码。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
 
 ## 前置检查
 
