@@ -2,11 +2,12 @@
 name: git-commit
 description: >
   使用 git 提交当前仓库代码。当用户要求提交代码、编写 commit message、执行 git commit/push/amend，或提到
-  提交、commit、推送、push、暂存并提交、保存更改、创建提交 时使用。
-  由 review 通过或 archive 收尾按流程触发时走 auto 模式：本地提交、不 push、不问是否推送。
+  提交、commit、推送、push、暂存并提交、保存更改、创建提交时或者由某个子代理直接指定使用。
 ---
 
 # Git 代码提交
+
+独立工具技能。谁调用都可以。何时提交、交哪些文件、提交信息要点由调用方给出；本技能只负责怎么提交。
 
 ## 目标
 
@@ -15,11 +16,11 @@ description: >
 ## 模式
 
 - **交互**（默认）：用户显式要求提交或推送。
-- **auto**：由 `review` 通过或 `archive` 结束后按流程触发。本地 `git add` + `git commit`，**禁止 push**，禁止问要不要推送。
+- **auto**：调用方指定 auto。本地 `git add` + `git commit`，**禁止 push**，禁止问要不要推送。
 
 ## 统一工具定义
 
-- `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等.auto 模式不要用它问是否 push。
+- `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等。auto 模式不要用它问是否 push。
 
 ## 交互模式
 
@@ -34,11 +35,10 @@ description: >
 
 1. `git status`：没有已跟踪变更且没有应入库的新文件 → 汇报「无提交」，结束。
 2. 发现 `.env`、密钥、凭证、明显不该入库的文件 → **停止，不要提交**，列给用户。不要用提问把风险问过去。
-3. 不要 add `.agents/cooking/`（已被 gitignore；不要强制加）。
-4. 只暂存本轮应入库文件：业务代码、`CODE-MAP.md`、sync-context / archive 改过的 `CONTEXT/`。不要顺手塞进无关脏文件。
-5. 一个逻辑提交；按 [提交规范](#提交规范) 写中文信息（review 触发写清本阶段/本改动；archive 触发用 `docs(context): 归档 <feature>`，若同一次还带未提交代码则按代码意图选类型，正文说明含归档上下文）。
-6. `git add` 指定路径 + `git commit`。不要 `--no-verify`。不要 `git push`。
-7. 汇报 commit hash，并写明未推送。
+3. 暂存范围：调用方指定了路径则只暂存这些路径；未指定则只暂存本轮应入库文件。不要顺手塞进无关脏文件。不要强制 add 已被 gitignore 的路径。
+4. 一个逻辑提交；按 [提交规范](#提交规范) 写中文信息。调用方给了提交信息要点则采用，否则按实际 diff 写。
+5. `git add` 指定路径 + `git commit`。不要 `--no-verify`。不要 `git push`。
+6. 汇报 commit hash，并写明未推送。
 
 ## 提交规范
 

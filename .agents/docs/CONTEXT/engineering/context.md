@@ -54,7 +54,6 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 - 修改：`skills/engineering/archive/SKILL.md`
 - 修改：`skills/engineering/rush/SKILL.md`
 - 修改：`skills/engineering/rush/references/subagent-prompts.md`
-- 修改：`skills/tools/git-commit/SKILL.md`
 - 修改：`AGENTS.md`
 - 修改：`.agents/scripts/spec-files.mjs`
 - 修改：`.agents/docs/CONTEXT/engineering/precheck.md`
@@ -66,3 +65,4 @@ explore：每轮单独提问、答完再写下轮具体问题；一轮最多 5 �
 - 2026-08-20：归档为 CONTEXT；sync-spec 改名 sync-context；脚本归 setup
 - 2026-08-23：sync-context 新增「废弃则删除」：能力被移除/推翻时整条删除条目并清理两级索引，替代则先建后删，更名则改内容并重命名条目文件；涉及：skills/engineering/sync-context/SKILL.md、skills/engineering/archive/references/context-layout.md
 - 2026-08-23：explore 取消固定问题类型，改为歧义驱动：开局把歧义列进「未决问题」，逐轮钉死、清零才停；涉及：skills/engineering/explore/SKILL.md、skills/engineering/explore/references/question-template.md、skills/engineering/explore/references/goal-template.md
+- 2026-08-25：git-commit 不再属于本能力；交哪些文件、提交文案由 archive / review 等调用方定义；涉及：skills/engineering/archive/SKILL.md

@@ -97,7 +97,7 @@ setup
 
 | 技能 | 做什么 |
 | --- | --- |
-| `git-commit` | 交互提交可问是否 push；`review` / `archive` 触发时只本地提交 |
+| `git-commit` | 交互提交可问是否 push；auto 模式只本地提交、不 push |
 | `build-lib-skill` | 给私有库 / 小众库写文档型伴生技能，事实只来自源码和公共 API |
 
 ## 目标仓库里会多出什么

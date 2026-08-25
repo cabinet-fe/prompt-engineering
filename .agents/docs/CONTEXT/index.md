@@ -7,3 +7,4 @@
 ## 模块
 
 - [engineering](engineering/index.md) — 工程流程技能包
+- [tools](tools/index.md) — 独立工具技能
