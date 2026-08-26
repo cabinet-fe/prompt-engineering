@@ -22,7 +22,7 @@ description: >
 3. 按 [subagent-prompt.md](references/subagent-prompt.md) 填任务书并启动。不要把本对话过程写进 prompt。
 4. 没有子代理工具：停止。不能在本对话降级代评。
 5. 结束后只转述：结论、阻塞项。
-6. 不通过或无改动：结束。
+6. 不通过或无改动：结束（由 rush 编排时，按 rush 规则自动进入 implement 返工修复闭环）。
 7. 通过：先按 [sync-context/SKILL.md](../sync-context/SKILL.md) 同步本次改动文件（派子代理；没有则亲自执行）。然后：
    - `defer-commit`：不提交。
    - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、已被 sync-context 更新的 `CONTEXT/`）。不要 add `.agents/cooking/`。禁止 push。没有该技能则停止，不要另写提交流程。
@@ -88,7 +88,7 @@ description: >
 1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件；做第 4、5 节。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
 3. 回写 `Pn.md`「评审」为通过或不通过。
-4. 不通过：列阻塞项，告诉用户 `implement <feature> <Pn>` 返工。不改代码。
+4. 不通过：列阻塞项，写明需针对阻塞项返工（独立调用时提示用户 `implement <feature> <Pn>` 返工；rush 编排时由 rush 自动触发返工）。不改代码。
 5. 通过：还有可做阶段则列出；全部阶段通过则提示可 `archive <feature>`。
 
 ## 7. git 评审
