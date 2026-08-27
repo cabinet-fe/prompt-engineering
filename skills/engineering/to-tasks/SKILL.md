@@ -36,6 +36,7 @@ description: >
 1. 定 `<feature>`。读 `spec.md`（验收标准是切分依据）。代码类需要时检索 `CODE-MAP.md`、读 `DEV-STANDARDS.md`；非代码不要打开那三份，对照 `PROJECT.md`。
 2. 画依赖：先能做的、可并行的、必须收口的。
 3. 按 [task-template.md](references/task-template.md) 写每个 `tasks/Pn.md`。不得增删标题。不要写 `README.md` 或其它索引文件。
+   存在 `.agents/docs/ACCEPTANCE.md` 时，按该提示词向各 `Pn.md`「完成标准」追加条目；不存在则行为与现网一致。直写路径无 `tasks/` 时，不因此补完成标准或补建 tasks。
 4. 后续技能枚举 `tasks/P*.md`，只读「前置任务 / 状态」，再打开当前要做的那一份。
 
 ## 结束
