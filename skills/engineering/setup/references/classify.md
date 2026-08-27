@@ -8,7 +8,7 @@
 
 ## 字段
 
-**类别（单选）**：前端项目 / 后端项目 / 前端库 / 后端库 / 全栈项目 / 非代码项目
+**类别（单选）**：前端项目 / 后端项目 / 前端库 / 后端库 / 全栈项目 / App / 嵌入式 / 游戏 / 非代码项目
 
 **组织结构**（各类都要有）：单包仓库 / 多包单体仓库（记下每个包路径，如 `packages/web`、`apps/api`）
 
@@ -27,6 +27,9 @@
 - 以 `exports` / 发布包为主、无应用入口 → 前端库或后端库
 - 服务、API、CLI、worker，无前端应用 → 后端项目
 - 同一仓库既有前端应用又有后端/API → 全栈项目（不要拆成两类叠加）
+- 有 iOS/Android 原生工程（`.xcodeproj` / `AndroidManifest.xml`），或 Flutter / React Native 带原生端目录 → App
+- 有 MCU/固件工具链（PlatformIO、STM32 `.ioc`、Zephyr `west.yml`、Arduino sketch）→ 嵌入式
+- 有引擎工程入口（Unity `Assets/`+`ProjectSettings/`、Unreal `.uproject`、Godot `project.godot`）→ 游戏
 - 根上一份 lockfile、一个可交付物 → 单包；`packages/` / `apps/` 多个可交付包 → 多包单体，记下路径
 - Next/Nuxt 等 SSR 一体 → 全栈 + 一体化；独立前端 + 独立 API 服务 → 全栈 + 前后端分离
 
@@ -43,4 +46,4 @@
 读 `PROJECT.md` 的类别：
 
 - **非代码**：不写架构 / 规范 / 地图，进入 CONTEXT、cooking、脚本、覆写 `AGENTS.md`
-- **代码类**（其余五类）：再走 [interview.md](interview.md)
+- **代码类**（前端项目 / 后端项目 / 前端库 / 后端库 / 全栈项目 / App / 嵌入式 / 游戏）：再走 [interview.md](interview.md)，写 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS

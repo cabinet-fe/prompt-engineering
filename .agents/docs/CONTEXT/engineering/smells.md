@@ -26,3 +26,4 @@
 ## 更新记录
 
 - 2026-08-25：坏味道基线改由 setup 安装；编码时边写边收；涉及：skills/engineering/setup/references/smells.md、skills/engineering/setup/SKILL.md、skills/engineering/review/SKILL.md、skills/engineering/implement/SKILL.md
+- 2026-08-27：PROJECT.md 类别枚举增加 App / 嵌入式 / 游戏，代码类仍由 setup 安装 SMELLS.md；涉及：skills/engineering/setup/references/templates.md
