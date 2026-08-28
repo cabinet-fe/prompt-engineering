@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Engineering · 面向 Agent 的技能包</title>
+<meta name="description" content="面向 Agent 的技能包：工程流程、语言/框架写法、角色规范、工具。让 Agent 不凭过时记忆写 API，不让上下文停在某一天。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Patrick+Hand&family=Permanent+Marker&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%8F%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- 手绘抖动滤镜：让所有边框像马克笔画的 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.03" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+    </filter>
+    <filter id="wobble-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02 0.05" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5"/>
+    </filter>
+  </defs>
+</svg>
+
+<header class="nav" id="top">
+  <a class="nav-logo" href="#top">
+    <svg viewBox="0 0 40 40" class="logo-pen" aria-hidden="true"><path d="M8 32 L12 22 L28 6 L34 12 L18 28 Z M12 22 L18 28 M28 6 L30 4 L36 10 L34 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>技能包</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#highlights">亮点</a>
+    <a href="#pick">先挑路</a>
+    <a href="#flow">流程</a>
+    <a href="#skills">技能</a>
+    <a href="#start">上手</a>
+  </nav>
+  <a class="nav-gh" href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">GitHub ↗</a>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-doodles" aria-hidden="true">
+    <svg class="doodle d-star" data-parallax="0.05" viewBox="0 0 100 100"><path d="M51 8 L60 37 L91 36 L66 55 L75 86 L51 67 L26 87 L35 56 L10 37 L41 37 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
+    <svg class="doodle d-spiral" data-parallax="-0.04" viewBox="0 0 100 100"><path d="M50 50 c0 -6 9 -6 9 0 c0 10 -16 12 -21 3 c-6 -12 6 -26 21 -24 c17 3 24 22 15 35 c-10 15 -33 16 -45 3" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+    <svg class="doodle d-arrow" data-parallax="0.08" viewBox="0 0 160 120"><path d="M12 14 C 55 70, 95 72, 128 96 M128 96 l-18 -6 M128 96 l-4 -18" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="doodle d-circle" data-parallax="-0.06" viewBox="0 0 120 120"><path d="M62 12 C 25 12, 8 38, 13 64 C 18 94, 52 112, 82 100 C 108 90, 116 58, 102 36 C 92 20, 70 10, 52 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+    <div class="coffee-stain" data-parallax="0.03"></div>
+  </div>
+
+  <p class="hero-eyebrow reveal">cabinet-fe / prompt-engineering</p>
+  <h1 class="hero-title reveal">
+    给 Agent 的<br>
+    <span class="marker-word">技能百宝袋</span>
+    <svg class="title-squiggle" viewBox="0 0 420 24" aria-hidden="true"><path d="M8 14 C 70 6, 140 18, 210 12 C 280 6, 350 16, 412 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
+  </h1>
+  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>22</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不让上下文停在某一天。</p>
+
+  <div class="install-box reveal">
+    <span class="install-prompt">$</span>
+    <code>npx skills add cabinet-fe/prompt-engineering</code>
+    <button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制安装命令">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 8 V6 a2 2 0 0 0 -2 -2 H6 a2 2 0 0 0 -2 2 v8 a2 2 0 0 0 2 2 h2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </button>
+    <span class="install-note">← 先装我！</span>
+  </div>
+
+  <div class="hero-cta reveal">
+    <a class="btn btn-primary" href="#pick">先挑条路</a>
+    <a class="btn" href="#skills">翻翻技能</a>
+  </div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <svg viewBox="0 0 40 60"><path d="M20 6 C 16 22, 24 34, 20 50 M20 50 l-8 -10 M20 50 l8 -10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>往下翻</span>
+  </div>
+</section>
+
+<!-- ================= 跑马灯分隔带 ================= -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner">
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-context ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-context ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
+  </div>
+</div>
+
+<!-- ================= 亮点 ================= -->
+<section id="highlights" class="section">
+  <h2 class="section-title reveal">
+    <span class="hl">凭什么不一样</span>
+    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 4, 110 16, 160 10 C 210 4, 260 14, 294 8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+  </h2>
+  <p class="section-sub reveal">项目一直在变，上下文却很容易停在某一天。这套技能包两头都管。</p>
+
+  <div class="card-row">
+    <article class="hl-card wobble tilt-l reveal">
+      <div class="hl-icon" aria-hidden="true">
+        <svg viewBox="0 0 60 60"><path d="M30 8 C 14 8, 8 20, 10 32 C 12 46, 26 54, 38 50 C 50 46, 54 32, 48 20 C 44 12, 34 8, 26 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M30 22 L30 34 L40 38" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>上下文持续更新</h3>
+      <p><code>sync-context</code> 可以单独用，不用绑流程。人手改的、没走 review 直接改的——只要可能让上下文过时，当前对话就该跑它。按变更路径扫「影响文件」，命中哪句只改哪句。</p>
+      <p class="hl-tag">不整夹加载 · 不留噪点</p>
+    </article>
+
+    <article class="hl-card wobble tilt-r reveal">
+      <div class="hl-icon" aria-hidden="true">
+        <svg viewBox="0 0 60 60"><path d="M12 44 L22 16 L32 38 L42 12 L50 34" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 50 C 24 46, 40 52, 54 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+      </div>
+      <h3>版本感知，不背旧 API</h3>
+      <p>语言/框架技能先看<b>已安装</b>版本（lockfile、<code>go.mod</code>、<code>rustc</code>），再打开对应的 <code>references/&lt;版本&gt;.md</code>。训练数据里的过时写法？不存在的。</p>
+      <p class="hl-tag">8 个技术栈 · 按版本分档</p>
+    </article>
+
+    <article class="hl-card wobble tilt-l reveal">
+      <div class="hl-icon" aria-hidden="true">
+        <svg viewBox="0 0 60 60"><path d="M10 14 L50 12 L48 48 L12 50 Z M18 24 L42 22 M18 32 L40 31 M18 40 L34 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3>按路径打开条目</h3>
+      <p>先 <code>spec-files.mjs query</code>，命中哪条读哪条。CONTEXT 和代码对得上，不用再纠结该信文档还是该信仓库。</p>
+      <p class="hl-tag">query 先行 · 命中才读</p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 先挑路 ================= -->
+<section id="pick" class="section">
+  <h2 class="section-title reveal">
+    <span class="hl">先挑路，再动手</span>
+    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 70 16, 130 4, 190 12 C 240 18, 270 8, 294 12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+  </h2>
+  <p class="section-sub reveal">对号入座：你现在是哪种情况？点一下，给你开张处方。</p>
+
+  <div class="pick-wrap reveal">
+    <div class="pick-list" role="tablist" aria-label="选择你的情况">
+      <button class="pick-chip wobble-sm" data-pick="first" role="tab">仓库第一次接入</button>
+      <button class="pick-chip wobble-sm" data-pick="vague" role="tab">需求含糊，边界没定</button>
+      <button class="pick-chip wobble-sm" data-pick="rush" role="tab">需求明确，想一次跑完</button>
+      <button class="pick-chip wobble-sm" data-pick="steps" role="tab">需求明确，想自己把关</button>
+      <button class="pick-chip wobble-sm" data-pick="small" role="tab">改个 bug、加个字段</button>
+      <button class="pick-chip wobble-sm" data-pick="review" role="tab">只想让人评一遍改动</button>
+      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完，上下文跟上</button>
+      <button class="pick-chip wobble-sm" data-pick="accept" role="tab">想给编码加层验收</button>
+    </div>
+
+    <div class="pick-note sticky-note" id="pick-note" aria-live="polite">
+      <div class="tape" aria-hidden="true"></div>
+      <p class="pick-note-label">处方 ✎</p>
+      <p class="pick-note-cmd"><code id="pick-cmd">setup</code></p>
+      <p class="pick-note-desc" id="pick-desc">一次性。访谈后分类，写 PROJECT.md、铺 .agents/docs/ 和脚本、覆写根 AGENTS.md。跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 流程 ================= -->
+<section id="flow" class="section">
+  <h2 class="section-title reveal">
+    <span class="hl">一条链，从 setup 到归档</span>
+    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 50 6, 120 16, 180 8 C 230 2, 270 14, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+  </h2>
+  <p class="section-sub reveal">点每个节点看看它在干嘛、卡在哪。<code>rush</code> 只是编排器，不是另一套流程——产物、模板、并行规则跟单独调用完全一样。</p>
+
+  <div class="flow-board reveal">
+    <div class="flow-track" role="tablist" aria-label="工程流程各环节">
+      <button class="flow-node wobble-sm" data-flow="setup"><span class="flow-emoji">🧱</span><span>setup</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="explore"><span class="flow-emoji">🧭</span><span>explore</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="to-spec"><span class="flow-emoji">📜</span><span>to-spec</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="to-tasks"><span class="flow-emoji">✂️</span><span>to-tasks</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="implement"><span class="flow-emoji">🔨</span><span>implement</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="review"><span class="flow-emoji">🔍</span><span>review</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="sync-context"><span class="flow-emoji">🔄</span><span>sync-context</span></button>
+      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <button class="flow-node wobble-sm" data-flow="archive"><span class="flow-emoji">🗃️</span><span>archive</span></button>
+    </div>
+
+    <div class="flow-note sticky-note" id="flow-note" aria-live="polite">
+      <div class="tape" aria-hidden="true"></div>
+      <p class="flow-note-title" id="flow-title">🧱 setup</p>
+      <p class="flow-note-cmd"><code id="flow-cmd">setup</code></p>
+      <p class="flow-note-desc" id="flow-desc">每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、建 CONTEXT 索引、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 技能一览 ================= -->
+<section id="skills" class="section">
+  <h2 class="section-title reveal">
+    <span class="hl">技能一览 · 22 件家伙事儿</span>
+    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 66 16, 126 4, 186 12 C 236 18, 272 6, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+  </h2>
+  <p class="section-sub reveal">点开卡片看用法。多数工程技能<b>点名才跑</b>；语言/框架技能不用点名，写对应代码时它自己就来。</p>
+
+  <div class="skill-filter reveal" role="group" aria-label="按类别筛选">
+    <button class="filter-chip wobble-sm active" data-filter="all">全部</button>
+    <button class="filter-chip wobble-sm" data-filter="engineering">工程流程</button>
+    <button class="filter-chip wobble-sm" data-filter="langs">语言</button>
+    <button class="filter-chip wobble-sm" data-filter="frameworks">框架</button>
+    <button class="filter-chip wobble-sm" data-filter="roles">角色</button>
+    <button class="filter-chip wobble-sm" data-filter="tools">工具</button>
+  </div>
+
+  <div class="skill-grid" id="skill-grid">
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">setup</span>
+      <span class="skill-one">初始化 / 更新仓库工程底座，一次性</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>仓库第一次接入；换栈、改分层、加删应用边界时再跑更新模式。</p>
+        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），建 <code>CONTEXT/index.md</code>，复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。</p>
+        <p><b>用法：</b><code>setup</code></p>
+        <p><b>注意：</b>跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。其它工程技能 precheck FAIL 会停下让你 setup，不代跑。收尾会问要不要验收层，选了也只是提示你去调 <code>acceptance</code>。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">explore</span>
+      <span class="skill-one">只问不写，把含糊需求问明白、定下 goal</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>需求含糊、边界还没定，「不问就可能做错」时。</p>
+        <p><b>干什么：</b>把歧义逐条写进 <code>cooking/&lt;feature&gt;/goal.md</code> 的「未决问题」，每轮挑最阻塞的问、最多 5 题；查得到的事实派子代理，不问你。未决清零、范围经你确认，才写「确认：已确认」。</p>
+        <p><b>用法：</b><code>explore 审批单想支持批量转办</code></p>
+        <p><b>注意：</b>中途改需求，对同一个未归档单位再 explore：goal 打回未确认，删掉该单位的 spec/tasks/reviews——但不回滚代码。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">to-spec</span>
+      <span class="skill-one">把明确需求写成可判定的 spec.md</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>需求已经明确（或 explore 确认完毕），要落成规格。</p>
+        <p><b>干什么：</b>写 <code>cooking/&lt;feature&gt;/spec.md</code>。验收标准必须可判定——「体验好」这种不收；「影响文件」只写新增/删除/修改的仓库相对路径，写完要能被 <code>spec-files.mjs parse</code> 通过。</p>
+        <p><b>用法：</b><code>to-spec approval-batch-transfer</code></p>
+        <p><b>注意：</b>需求本来就明确可跳过 explore，没有 goal.md 也能写 spec。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">to-tasks</span>
+      <span class="skill-one">把 spec 拆成能动手的阶段任务 Pn</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>spec 写好后，拆成能动手的一个个阶段。</p>
+        <p><b>干什么：</b>拆 <code>tasks/P1.md</code>、<code>P2.md</code>…。<code>Pn</code> 是阶段 id，不是必须串行的序号——前置为「无」的阶段一上来就能并行。</p>
+        <p><b>用法：</b><code>to-tasks approval-batch-transfer</code></p>
+        <p><b>注意：</b>存在 <code>ACCEPTANCE.md</code> 时，会按它给各阶段「完成标准」追加条目。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">implement</span>
+      <span class="skill-one">做一个未阻塞阶段，或按描述直写</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>按阶段任务实现；或改个 bug、加个字段直接描述。</p>
+        <p><b>干什么：</b>一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。参数既不是 cooking 标识也不是 <code>P&lt;n&gt;</code> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。</p>
+        <p><b>用法：</b><code>implement approval-batch-transfer P1</code> / <code>implement 把 UserCard 的头像换成懒加载</code></p>
+        <p><b>注意：</b>参数为空会被当成阶段路径，只说「实现一下」不触发直写。对照 <code>SMELLS.md</code> 把本次引入的坏味道当场收掉，不扩到无关重构。改动等于换栈/加边界/改分层会停下来让你先 setup。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">review</span>
+      <span class="skill-one">只评不改，必须在子代理里评</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>阶段做完、或想让人评一遍现有改动（工作区 / 相对基点）。</p>
+        <p><b>干什么：</b>四条评审轴：Spec（仅阶段路径）、Standards（规范 + 坏味道基线）、规格影响（query 命中的 CONTEXT 条目有没有被 diff 推翻）、正确性（仅 git 路径）。</p>
+        <p><b>用法：</b><code>review</code> / <code>review main</code> / <code>review approval-batch-transfer P2</code></p>
+        <p><b>注意：</b>主会话只派发、只听结论，不读 diff；没有子代理工具就停止，不降级代评。通过后由派发方先 <code>sync-context</code> 再 <code>git-commit</code> auto（不 push）；不通过列出阻塞项，该阶段下游不许开工。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">sync-context</span>
+      <span class="skill-one">唯一不必点名：让 CONTEXT 跟上仓库</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>人手改的、或不走 review 直接改文件的——只要可能让上下文过时或出现尚未入库的能力，当前对话就该跑。走 implement / rush 时不用管，review 通过后派发方会跑。</p>
+        <p><b>干什么：</b>按 <code>spec-files.mjs query</code> 定位条目。命中就只改被推翻的那几句、更新「影响文件」、追加一行更新记录；未命中但构成新能力就按模板建条目。</p>
+        <p><b>用法：</b><code>sync-context</code> / <code>sync-context src/modules/approval</code></p>
+        <p><b>注意：</b>typo、格式这类琐碎改动直接结束。能力被整体推翻：整条删掉，连两级索引的对应行一起清——过时条目留着就是噪点。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">archive</span>
+      <span class="skill-one">把 cooking 蒸馏进 CONTEXT 并删掉</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>功能完成：每个阶段都「实现：完成 + 评审：通过」。</p>
+        <p><b>干什么：</b>把 spec <b>蒸馏</b>成 CONTEXT 条目（术语、领域、影响哪些文件），丢掉验收标准、非目标、用户故事——长期文档不是验收清单的复印件。更新两级索引，然后删掉整个 cooking 目录。</p>
+        <p><b>用法：</b><code>archive approval-batch-transfer</code></p>
+        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">rush</span>
+      <span class="skill-one">编排整条链，一条命令跑完</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>需求明确，想一次跑完整个功能。简单改动别用 rush，直接 implement 直写。</p>
+        <p><b>干什么：</b>编排器，不是另一套流程。需求含糊时主代理亲自 explore；可并行阶段同时开 implement；某阶段一返回就立刻单独 review；不通过自动返工闭环，单阶段最多 3 轮。</p>
+        <p><b>用法：</b><code>rush 审批单想支持批量转办</code> / <code>rush approval-batch-transfer</code>（继续推进）</p>
+        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后照样 sync 但不提交；archive 之后一次提交。架构级变更会停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
+      <span class="skill-name">acceptance</span>
+      <span class="skill-one">给编码加一层可执行的验收</span>
+      <span class="skill-cat">工程流程</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>想给编码加一层验收保障。setup 收尾会问一次，但不代跑，要就显式调用。</p>
+        <p><b>干什么：</b>先检索仓库已有的测试 / e2e / HTTP / 构建命令，再结合项目类别推荐手段——检索完成前不会点名 Playwright、Maestro 这类工具。产出 <code>.agents/docs/ACCEPTANCE.md</code>。</p>
+        <p><b>用法：</b><code>acceptance</code></p>
+        <p><b>注意：</b>之后 to-tasks 按它给各阶段追加完成标准，review 按它评。纯原型或日常工作类仓库不会生成可执行脚手架。代价是 token 和工时明显增加。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
+      <span class="skill-name">typescript</span>
+      <span class="skill-one">类型系统、tsconfig 与编译器行为</span>
+      <span class="skill-cat">语言 · 5 / 6 / 7</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>TypeScript major 5 / 6 / 7。先看已安装版本，再打开 <code>references/&lt;版本&gt;.md</code>。</p>
+        <p><b>边界：</b>只管类型、<code>tsconfig.json</code>、编译器行为。如何用 Node 跑 <code>.ts</code> 交给 node 技能；Vue SFC / Volar 交给 vue 技能。构建工具、CSS、状态库跟项目走。</p>
+        <p><b>触发：</b>编辑 <code>.ts</code> / <code>.tsx</code>、tsconfig.json 或处理类型与编译选项时。不用点名。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
+      <span class="skill-name">node</span>
+      <span class="skill-one">Node 运行时,以及 V8 已稳定的 JS 写法</span>
+      <span class="skill-cat">语言 · 22 / 24 / 26</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>偶数 major 22 / 24 / 26，该 V8 已稳定的 JS 写法。</p>
+        <p><b>边界：</b>运行时、标准库（<code>node:</code> 前缀模块）、CLI、测试。框架跟项目走。</p>
+        <p><b>触发：</b>编写 Node 脚本、服务、CLI，编辑 <code>.js/.mjs/.cjs</code>、由 Node 直接跑的 <code>.ts</code>、package.json、<code>.nvmrc</code> 时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
+      <span class="skill-name">go</span>
+      <span class="skill-one">按 go.mod 的 go 行选版本写法</span>
+      <span class="skill-cat">语言 · 1.24–1.27</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>Go 1.24 / 1.25 / 1.26 / 1.27。按项目 <code>go.mod</code> 的 go 行选用该版本语言与标准库 API。</p>
+        <p><b>边界：</b>语言与标准库。框架、构建工具、HTTP 库跟项目走，不在本技能里指定。</p>
+        <p><b>触发：</b>编辑 <code>.go</code>、go.mod、go.work、<code>*_test.go</code> 或处理 Go 工具链时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
+      <span class="skill-name">rust</span>
+      <span class="skill-one">先定 rustc 1.y，再读对应 reference</span>
+      <span class="skill-cat">语言 · 1.95–1.97</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>rustc 1.95 / 1.96 / 1.97。禁止凭训练数据写 API——先定 <b>rustc 1.y</b>，再读对应 reference。</p>
+        <p><b>边界：</b>语言、Cargo、测试与宏。Axum / Actix / Rocket 等 web 框架不在本技能里指定。</p>
+        <p><b>触发：</b>编辑 <code>.rs</code>、Cargo.toml / Cargo.lock、rust-toolchain.toml 时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
+      <span class="skill-name">vue</span>
+      <span class="skill-one">默认 script setup + Composition API</span>
+      <span class="skill-cat">框架 · 3.4 / 3.5</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>Vue 3.4 / 3.5，按项目 minor 选用该版本 API。</p>
+        <p><b>约定：</b>默认 <code>&lt;script setup&gt;</code> + Composition API。构建工具、CSS、状态库、TS 版本跟项目走，不在本技能里指定。</p>
+        <p><b>触发：</b>编辑 <code>.vue</code>、Vue TSX/JSX 组件或编写组合式函数时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
+      <span class="skill-name">react</span>
+      <span class="skill-one">默认函数组件 + Hooks</span>
+      <span class="skill-cat">框架 · 19.0–19.2</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>React 19.0 / 19.1 / 19.2，按项目 minor 选用该版本 API。</p>
+        <p><b>约定：</b>默认函数组件 + Hooks。路由、数据请求、CSS、状态库、构建工具跟项目走——不指定 Next / Remix / Vite。</p>
+        <p><b>触发：</b>编辑 <code>.jsx</code> / <code>.tsx</code>、React 组件、Hooks 或处理 react / react-dom 时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
+      <span class="skill-name">svelte</span>
+      <span class="skill-one">默认 runes 模式</span>
+      <span class="skill-cat">框架 · 5</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>Svelte 5，按已安装的 5.x minor 选用该版本 rune / 模板写法。</p>
+        <p><b>约定：</b>默认 <b>runes 模式</b>。SvelteKit、CSS、状态库跟项目走，不在本技能里指定。</p>
+        <p><b>触发：</b>编辑 <code>.svelte</code>、<code>.svelte.ts</code> / <code>.svelte.js</code> 或编写 Svelte 组件时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
+      <span class="skill-name">gin</span>
+      <span class="skill-one">按 go.mod 里 gin 的 1.y 选 API</span>
+      <span class="skill-cat">框架 · 1.10–1.12</span>
+      <div class="skill-detail" hidden>
+        <p><b>覆盖：</b>Gin 1.10 / 1.11 / 1.12，按 <code>go.mod</code> 里 github.com/gin-gonic/gin 的 1.y 选用该版本 API。</p>
+        <p><b>约定：</b>Go 语法交给 go 技能；ORM、日志库、鉴权方案跟项目走。用户没点名就不要顺手加完整鉴权中间件。</p>
+        <p><b>触发：</b>编写 Gin 路由、handler、中间件、绑定与渲染时。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-roles reveal" data-cat="roles">
+      <span class="skill-name">frontend-expert</span>
+      <span class="skill-one">前端简洁优先，克制膨胀</span>
+      <span class="skill-cat">角色</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>编写或修改前端页面、组件、表单、样式、重构前端代码，或你提到简洁、代码膨胀、过度封装、兼容性代码、造轮子时。</p>
+        <p><b>干什么：</b>像多年经验的前端专家一样写简洁代码：字段对齐、不顺手加兼容层、不造轮子、改完做减法。references 里是一套坏味道清单（表单、样式、过度工程、兼容、死代码、重复造轮子）。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-roles reveal" data-cat="roles">
+      <span class="skill-name">backend-expert</span>
+      <span class="skill-one">后端同样：少透传层、少封装</span>
+      <span class="skill-cat">角色</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>编写或修改后端 API、handler、DTO、中间件、仓储与服务分层时。</p>
+        <p><b>干什么：</b>克制代码膨胀与过度设计：少透传层、少造轮子、少过度封装、DTO 映射别铺满每一层。references 同样是一套坏味道清单。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
+      <span class="skill-name">git-commit</span>
+      <span class="skill-one">交互提交可问 push；auto 只本地</span>
+      <span class="skill-cat">工具</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>要求提交代码、写 commit message、执行 commit / push / amend 时，或被流程指定。</p>
+        <p><b>干什么：</b>交互模式会问要不要 push；被流程调用时一律 auto——只本地提交、禁止 push、禁止 add <code>.agents/cooking/</code>。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
+      <span class="skill-name">build-lib-skill</span>
+      <span class="skill-one">给私有库 / 小众库写伴生技能</span>
+      <span class="skill-cat">工具</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>目标仓库是库项目，库代码更新、或你提出创建/更新它的伴生技能时。</p>
+        <p><b>干什么：</b>为库、SDK 或 package 创建/更新文档型伴生 Agent Skill。事实只来自源码和公共 API，不脑补。</p>
+      </div>
+    </button>
+
+  </div>
+</section>
+
+<!-- ================= 上手 ================= -->
+<section id="start" class="section">
+  <h2 class="section-title reveal">
+    <span class="hl">三分钟上手</span>
+    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 6, 130 16, 190 8 C 240 2, 275 14, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+  </h2>
+
+  <div class="start-grid">
+    <div class="start-col reveal">
+      <h3 class="start-h">① 装进你的 Agent</h3>
+      <div class="cmd-block wobble-sm">
+        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制">⧉</button></div>
+        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --list</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --list" aria-label="复制">⧉</button></div>
+        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush" aria-label="复制">⧉</button></div>
+        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering -g</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering -g" aria-label="复制">⧉</button></div>
+      </div>
+      <p class="start-note">列技能、只装一部分、装到用户级（所有项目）。多数工程技能只在点名时跑。</p>
+    </div>
+
+    <div class="start-col reveal">
+      <h3 class="start-h">② 挑一种姿势跑起来</h3>
+      <div class="cmd-block wobble-sm">
+        <p class="cmd-comment"># 分步走：需求含糊也不怕</p>
+        <div class="cmd-line"><code>explore 审批单想支持批量转办</code></div>
+        <div class="cmd-line"><code>to-spec approval-batch-transfer</code></div>
+        <div class="cmd-line"><code>to-tasks approval-batch-transfer</code></div>
+        <div class="cmd-line"><code>implement approval-batch-transfer P1</code></div>
+        <div class="cmd-line"><code>archive approval-batch-transfer</code></div>
+      </div>
+      <div class="cmd-block wobble-sm">
+        <p class="cmd-comment"># 或者：一条命令跑完</p>
+        <div class="cmd-line"><code>rush 审批单想支持批量转办</code></div>
+      </div>
+    </div>
+
+    <div class="start-col reveal">
+      <h3 class="start-h">③ 目标仓库会多出什么</h3>
+      <div class="cmd-block wobble-sm tree-block">
+<pre>.agents/
+├── docs/       PROJECT、CONTEXT 索引；
+│               代码类还有架构/规范/地图/坏味道
+├── scripts/    precheck、spec-files
+└── cooking/    进行中的功能（gitignore，别提交）
+AGENTS.md       短索引，按需打开 docs，
+                禁止一次加载全部</pre>
+      </div>
+      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。已完成能力进 <code>CONTEXT/</code>，靠 <code>sync-context</code> 跟着仓库改。</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <svg class="footer-squiggle" viewBox="0 0 1200 30" aria-hidden="true"><path d="M10 16 C 200 6, 400 24, 600 12 C 800 2, 1000 22, 1190 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+  <p class="footer-big">马克笔手绘 · 谢绝完美 ✎</p>
+  <p><a href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">github.com/cabinet-fe/prompt-engineering</a></p>
+  <p class="footer-license">MIT License © 前端小分队 · 细节在各技能的 <code>references/</code>，别整夹盲读</p>
+</footer>
+
+<!-- 技能详情弹层 -->
+<div class="modal" id="skill-modal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-sheet wobble" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="tape" aria-hidden="true"></div>
+    <button class="modal-close" data-close aria-label="关闭">✕</button>
+    <p class="modal-cat" id="modal-cat"></p>
+    <h3 class="modal-title" id="modal-title"></h3>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status">复制好了！✎</div>
+
+<script src="./main.js"></script>
+</body>
+</html>
