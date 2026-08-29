@@ -6,11 +6,11 @@ description: >
 
 # implement
 
-不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
+运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](../setup/references/persistent-docs.md)。
 
 ## 统一工具定义
 
@@ -39,12 +39,12 @@ description: >
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准。若为返工（`Pn.md` 评审为 `不通过` 或存在 `reviews/Pn.md`）：同时读取 `reviews/Pn.md` 中的「阻塞项」，针对阻塞项进行修复。代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。先运行 `node .agents/scripts/spec-files.mjs query <预计改动路径...>`（只匹配「影响文件」里的新增和修改）。命中才打开对应 CONTEXT 条目，确认不会破坏已归档能力；可能破坏时停止，让用户决定更新上下文还是调整方案。未命中不要打开任何 CONTEXT 条目。代码类需要定位模块/路径时，再按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准。若为返工（`Pn.md` 评审为 `不通过` 或存在 `reviews/Pn.md`）：同时读取 `reviews/Pn.md` 中的「阻塞项」，针对阻塞项进行修复。代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。代码类需要定位模块/路径时，按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。不要打开 `.agents/docs/CONTEXT/`。
 2. 把该阶段「实现」改为 `进行中`。
 3. 只做清单项。小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。
 4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 5. 勾选已完成的清单项。
-6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。
+6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份。没说错则不动。禁止新建蒸馏文档。
 7. 「实现」改为 `完成`。「评审」保持 `未开始`（或从 `不通过` 改回 `未开始` 若这是返工）。
 
 ## 直写路径
@@ -52,11 +52,11 @@ description: >
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`。先运行 `node .agents/scripts/spec-files.mjs query <改动路径...>`。命中才打开对应 CONTEXT 条目；未命中不要打开任何条目。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。
+2. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。不要打开 `.agents/docs/CONTEXT/`。
 3. 小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
-4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。
+4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把已有持久文档说错：当场改那一份。禁止新建蒸馏文档。
 
 ## 结束
 
-- **阶段路径**：用户直接调用时，完成后 **派 review 子代理**（按 `review/references/subagent-prompt.md` 阶段模板，带上改动路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。本对话不要做评审、不要读 reviews 正文。由 rush 派发时只汇报，review 由 rush 统一派（rush 当派发方）。不要在派 review 之前提交或 `sync-context`。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
-- **直写路径**：汇报改了哪些路径、CODE-MAP 是否更新，然后 **派 review 子代理**（git 评审模板，不要走阶段路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。不要写 `reviews/`，不要说「对本阶段执行 review」，不要在派 review 之前提交或 `sync-context`，不要在本对话做评审。
+- **阶段路径**：用户直接调用时，完成后 **派 review 子代理**（按 `review/references/subagent-prompt.md` 阶段模板，带上改动路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。本对话不要做评审、不要读 reviews 正文。由 rush 派发时只汇报，review 由 rush 统一派（rush 当派发方）。不要在派 review 之前提交。未 review 通过前，不得开始依赖本阶段的后续阶段。不要在本技能里改业务代码之外的 review 结论。
+- **直写路径**：汇报改了哪些路径、CODE-MAP 及其它已有文档是否更新，然后 **派 review 子代理**（git 评审模板，不要走阶段路径；本对话当派发方，返回后执行 review 派发方第 6–7 步）。不要写 `reviews/`，不要说「对本阶段执行 review」，不要在派 review 之前提交，不要在本对话做评审。

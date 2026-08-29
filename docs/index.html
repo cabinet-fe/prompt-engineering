@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prompt Engineering · 面向 Agent 的技能包</title>
-<meta name="description" content="面向 Agent 的技能包：工程流程、语言/框架写法、角色规范、工具。让 Agent 不凭过时记忆写 API，不让上下文停在某一天。">
+<meta name="description" content="面向 Agent 的技能包：工程流程、语言/框架写法、角色规范、工具。让 Agent 不凭过时记忆写 API，不另建一层过时文档。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Patrick+Hand&family=Permanent+Marker&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
     <span class="marker-word">技能百宝袋</span>
     <svg class="title-squiggle" viewBox="0 0 420 24" aria-hidden="true"><path d="M8 14 C 70 6, 140 18, 210 12 C 280 6, 350 16, 412 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
   </h1>
-  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>22</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不让上下文停在某一天。</p>
+  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>22</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不另建一层过时文档。</p>
 
   <div class="install-box reveal">
     <span class="install-prompt">$</span>
@@ -85,8 +85,8 @@
 <!-- ================= 跑马灯分隔带 ================= -->
 <div class="ticker" aria-hidden="true">
   <div class="ticker-inner">
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-context ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-context ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
   </div>
 </div>
 
@@ -96,16 +96,16 @@
     <span class="hl">凭什么不一样</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 4, 110 16, 160 10 C 210 4, 260 14, 294 8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
-  <p class="section-sub reveal">项目一直在变，上下文却很容易停在某一天。这套技能包两头都管。</p>
+  <p class="section-sub reveal">项目一直在变，过时文档会让 Agent 幻觉。这套技能包管的是已有文档，不另建一层摘要。</p>
 
   <div class="card-row">
     <article class="hl-card wobble tilt-l reveal">
       <div class="hl-icon" aria-hidden="true">
         <svg viewBox="0 0 60 60"><path d="M30 8 C 14 8, 8 20, 10 32 C 12 46, 26 54, 38 50 C 50 46, 54 32, 48 20 C 44 12, 34 8, 26 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M30 22 L30 34 L40 38" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h3>上下文持续更新</h3>
-      <p><code>sync-context</code> 可以单独用，不用绑流程。人手改的、没走 review 直接改的——只要可能让上下文过时，当前对话就该跑它。按变更路径扫「影响文件」，命中哪句只改哪句。</p>
-      <p class="hl-tag">不整夹加载 · 不留噪点</p>
+      <h3>已有文档跟着代码走</h3>
+      <p>改动把 <code>CODE-MAP</code>、技能、包内 <code>AGENTS.md</code> 说错了，当场改那一份。没说错就不动。<code>sync-docs</code> 可以单独点名，但绝不新建蒸馏文件。</p>
+      <p class="hl-tag">只改已有的 · 禁止另建一层</p>
     </article>
 
     <article class="hl-card wobble tilt-r reveal">
@@ -121,9 +121,9 @@
       <div class="hl-icon" aria-hidden="true">
         <svg viewBox="0 0 60 60"><path d="M10 14 L50 12 L48 48 L12 50 Z M18 24 L42 22 M18 32 L40 31 M18 40 L34 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h3>按路径打开条目</h3>
-      <p>先 <code>spec-files.mjs query</code>，命中哪条读哪条。CONTEXT 和代码对得上，不用再纠结该信文档还是该信仓库。</p>
-      <p class="hl-tag">query 先行 · 命中才读</p>
+      <h3>cooking 用完即删</h3>
+      <p>进行中的功能写在 <code>cooking/</code>，完成后删掉。长期事实在代码和已有地图里，不把 spec 蒸馏成第二套语料。</p>
+      <p class="hl-tag">不留验收复印件</p>
     </article>
   </div>
 </section>
@@ -144,7 +144,7 @@
       <button class="pick-chip wobble-sm" data-pick="steps" role="tab">需求明确，想自己把关</button>
       <button class="pick-chip wobble-sm" data-pick="small" role="tab">改个 bug、加个字段</button>
       <button class="pick-chip wobble-sm" data-pick="review" role="tab">只想让人评一遍改动</button>
-      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完，上下文跟上</button>
+      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完，已有文档可能撒谎</button>
       <button class="pick-chip wobble-sm" data-pick="accept" role="tab">想给编码加层验收</button>
     </div>
 
@@ -179,8 +179,6 @@
       <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <button class="flow-node wobble-sm" data-flow="review"><span class="flow-emoji">🔍</span><span>review</span></button>
       <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="sync-context"><span class="flow-emoji">🔄</span><span>sync-context</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <button class="flow-node wobble-sm" data-flow="archive"><span class="flow-emoji">🗃️</span><span>archive</span></button>
     </div>
 
@@ -188,7 +186,7 @@
       <div class="tape" aria-hidden="true"></div>
       <p class="flow-note-title" id="flow-title">🧱 setup</p>
       <p class="flow-note-cmd"><code id="flow-cmd">setup</code></p>
-      <p class="flow-note-desc" id="flow-desc">每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、建 CONTEXT 索引、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。</p>
+      <p class="flow-note-desc" id="flow-desc">每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。</p>
     </div>
   </div>
 </section>
@@ -218,7 +216,7 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>仓库第一次接入；换栈、改分层、加删应用边界时再跑更新模式。</p>
-        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），建 <code>CONTEXT/index.md</code>，复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。</p>
+        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。不创建 CONTEXT。</p>
         <p><b>用法：</b><code>setup</code></p>
         <p><b>注意：</b>跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。其它工程技能 precheck FAIL 会停下让你 setup，不代跑。收尾会问要不要验收层，选了也只是提示你去调 <code>acceptance</code>。</p>
       </div>
@@ -266,7 +264,7 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>按阶段任务实现；或改个 bug、加个字段直接描述。</p>
-        <p><b>干什么：</b>一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。参数既不是 cooking 标识也不是 <code>P&lt;n&gt;</code> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。</p>
+        <p><b>干什么：</b>一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。本轮若把已有文档说错，当场改那一份。参数既不是 cooking 标识也不是 <code>P&lt;n&gt;</code> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。</p>
         <p><b>用法：</b><code>implement approval-batch-transfer P1</code> / <code>implement 把 UserCard 的头像换成懒加载</code></p>
         <p><b>注意：</b>参数为空会被当成阶段路径，只说「实现一下」不触发直写。对照 <code>SMELLS.md</code> 把本次引入的坏味道当场收掉，不扩到无关重构。改动等于换栈/加边界/改分层会停下来让你先 setup。</p>
       </div>
@@ -278,33 +276,33 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>阶段做完、或想让人评一遍现有改动（工作区 / 相对基点）。</p>
-        <p><b>干什么：</b>四条评审轴：Spec（仅阶段路径）、Standards（规范 + 坏味道基线）、规格影响（query 命中的 CONTEXT 条目有没有被 diff 推翻）、正确性（仅 git 路径）。</p>
+        <p><b>干什么：</b>评审轴：Spec（仅阶段路径）、Standards（规范 + CODE-MAP + 已有文档有没有被说错 + 坏味道基线）、正确性（仅 git 路径）。</p>
         <p><b>用法：</b><code>review</code> / <code>review main</code> / <code>review approval-batch-transfer P2</code></p>
-        <p><b>注意：</b>主会话只派发、只听结论，不读 diff；没有子代理工具就停止，不降级代评。通过后由派发方先 <code>sync-context</code> 再 <code>git-commit</code> auto（不 push）；不通过列出阻塞项，该阶段下游不许开工。</p>
+        <p><b>注意：</b>主会话只派发、只听结论，不读 diff；没有子代理工具就停止，不降级代评。通过后由派发方 <code>git-commit</code> auto（不 push）；不通过列出阻塞项，该阶段下游不许开工。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">sync-context</span>
-      <span class="skill-one">唯一不必点名：让 CONTEXT 跟上仓库</span>
+      <span class="skill-name">sync-docs</span>
+      <span class="skill-one">只改已被代码说错的已有文档</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>人手改的、或不走 review 直接改文件的——只要可能让上下文过时或出现尚未入库的能力，当前对话就该跑。走 implement / rush 时不用管，review 通过后派发方会跑。</p>
-        <p><b>干什么：</b>按 <code>spec-files.mjs query</code> 定位条目。命中就只改被推翻的那几句、更新「影响文件」、追加一行更新记录；未命中但构成新能力就按模板建条目。</p>
-        <p><b>用法：</b><code>sync-context</code> / <code>sync-context src/modules/approval</code></p>
-        <p><b>注意：</b>typo、格式这类琐碎改动直接结束。能力被整体推翻：整条删掉，连两级索引的对应行一起清——过时条目留着就是噪点。</p>
+        <p><b>何时用：</b>人手改的、或不走 implement 直接改文件，已有文档可能撒谎时点名。走 implement / rush 时不用管。</p>
+        <p><b>干什么：</b>对照当前代码，只改被说错的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md。没有被说错就结束。</p>
+        <p><b>用法：</b><code>sync-docs</code> / <code>sync-docs src/modules/approval</code></p>
+        <p><b>注意：</b>禁止新建文件，禁止蒸馏实现过程，禁止读写 CONTEXT。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">archive</span>
-      <span class="skill-one">把 cooking 蒸馏进 CONTEXT 并删掉</span>
+      <span class="skill-one">确认已有文档已对齐后删掉 cooking</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>功能完成：每个阶段都「实现：完成 + 评审：通过」。</p>
-        <p><b>干什么：</b>把 spec <b>蒸馏</b>成 CONTEXT 条目（术语、领域、影响哪些文件），丢掉验收标准、非目标、用户故事——长期文档不是验收清单的复印件。更新两级索引，然后删掉整个 cooking 目录。</p>
+        <p><b>干什么：</b>确认 CODE-MAP / 技能等已有文档没撒谎，然后删掉整个 cooking 目录。不蒸馏 spec，不另建长期文档。</p>
         <p><b>用法：</b><code>archive approval-batch-transfer</code></p>
-        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。</p>
+        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。文档仍说错则停止，不要补写蒸馏文件。</p>
       </div>
     </button>
 
@@ -316,7 +314,7 @@
         <p><b>何时用：</b>需求明确，想一次跑完整个功能。简单改动别用 rush，直接 implement 直写。</p>
         <p><b>干什么：</b>编排器，不是另一套流程。需求含糊时主代理亲自 explore；可并行阶段同时开 implement；某阶段一返回就立刻单独 review；不通过自动返工闭环，单阶段最多 3 轮。</p>
         <p><b>用法：</b><code>rush 审批单想支持批量转办</code> / <code>rush approval-batch-transfer</code>（继续推进）</p>
-        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后照样 sync 但不提交；archive 之后一次提交。架构级变更会停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
+        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后不提交；archive 之后一次提交。架构级变更会停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
       </div>
     </button>
 
@@ -502,14 +500,14 @@
       <h3 class="start-h">③ 目标仓库会多出什么</h3>
       <div class="cmd-block wobble-sm tree-block">
 <pre>.agents/
-├── docs/       PROJECT、CONTEXT 索引；
+├── docs/       PROJECT；
 │               代码类还有架构/规范/地图/坏味道
 ├── scripts/    precheck、spec-files
 └── cooking/    进行中的功能（gitignore，别提交）
 AGENTS.md       短索引，按需打开 docs，
                 禁止一次加载全部</pre>
       </div>
-      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。已完成能力进 <code>CONTEXT/</code>，靠 <code>sync-context</code> 跟着仓库改。</p>
+      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。cooking 完成后删掉，不另建蒸馏层。</p>
     </div>
   </div>
 </section>

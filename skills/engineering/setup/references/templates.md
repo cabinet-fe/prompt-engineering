@@ -97,8 +97,8 @@
 
 ## 明确禁止
 
-- 归档 CONTEXT 条目 / cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
-- 一次加载整个 `CONTEXT/`；按变更路径用 `spec-files.mjs query` 扫描归档条目定位相关上下文
+- cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
+- 为已完成改动另建 `.agents/docs/CONTEXT/` 或实现摘要
 - <其它本仓库不要做的事。没有则只保留上两条。>
 
 ```
@@ -109,7 +109,7 @@
 
 ## `.agents/docs/CODE-MAP.md`
 
-仅代码类。这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。何时改、改哪、何时停见 [code-map-update.md](code-map-update.md)。上下文→文件的反查不写在本文件：运行 `node .agents/scripts/spec-files.mjs query <变更路径...>`，脚本扫描归档条目的「影响文件」。
+仅代码类。这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。何时改、改哪、何时停见 [code-map-update.md](code-map-update.md)。已有文档对齐见 [persistent-docs.md](persistent-docs.md)。
 
 依赖图用 mermaid `graph TD`，模块作节点、依赖作边。
 
@@ -134,21 +134,3 @@
 
 <启动、请求/任务如何穿过模块。没有则删。>
 ~~~~
-
-## `.agents/docs/CONTEXT/index.md`
-
-各类都要有。首次只建空索引。archive 才会往里填。
-
-```markdown
-# CONTEXT 索引
-
-已归档的上下文。**先读本文件，再按需打开条目。禁止一次加载本目录全部文件。**
-
-按变更路径定位：运行 `node .agents/scripts/spec-files.mjs query <变更文件...>`。脚本扫描本目录已归档条目的「影响文件」（只匹配新增和修改）。禁止一次加载整个 CONTEXT。
-
-## 模块
-
-暂无。归档后在此增加：
-
-- [<模块>](<模块>/index.md) — <一句话>
-```

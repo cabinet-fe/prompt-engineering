@@ -2,7 +2,7 @@
 
 路径：`.agents/cooking/<feature>/spec.md`。只使用这些标题。
 
-「影响文件」格式与强规则见 [impact-files.md](../../sync-context/references/impact-files.md)。写完必须 `node .agents/scripts/spec-files.mjs parse <本文件>` 通过。
+「影响文件」格式与强规则见 [impact-files.md](impact-files.md)。写完必须 `node .agents/scripts/spec-files.mjs parse <本文件>` 通过。
 
 ```markdown
 # <标题>

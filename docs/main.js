@@ -34,15 +34,15 @@
     },
     small: {
       cmd: "implement 把 UserCard 的头像换成懒加载",
-      desc: "参数既不是 cooking 标识、也不是单独的 P<n> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。改完派 review 子代理，通过后先 sync-context 再 git-commit auto。"
+      desc: "参数既不是 cooking 标识、也不是单独的 P<n> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。说错的已有文档当场改。改完派 review 子代理，通过后 git-commit auto。"
     },
     review: {
       cmd: "review  /  review main  /  review <feature> P2",
-      desc: "只评不改，必须在子代理里评：主会话只派发、只听结论，不读 diff。四条评审轴：Spec、Standards、规格影响、正确性（仅 git 路径）。"
+      desc: "只评不改，必须在子代理里评：主会话只派发、只听结论，不读 diff。评审轴：Spec、Standards（含已有文档有没有被说错）、正确性（仅 git 路径）。"
     },
     sync: {
-      cmd: "sync-context src/modules/approval",
-      desc: "唯一不必点名的技能。按 spec-files.mjs query 定位条目：命中就只改被推翻的那几句；未命中但构成新能力就建条目；typo、格式这类琐碎改动直接结束。"
+      cmd: "sync-docs src/modules/approval",
+      desc: "未走 implement 时点名。只改已经被代码说错的已有文档；没有被说错就结束。禁止新建文件。"
     },
     accept: {
       cmd: "acceptance",
@@ -71,7 +71,7 @@
     setup: {
       title: "🧱 setup",
       cmd: "setup",
-      desc: "每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、建 CONTEXT 索引、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。"
+      desc: "每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。"
     },
     explore: {
       title: "🧭 explore",
@@ -91,22 +91,17 @@
     implement: {
       title: "🔨 implement",
       cmd: "implement approval-batch-transfer P1",
-      desc: "一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。参数既不是标识也不是 P<n> 时走直写：不碰 cooking，小 diff，对照 SMELLS.md 收掉本次引入的坏味道。"
+      desc: "一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。说错的已有文档当场改。参数既不是标识也不是 P<n> 时走直写：不碰 cooking，小 diff，对照 SMELLS.md 收掉本次引入的坏味道。"
     },
     review: {
       title: "🔍 review",
       cmd: "review approval-batch-transfer P2",
-      desc: "只评不改，必须在子代理里评。通过后由派发方先 sync-context 再 git-commit auto（本地提交，不 push）；不通过就把阻塞项列出来返工，再评一轮，该阶段下游不许开工。"
-    },
-    "sync-context": {
-      title: "🔄 sync-context",
-      cmd: "sync-context",
-      desc: "把已归档 CONTEXT 与仓库现状对齐。命中条目只改被推翻的句子；新能力建条目；能力被整体推翻就连索引一起清。review 通过后由派发方跑，也是唯一不必点名的技能。"
+      desc: "只评不改，必须在子代理里评。通过后由派发方 git-commit auto（本地提交，不 push）；不通过就把阻塞项列出来返工，再评一轮，该阶段下游不许开工。"
     },
     archive: {
       title: "🗃️ archive",
       cmd: "archive approval-batch-transfer",
-      desc: "要求每个阶段都「实现：完成 + 评审：通过」。把 spec 蒸馏成 CONTEXT 条目（术语、领域、影响哪些文件），丢掉验收清单，更新两级索引，然后删掉整个 cooking 目录。"
+      desc: "要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录，不蒸馏 spec。"
     }
   };
   const flowNote = document.getElementById("flow-note");

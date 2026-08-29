@@ -1,8 +1,8 @@
 # CODE-MAP 更新契约
 
-implement / review / sync-context / archive / setup 更新模式都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。
+implement / review / sync-docs / archive / setup 更新模式都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。
 
-只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接（按变更路径用 `spec-files.mjs query` 扫描归档条目）。
+只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接。
 
 ## 要改
 
@@ -16,7 +16,7 @@ implement / review / sync-context / archive / setup 更新模式都引用本文�
 ## 不要改
 
 - 模块内部新增文件、改实现、改测试
-- 只动 CONTEXT / cooking
+- 只动 cooking
 - 文件重命名但模块边界和入口都没变
 
 ## 谁来改
@@ -25,8 +25,8 @@ implement / review / sync-context / archive / setup 更新模式都引用本文�
 | --- | --- |
 | 首次生成；换栈/改分层/加应用边界/拆合包 | setup（可一并改 ARCHITECTURE + CODE-MAP） |
 | 本轮实现触及上面 1～6 | implement（阶段或直写） |
-| 同步上下文时发现路径或职责已被代码推翻 | sync-context |
-| 归档时地图明显过期 | archive 补相关行；若新目录等于新分层，停止并让用户先 setup |
+| 用户点名 sync-docs 且路径或职责已被代码推翻 | sync-docs |
+| 归档时地图明显过期 | 停止，列出要改的行，让 implement 修；若新目录等于新分层，让用户先 setup |
 
 全栈架构形态变化：setup 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步本文件。
 

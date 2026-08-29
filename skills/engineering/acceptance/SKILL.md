@@ -6,7 +6,7 @@ description: >
 
 # acceptance
 
-按目标仓 `.agents/docs/PROJECT.md` 类别提问，检索已有测试 / e2e / HTTP / 构建命令后再推荐，生成全局验收提示词和必要脚本，并记录本机能否跑。setup 不代跑本技能。禁止把本技能的问答写入 setup 的 `interview.md`。禁止无检索就指定工具。验收文件不是 precheck 必有项。禁止啰嗦和故作高深。CONTEXT 必须与仓库现状对齐。
+按目标仓 `.agents/docs/PROJECT.md` 类别提问，检索已有测试 / e2e / HTTP / 构建命令后再推荐，生成全局验收提示词和必要脚本，并记录本机能否跑。setup 不代跑本技能。禁止把本技能的问答写入 setup 的 `interview.md`。禁止无检索就指定工具。验收文件不是 precheck 必有项。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
 
 ## 前置检查
 

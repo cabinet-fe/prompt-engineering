@@ -8,7 +8,7 @@ description: >
 
 两条路径不混用。必须在子代理里评：主会话只派发、只听结论，不读 diff、不写 `reviews/`。不要因提到 review 相关词自动进入。
 
-执行方不提交、不 sync。通过后由派发方先 `sync-context` 再 `git-commit` auto。不通过、无改动：不 sync、不提交。`defer-commit`：仍 sync，不提交。
+执行方不提交。通过后由派发方 `git-commit` auto。不通过、无改动：不提交。`defer-commit`：不提交。不要派 `sync-docs`。
 
 ## 1. 执行身份
 
@@ -23,13 +23,13 @@ description: >
 4. 没有子代理工具：停止。不能在本对话降级代评。
 5. 结束后只转述：结论、阻塞项。
 6. 不通过或无改动：结束（由 rush 编排时，按 rush 规则自动进入 implement 返工修复闭环）。
-7. 通过：先按 [sync-context/SKILL.md](../sync-context/SKILL.md) 同步本次改动文件（派子代理；没有则亲自执行）。然后：
+7. 通过：
    - `defer-commit`：不提交。
-   - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、已被 sync-context 更新的 `CONTEXT/`）。不要 add `.agents/cooking/`。禁止 push。没有该技能则停止，不要另写提交流程。
+   - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`）。不要 add `.agents/cooking/`。不要 add `.agents/docs/CONTEXT/`。禁止 push。没有该技能则停止，不要另写提交流程。
 
 ## 2. 前置检查
 
-`node .agents/scripts/precheck.mjs`：FAIL 则停，提示 `setup`，不代跑。PASS 带类别；按根 AGENTS.md 按需读 docs。CODE-MAP 阻塞见 [code-map-update.md](../setup/references/code-map-update.md)。
+`node .agents/scripts/precheck.mjs`：FAIL 则停，提示 `setup`，不代跑。PASS 带类别；按根 AGENTS.md 按需读 docs。CODE-MAP 阻塞见 [code-map-update.md](../setup/references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](../setup/references/persistent-docs.md)。
 
 ## 3. 选路径
 
@@ -38,20 +38,15 @@ description: >
 - **阶段评审**：命中标识；或去掉标识后是单独的 `P<n>`。
 - **git 评审**：其余（含参数为空）。即使 cooking 有可评阶段也不自动去评。`git rev-parse` 能解析的参数当作比较基点。
 
-参数含 `defer-commit`：通过后仍 sync，不提交。执行方以任务书指定的路径为准。
+参数含 `defer-commit`：通过后不提交。执行方以任务书指定的路径为准。
 
-## 4. 规格检查
+## 4. 已有文档
 
-两条路径都做。只读，不改 CONTEXT、不代跑 `sync-context`。对照的是尚未同步的已归档条目。
+两条路径都做。只读，不改文档、不代跑 `sync-docs`。不要打开 `.agents/docs/CONTEXT/`。
 
-1. 改动路径：调用方传入的文件，否则 `git status --porcelain`、`git diff --name-only`、`git diff --cached --name-only` 的并集。忽略 `.agents/cooking/`。
-2. `node .agents/scripts/spec-files.mjs query <改动文件...>`。只匹配条目「影响文件」的新增和修改。
-3. 未命中：规格影响记「无命中」，不要打开归档条目。
-4. 命中：只打开命中条目。
-   - `parse` 失败 → 阻塞。
-   - 对照术语 / 领域：diff 推翻了已归档能力时，阶段路径下超出本阶段 spec/任务则阻塞；git 路径下改了与本次意图无关的已归档能力则阻塞。本阶段或本次意图内的演进不阻塞，记「通过后需 sync-context」。
-   - 「更新记录没有本次」、影响文件未覆盖本次路径、条目仍用旧章节名：不阻塞。
-5. 阶段路径额外：cooking `spec.md` 跑 `parse`；对照本阶段实际增删改，「新增/删除/修改」过时则阻塞。
+对照本次 diff：仓库内已有的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md 是否被说错。说错且未改 → 阻塞。没有被说错、或不存在对应文档 → 不阻塞。禁止因为「没有 CONTEXT 条目」而要求新建文件。
+
+阶段路径额外：cooking `spec.md` 跑 `parse`；对照本阶段实际增删改，「新增/删除/修改」过时则阻塞。
 
 ## 5. 评审轴
 
@@ -60,22 +55,21 @@ description: >
 
 | 轴        | 阶段                                        | git                                                         |
 | --------- | ------------------------------------------- | ----------------------------------------------------------- |
-| Spec      | `spec.md` + 该 `Pn.md` 完成标准；有无超范围 | 无                                                          |
+| Spec      | `spec.md` + 该 `Pn.md` 完成标准；有无超范围；「影响文件」覆盖本阶段实际改动 | 无                                                          |
 | Standards | 见下                                        | 见下                                                        |
-| 规格影响  | 第 4 节                                     | 第 4 节                                                     |
 | 正确性    | 无                                          | 改动是否自洽、有无明显 bug、是否与提交说明 / 本对话意图一致 |
 
 ### Standards
 
 文档：
 
-- 代码：只评 `DEV-STANDARDS.md`。diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 1～6 但 CODE-MAP 对应行没改 → 阻塞。
-- 非代码：对照 `PROJECT.md`。不虚构 DEV-STANDARDS，不要求 CODE-MAP。
+- 代码：只评 `DEV-STANDARDS.md`。diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 1～6 但 CODE-MAP 对应行没改 → 阻塞。已有技能 / 包内 AGENTS.md / ACCEPTANCE.md 被 diff 说错且未改 → 阻塞。
+- 非代码：对照 `PROJECT.md`。不虚构 DEV-STANDARDS，不要求 CODE-MAP。已有技能 / AGENTS.md / ACCEPTANCE.md 被说错且未改 → 阻塞。
 
 项目技能（仅代码）：
 
 - 遵循 Agent Skills 标准渐进式读取。
-- 不评 setup / explore / to-spec / to-tasks / implement / review / sync-context / archive / rush / git-commit。
+- 不评 setup / explore / to-spec / to-tasks / implement / review / sync-docs / archive / rush / git-commit。
 - 没有对应技能不阻塞。
 
 坏味道基线（仅代码，始终适用）：对照 `.agents/docs/SMELLS.md`。仓库已有标准覆盖它；启发式不阻塞；工具已查的跳过。

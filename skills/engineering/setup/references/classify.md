@@ -45,5 +45,5 @@
 
 读 `PROJECT.md` 的类别：
 
-- **非代码**：不写架构 / 规范 / 地图，进入 CONTEXT、cooking、脚本、覆写 `AGENTS.md`
+- **非代码**：不写架构 / 规范 / 地图，进入 cooking、脚本、覆写 `AGENTS.md`
 - **代码类**（前端项目 / 后端项目 / 前端库 / 后端库 / 全栈项目 / App / 嵌入式 / 游戏）：再走 [interview.md](interview.md)，写 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS
