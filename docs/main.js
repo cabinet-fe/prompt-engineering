@@ -101,7 +101,7 @@
     archive: {
       title: "🗃️ archive",
       cmd: "archive approval-batch-transfer",
-      desc: "要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录，不蒸馏 spec。"
+      desc: "要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录。"
     }
   };
   const flowNote = document.getElementById("flow-note");

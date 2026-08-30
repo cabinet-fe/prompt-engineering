@@ -25,7 +25,7 @@ description: >
 6. 不通过或无改动：结束（由 rush 编排时，按 rush 规则自动进入 implement 返工修复闭环）。
 7. 通过：
    - `defer-commit`：不提交。
-   - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`）。不要 add `.agents/cooking/`。不要 add `.agents/docs/CONTEXT/`。禁止 push。没有该技能则停止，不要另写提交流程。
+   - 否则走 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`）。不要 add `.agents/cooking/`。禁止 push。没有该技能则停止，不要另写提交流程。
 
 ## 2. 前置检查
 
@@ -42,9 +42,9 @@ description: >
 
 ## 4. 已有文档
 
-两条路径都做。只读，不改文档、不代跑 `sync-docs`。不要打开 `.agents/docs/CONTEXT/`。
+两条路径都做。只读，不改文档、不代跑 `sync-docs`。
 
-对照本次 diff：仓库内已有的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md 是否被说错。说错且未改 → 阻塞。没有被说错、或不存在对应文档 → 不阻塞。禁止因为「没有 CONTEXT 条目」而要求新建文件。
+对照本次 diff：仓库内已有的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md 是否被说错。说错且未改 → 阻塞。没有被说错、或不存在对应文档 → 不阻塞。
 
 阶段路径额外：cooking `spec.md` 跑 `parse`；对照本阶段实际增删改，「新增/删除/修改」过时则阻塞。
 

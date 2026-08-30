@@ -6,7 +6,7 @@ description: >
 
 # sync-docs
 
-只改**已经存在**的持久文档。禁止新建文件、禁止蒸馏实现过程。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
+只改**已经存在**的持久文档。禁止新建文件。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
 
 不由 review 自动触发。走 `implement` / `rush` 时文档对齐在实现当轮完成，review 只检查有没有漏。
 
@@ -32,13 +32,12 @@ description: >
 1. 代码类触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要打开 CODE-MAP。
 2. 技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md`、模块已有约定文档：说错才改。
 3. 架构级变化：停止，让用户跑 `setup` 更新 `ARCHITECTURE.md`。不要在这里改架构文档。
-4. 没有被说错的文档：结束。不要为了「有上下文」写任何新文件。
+4. 没有被说错的文档：结束。不要写任何新文件。
 5. 拿不准某份已有文档是否被推翻：使用 `交互式提问` 工具来问用户，不要猜。
 
 ## 禁止
 
 不写业务代码，不改 cooking，不代替 `setup` 更新 `ARCHITECTURE.md`。
-不新建、不更新、不删除 `.agents/docs/CONTEXT/`。旧目录若还在，当它不存在。
 
 ## 结束
 

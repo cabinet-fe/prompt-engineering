@@ -63,9 +63,6 @@ function parseImpactFiles(markdown, specPath) {
   let headingAt = -1;
   for (let i = 0; i < lines.length; i += 1) {
     const trimmed = lines[i].trim();
-    if (trimmed === '## 影响面') {
-      throw specError(specPath, i + 1, '章节已改名为「影响文件」，不要再用「影响面」');
-    }
     if (trimmed.startsWith('## ') && /^##\s+影响文件/.test(trimmed) && trimmed !== '## 影响文件') {
       throw specError(specPath, i + 1, '标题必须恰好是「## 影响文件」');
     }
@@ -102,9 +99,6 @@ function parseImpactFiles(markdown, specPath) {
   const buckets = { added, removed, modified };
 
   for (const { lineNo, text } of body) {
-    if (/^- (模块|新增模块|路径)：/.test(text)) {
-      throw specError(specPath, lineNo, '不要写模块 / 新增模块 / 路径；只写「- 新增|删除|修改：`路径`」');
-    }
     const match = text.match(ACTION_LINE);
     if (!match) {
       throw specError(specPath, lineNo, '每行必须是「- 新增|删除|修改：`路径`」，全角冒号，路径用反引号包裹');

@@ -6,7 +6,7 @@ description: >
 
 # archive
 
-不蒸馏 spec。cooking 只是进行中的工作区，完成后删掉。禁止另建 CONTEXT 或实现摘要。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
+cooking 只是进行中的工作区，完成后删掉。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
 
 ## 前置检查
 
@@ -34,7 +34,7 @@ description: >
 ## 工作流
 
 1. 定 `<feature>`。
-2. 对照本单位实际落地的代码：已有持久文档是否已对齐（见 [persistent-docs.md](../setup/references/persistent-docs.md)）。未对齐则停止，列出哪几份说错了，让用户先用 implement 修，不要在这里补写蒸馏文档。代码类地图明显过期、或新目录等于新分层：停止并让用户先 `setup` / implement 按契约改 CODE-MAP。非代码不要改 CODE-MAP。
+2. 对照本单位实际落地的代码：已有持久文档是否已对齐（见 [persistent-docs.md](../setup/references/persistent-docs.md)）。未对齐则停止，列出哪几份说错了，让用户先用 implement 修，不要在这里另写文档。代码类地图明显过期、或新目录等于新分层：停止并让用户先 `setup` / implement 按契约改 CODE-MAP。非代码不要改 CODE-MAP。
 3. 删除整个 `.agents/cooking/<feature>/`（含 goal、spec、tasks、reviews）。
 
 ## 结束

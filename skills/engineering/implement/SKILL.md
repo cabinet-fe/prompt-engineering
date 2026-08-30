@@ -6,7 +6,7 @@ description: >
 
 # implement
 
-不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
+不要因用户提到「实现 / 开发」就自动进入阶段路径。两条路径，不要混用。不改 spec、不拆新阶段。架构级变更不要在这里改 `ARCHITECTURE.md`，让用户先跑 `setup` 更新。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
 
 ## 前置检查
 
@@ -39,12 +39,12 @@ description: >
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准。若为返工（`Pn.md` 评审为 `不通过` 或存在 `reviews/Pn.md`）：同时读取 `reviews/Pn.md` 中的「阻塞项」，针对阻塞项进行修复。代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。代码类需要定位模块/路径时，按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。不要打开 `.agents/docs/CONTEXT/`。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准。若为返工（`Pn.md` 评审为 `不通过` 或存在 `reviews/Pn.md`）：同时读取 `reviews/Pn.md` 中的「阻塞项」，针对阻塞项进行修复。代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。代码类需要定位模块/路径时，按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。
 2. 把该阶段「实现」改为 `进行中`。
 3. 只做清单项。小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。
 4. 若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
 5. 勾选已完成的清单项。
-6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份。没说错则不动。禁止新建蒸馏文档。
+6. 代码类且触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份。没说错则不动。
 7. 「实现」改为 `完成`。「评审」保持 `未开始`（或从 `不通过` 改回 `未开始` 若这是返工）。
 
 ## 直写路径
@@ -52,9 +52,9 @@ description: >
 不读 spec/tasks，不创建、不修改任何 cooking 文件，不勾任务。不受某单位 `goal.md` 未确认挡住。
 
 1. 只做用户这段实现内容，不要扩大范围。
-2. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。不要打开 `.agents/docs/CONTEXT/`。
+2. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；非代码对照 `PROJECT.md`。代码类需要定位模块时检索 `CODE-MAP.md` 相关行，不要全文加载。
 3. 小 diff。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不要扩到与本次无关的重构。若改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`。
-4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把已有持久文档说错：当场改那一份。禁止新建蒸馏文档。
+4. 代码类且触及 CODE-MAP 要改项：只改相关行。非代码不要改 CODE-MAP。本轮若把已有持久文档说错：当场改那一份。
 
 ## 结束
 

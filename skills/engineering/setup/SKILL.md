@@ -6,7 +6,7 @@ description: >
 
 # setup
 
-每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份，禁止另建蒸馏文档。
+每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
 
 项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。
 
@@ -39,7 +39,6 @@ description: >
 - `.gitignore` 追加 `.agents/cooking/`（已有则跳过）
 - 若 `.gitignore` 忽略了整个 `.agents/`：改成只忽略 cooking，`.agents/docs/` 和 `.agents/scripts/` 必须能提交
 - 模板见 [templates.md](references/templates.md)
-- 不要创建 `.agents/docs/CONTEXT/`。旧仓库若已有该目录，不要读、不要改、不要删。
 
 ### 3. 分类，写 PROJECT.md
 
@@ -70,7 +69,7 @@ description: >
 | `CODE-MAP.md`      | 扫真实目录；模块怎么切拿不准才问                                             | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
 | `SMELLS.md`        | 从 [smells.md](references/smells.md) **原样复制**；已有则覆写为当前模板      | 同左。禁止按项目改写、追加或删条                             |
 
-不要创建或改写 `.agents/docs/CONTEXT/`。CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。全栈架构形态变化时同步更新 `PROJECT.md` + `ARCHITECTURE.md` + `CODE-MAP.md`。
+CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。全栈架构形态变化时同步更新 `PROJECT.md` + `ARCHITECTURE.md` + `CODE-MAP.md`。
 
 ### 6. 汇报
 
@@ -95,5 +94,5 @@ docs 已存在、用户要刷新，或架构大变时：
 | `.agents/docs/SMELLS.md` 缺失或与 [smells.md](references/smells.md) 不一致     | 从技能包模板原样覆写                                                                         |
 | `AGENTS.md` 又变长了或掺了短注                                                | 按当前类别模板覆写                                                                           |
 
-禁止：删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`、新建或改写 `.agents/docs/CONTEXT/`。
+禁止：删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。
 正常结束后执行上文验收保障询问。

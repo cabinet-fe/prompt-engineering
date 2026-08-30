@@ -104,7 +104,7 @@
         <svg viewBox="0 0 60 60"><path d="M30 8 C 14 8, 8 20, 10 32 C 12 46, 26 54, 38 50 C 50 46, 54 32, 48 20 C 44 12, 34 8, 26 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M30 22 L30 34 L40 38" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <h3>已有文档跟着代码走</h3>
-      <p>改动把 <code>CODE-MAP</code>、技能、包内 <code>AGENTS.md</code> 说错了，当场改那一份。没说错就不动。<code>sync-docs</code> 可以单独点名，但绝不新建蒸馏文件。</p>
+      <p>改动把 <code>CODE-MAP</code>、技能、包内 <code>AGENTS.md</code> 说错了，当场改那一份。没说错就不动。<code>sync-docs</code> 可以单独点名，只改已有文档。</p>
       <p class="hl-tag">只改已有的 · 禁止另建一层</p>
     </article>
 
@@ -122,7 +122,7 @@
         <svg viewBox="0 0 60 60"><path d="M10 14 L50 12 L48 48 L12 50 Z M18 24 L42 22 M18 32 L40 31 M18 40 L34 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <h3>cooking 用完即删</h3>
-      <p>进行中的功能写在 <code>cooking/</code>，完成后删掉。长期事实在代码和已有地图里，不把 spec 蒸馏成第二套语料。</p>
+      <p>进行中的功能写在 <code>cooking/</code>，完成后删掉。长期事实在代码和已有地图里。</p>
       <p class="hl-tag">不留验收复印件</p>
     </article>
   </div>
@@ -216,7 +216,7 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>仓库第一次接入；换栈、改分层、加删应用边界时再跑更新模式。</p>
-        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。不创建 CONTEXT。</p>
+        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。</p>
         <p><b>用法：</b><code>setup</code></p>
         <p><b>注意：</b>跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。其它工程技能 precheck FAIL 会停下让你 setup，不代跑。收尾会问要不要验收层，选了也只是提示你去调 <code>acceptance</code>。</p>
       </div>
@@ -290,7 +290,7 @@
         <p><b>何时用：</b>人手改的、或不走 implement 直接改文件，已有文档可能撒谎时点名。走 implement / rush 时不用管。</p>
         <p><b>干什么：</b>对照当前代码，只改被说错的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md。没有被说错就结束。</p>
         <p><b>用法：</b><code>sync-docs</code> / <code>sync-docs src/modules/approval</code></p>
-        <p><b>注意：</b>禁止新建文件，禁止蒸馏实现过程，禁止读写 CONTEXT。</p>
+        <p><b>注意：</b>禁止新建文件。只改已经存在、被代码说错的文档。</p>
       </div>
     </button>
 
@@ -300,9 +300,9 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>功能完成：每个阶段都「实现：完成 + 评审：通过」。</p>
-        <p><b>干什么：</b>确认 CODE-MAP / 技能等已有文档没撒谎，然后删掉整个 cooking 目录。不蒸馏 spec，不另建长期文档。</p>
+        <p><b>干什么：</b>确认 CODE-MAP / 技能等已有文档没撒谎，然后删掉整个 cooking 目录。</p>
         <p><b>用法：</b><code>archive approval-batch-transfer</code></p>
-        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。文档仍说错则停止，不要补写蒸馏文件。</p>
+        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。文档仍说错则停止，不要另写一份来补。</p>
       </div>
     </button>
 
@@ -507,7 +507,7 @@
 AGENTS.md       短索引，按需打开 docs，
                 禁止一次加载全部</pre>
       </div>
-      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。cooking 完成后删掉，不另建蒸馏层。</p>
+      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。cooking 完成后删掉。</p>
     </div>
   </div>
 </section>

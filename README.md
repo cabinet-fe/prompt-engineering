@@ -6,9 +6,9 @@
 
 ## 亮点：已有文档跟着代码走
 
-项目会变，过时文档会让 Agent 幻觉。解法是**改已经被代码说错的那份文档**，不是再蒸馏一层实现摘要。
+项目会变，过时文档会让 Agent 幻觉。解法是**改已经被代码说错的那份文档**。
 
-- **实现当轮对齐。** `CODE-MAP.md`、技能、包内 `AGENTS.md`、`ACCEPTANCE.md` 被这次改动说错，就当场改那一份。没说错就不动。禁止为「有上下文」新建文件。
+- **实现当轮对齐。** `CODE-MAP.md`、技能、包内 `AGENTS.md`、`ACCEPTANCE.md` 被这次改动说错，就当场改那一份。没说错就不动。
 - **cooking 用完即删。** 进行中的功能写在 `cooking/`；`archive` 确认已有文档已对齐后删掉该目录，不把 spec 留成长期文档。
 - **`sync-docs` 可单独用。** 不绑在 cooking 上。人手改、或不走 implement 的直接改文件，点名即可。只改已有文档，绝不新建。走 `implement` / `rush` 时不必再跑一遍——review 只检查有没有漏。
 
@@ -53,7 +53,7 @@ npx skills add cabinet-fe/prompt-engineering -g
 setup
 ```
 
-访谈后分类，写 `PROJECT.md`、（代码类还有）`ARCHITECTURE.md` / `DEV-STANDARDS.md` / `CODE-MAP.md` / `SMELLS.md`、复制 `.agents/scripts/`、覆写根 `AGENTS.md`、把 `.agents/cooking/` 加进 `.gitignore`。跑完 `node .agents/scripts/precheck.mjs` 应为 PASS。不创建 `CONTEXT/`。
+访谈后分类，写 `PROJECT.md`、（代码类还有）`ARCHITECTURE.md` / `DEV-STANDARDS.md` / `CODE-MAP.md` / `SMELLS.md`、复制 `.agents/scripts/`、覆写根 `AGENTS.md`、把 `.agents/cooking/` 加进 `.gitignore`。跑完 `node .agents/scripts/precheck.mjs` 应为 PASS。
 
 其它工程技能都会先跑 precheck，FAIL 就停下让你 `setup`，不代跑。换栈、改分层、加删应用边界这类架构级变化，再 `setup` 走更新模式。结束时它会问要不要加一层验收保障，选了也只是提示你去调 `acceptance`，不代跑。
 
@@ -75,7 +75,7 @@ archive approval-batch-transfer
 - **to-tasks** 拆 `tasks/P1.md`、`P2.md`…。`Pn` 是阶段 id，不是必须串行的序号；前置为「无」的阶段一上来就能并行。
 - **implement** 一次只做一个未阻塞阶段，做完在同一对话派 review 子代理，不自己评、不提交。
 - **review** 通过后，派发方 `git-commit` auto（本地提交，不 push）；不通过就把阻塞项列出来，用 `implement <feature> <Pn>` 针对 `reviews/Pn.md` 的阻塞项返工，再评一轮。已有文档被说错且未改会阻塞。
-- **archive** 要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录，不蒸馏 spec。
+- **archive** 要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录。
 
 需求本来就明确的话跳过 explore，直接从 `to-spec` 起步；没有 `goal.md` 也能写 spec。
 
@@ -106,7 +106,7 @@ implement 把 UserCard 的头像换成懒加载，占位用 skeleton
 参数既不是 cooking 标识、也不是单独的 `P<n>` 时走直写：不读 spec/tasks，不创建也不修改任何 cooking 文件，不勾任务，也不会被某个单位的「未确认」挡住。
 
 - 只做你说的这段，小 diff；对照 `SMELLS.md` 把本次引入的坏味道当场收掉，不扩到无关重构。
-- 本轮若把 `CODE-MAP.md` / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` 说错，当场改那一份；没说错则不动。不要打开 `CONTEXT/`。
+- 本轮若把 `CODE-MAP.md` / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` 说错，当场改那一份；没说错则不动。
 - 改完派 review 子代理（git 评审模板），通过后同一对话 `git-commit` auto。
 - 参数为空会被当成**阶段路径**，所以只说「实现一下」不会触发直写，得把实现内容说出来。
 - 改动等于换栈 / 加一条应用边界 / 改分层：停止编码，让你先 `setup` 更新 `ARCHITECTURE.md`，不会只偷偷改 CODE-MAP。
@@ -136,7 +136,7 @@ sync-docs src/modules/approval src/api/approval.ts
 未走 implement 时点名即可。走 `implement` / `rush` 时不用管，文档对齐在实现当轮完成。
 
 - 只改已经被代码说错的已有文档（CODE-MAP、技能、包内 AGENTS.md、ACCEPTANCE.md）。没有被说错就结束。
-- 禁止新建文件，禁止蒸馏实现过程，禁止读写 `CONTEXT/`。
+- 禁止新建文件。
 - 不写业务代码、不改 cooking、不代替 `setup` 改 `ARCHITECTURE.md`；发现架构级变化会停下来。
 
 ### 6. 给编码加一层验收：acceptance
@@ -242,7 +242,7 @@ AGENTS.md          短索引，按需打开 docs，禁止一次加载全部
 
 跑过 `acceptance` 还会多出 `.agents/docs/ACCEPTANCE.md` 和可选的 `.agents/docs/acceptance/`。
 
-cooking 完成后删掉。长期事实在代码和已有地图 / 技能里，不另建蒸馏层。
+cooking 完成后删掉。长期事实在代码和已有地图 / 技能里。
 
 ## License
 

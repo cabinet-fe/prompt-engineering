@@ -22,7 +22,7 @@ const ROOT_AGENTS_LINES = {
     '| `.agents/docs/DEV-STANDARDS.md` | 写代码、做 review | 仅 setup：规范或偏好变了 |',
     '| `.agents/docs/SMELLS.md` | 写代码时按坏味道边写边收；review 对照 | 仅 setup：技能包模板变了 |',
     '| `.agents/docs/CODE-MAP.md` | 定位模块；按模块/路径检索，禁止全文加载 | implement / sync-docs：模块表增删行，或某模块路径、入口、职责、依赖边变了。只改相关行。架构级变化先 setup 改 ARCHITECTURE，再由 setup 同步本文件。模块内部加文件不算。 |',
-    '| 已有技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` | 被本次改动说错时读并当场改那一份 | implement 或 `sync-docs`。禁止另建蒸馏文档 |',
+    '| 已有技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` | 被本次改动说错时读并当场改那一份 | implement 或 `sync-docs` |',
   ],
   非代码: [
     '# AGENTS',
@@ -31,7 +31,7 @@ const ROOT_AGENTS_LINES = {
     '| 文件 | 何时读 | 何时更新 |',
     '| --- | --- | --- |',
     '| `.agents/docs/PROJECT.md` | 需要知道项目类别与仓库结构 | 仅 setup：类别、组织结构变了 |',
-    '| 已有技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` | 被本次改动说错时读并当场改那一份 | implement 或 `sync-docs`。禁止另建蒸馏文档 |',
+    '| 已有技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` | 被本次改动说错时读并当场改那一份 | implement 或 `sync-docs` |',
   ],
 };
 
