@@ -4,10 +4,10 @@
 
 ## 根目录 `AGENTS.md`
 
-按类别**原样复制**对应模板，禁止追加短注、流程章、项目特例。不要把规范全文、技术栈清单、目录树塞进来。
+按类别用 shell 从 `.agents/scripts/` 复制对应模板文件（setup 第 2 步已把它们连同脚本一起复制过去），禁止追加短注、流程章、项目特例。不要把规范全文、技术栈清单、目录树塞进来。precheck 运行时读同一份模板做比对。
 
-- 代码类：[root-agents-code.md](root-agents-code.md)
-- 非代码：[root-agents-non-code.md](root-agents-non-code.md)
+- 代码类：[root-agents-code.md](../scripts/root-agents-code.md)
+- 非代码：[root-agents-non-code.md](../scripts/root-agents-non-code.md)
 
 ## `.agents/docs/PROJECT.md`
 

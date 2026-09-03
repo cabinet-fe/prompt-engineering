@@ -266,7 +266,7 @@
         <p><b>何时用：</b>按阶段任务实现；或改个 bug、加个字段直接描述。</p>
         <p><b>干什么：</b>一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。本轮若把已有文档说错，当场改那一份。参数既不是 cooking 标识也不是 <code>P&lt;n&gt;</code> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。</p>
         <p><b>用法：</b><code>implement approval-batch-transfer P1</code> / <code>implement 把 UserCard 的头像换成懒加载</code></p>
-        <p><b>注意：</b>参数为空会被当成阶段路径，只说「实现一下」不触发直写。对照 <code>SMELLS.md</code> 把本次引入的坏味道当场收掉，不扩到无关重构。改动等于换栈/加边界/改分层会停下来让你先 setup。</p>
+        <p><b>注意：</b>参数为空会先问你：做哪个 cooking 阶段，还是直写。对照 <code>SMELLS.md</code> 把本次引入的坏味道当场收掉，不扩到无关重构；仓库已有 lint / typecheck / 测试就跑一遍，不过不算完成。改动等于换栈/加边界/改分层会停下来让你先 setup。</p>
       </div>
     </button>
 
@@ -312,9 +312,9 @@
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>需求明确，想一次跑完整个功能。简单改动别用 rush，直接 implement 直写。</p>
-        <p><b>干什么：</b>编排器，不是另一套流程。需求含糊时主代理亲自 explore；可并行阶段同时开 implement；某阶段一返回就立刻单独 review；不通过自动返工闭环，单阶段最多 3 轮。</p>
+        <p><b>干什么：</b>编排器，不是另一套流程。需求含糊时主代理亲自 explore，确认后建议你新开会话再 rush；可并行阶段同时开 implement；某阶段一返回就立刻单独 review；不通过自动返工闭环，单阶段最多 3 轮。</p>
         <p><b>用法：</b><code>rush 审批单想支持批量转办</code> / <code>rush approval-batch-transfer</code>（继续推进）</p>
-        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后不提交；archive 之后一次提交。架构级变更会停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
+        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后不提交；archive 之后一次提交。spec 判出架构级变更会在开工前停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
       </div>
     </button>
 
@@ -502,7 +502,8 @@
 <pre>.agents/
 ├── docs/       PROJECT；
 │               代码类还有架构/规范/地图/坏味道
-├── scripts/    precheck、spec-files
+├── scripts/    precheck、spec-files、cooking
+│               与根 AGENTS 模板
 └── cooking/    进行中的功能（gitignore，别提交）
 AGENTS.md       短索引，按需打开 docs，
                 禁止一次加载全部</pre>

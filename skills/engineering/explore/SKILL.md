@@ -6,23 +6,23 @@ description: >
 
 # explore
 
-需求已经明确时不要用本技能，让用户显式调用 `to-spec`。也可改一个尚未归档单位的需求。不写 spec、不改代码。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
+需求已经明确时不要用本技能，让用户显式调用 `to-spec`。也可改一个尚未归档单位的需求。不写 spec、不改代码。禁止啰嗦和故作高深。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`，不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。
+本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。
 
 ## 统一工具定义
 
-- `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等.
+- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
 
 ## 单位
 
-一次只做一个 `cooking/<feature>/`。其它单位未完成也可以新开。
+一次只做一个 `cooking/<feature>/`。其它单位未完成也可以新开。用户一次说了多件不相关的事：问清本次是哪一件。
 
-新开或改范围：只读其它未归档单位的 `goal.md` 做冲突检查（没有 goal 则只看 `spec.md` 标题）。冲突未解决不新建。用户一次说了多件不相关的事：问清本次是哪一件。
+**新开或扩范围**：先只读其它未归档单位的 `goal.md` 做冲突检查（没有 goal 则只看 `spec.md` 标题）。冲突未解决不新建。
 
-改**同一个**已有 `spec.md` 或 `tasks/` 的单位（不是新开）：立刻把该 goal 的确认改为 `未确认`；问补充 / 改写 / 取消。取消则改回 `已确认`，下游不动。确认新目标后：把各 `tasks/P*.md` 的「状态」抄进纪要，删除该单位的 spec/tasks/reviews，不回滚代码。其它 cooking 单位一律不要动。
+**改已有单位**（该单位已有 `已确认` 的 `goal.md`，或已有 `spec.md` / `tasks/`）：立刻把 `goal.md` 的确认改为 `未确认`（没有 `goal.md` 则按模板新建）；问用户是补充、改写还是取消。取消：`goal.md` 恢复到介入前的状态（原本没有就删掉），下游不动。确认新目标后：有 `tasks/` 则把 `node .agents/scripts/cooking.mjs status <feature>` 的输出抄进对话纪要，删除该单位的 `spec.md`、`tasks/`、`reviews/`，不回滚代码。其它 cooking 单位一律不动。
 
 ## 决策树
 
@@ -42,3 +42,5 @@ description: >
 ## 退出
 
 「未决问题」清零才停：没有默许的假设。把「需求目标 + 范围」交给用户确认后，才写 `确认：已确认`。未确认前每轮按 [goal-template.md](references/goal-template.md) 回写，不得增删标题。对话纪要只写已钉死结论，禁止复述问答、禁止复制决策树。
+
+写下 `已确认` 后结束语只说一件事：建议用户新开会话再 `to-spec <feature>` 或 `rush <feature>`。多轮问答已占用本对话上下文，不在这里接着写 spec 或派下游。

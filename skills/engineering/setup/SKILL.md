@@ -6,13 +6,13 @@ description: >
 
 # setup
 
-每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
+每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。
 
 项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。
 
 ## 统一工具定义
 
-- `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等.
+- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
 
 ## 完成判定
 
@@ -35,7 +35,7 @@ description: >
 ### 2. 目录与 gitignore
 
 - 创建 `.agents/docs/`、`.agents/cooking/`（空目录即可，不要写 README）
-- 创建 `.agents/scripts/`，把 `<engineering>/setup/scripts/` **整目录**复制到 `.agents/scripts/`（`<engineering>` = 本技能包目录）
+- 创建 `.agents/scripts/`，把 `<engineering>/setup/scripts/` **整目录**复制到 `.agents/scripts/`（`<engineering>` = 本技能包目录）。里面有 precheck / spec-files / cooking 三个脚本和两份根 AGENTS 模板，precheck 运行时读同目录模板，缺一不可
 - `.gitignore` 追加 `.agents/cooking/`（已有则跳过）
 - 若 `.gitignore` 忽略了整个 `.agents/`：改成只忽略 cooking，`.agents/docs/` 和 `.agents/scripts/` 必须能提交
 - 模板见 [templates.md](references/templates.md)
@@ -48,11 +48,11 @@ description: >
 
 ### 4. 覆写根 `AGENTS.md`
 
-按类别从 [root-agents-code.md](references/root-agents-code.md) 或 [root-agents-non-code.md](references/root-agents-non-code.md) **原样复制**。禁止追加短注、流程章、项目特例。
+按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打，禁止追加短注、流程章、项目特例。
 
-- **没有**：按模板新建
-- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；能对应上的原文尽量搬迁。然后覆写为对应模板
-- **已有且已是索引**：仍按当前类别模板覆写，不要保留旧短注
+- **没有**：直接复制
+- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；能对应上的原文尽量搬迁。然后复制覆写
+- **已有且已是索引**：仍按当前类别模板复制覆写，不要保留旧短注
 
 用户全局规则（例如个人 `AGENTS.md`）不要复制进本仓库 docs。
 
@@ -89,7 +89,7 @@ docs 已存在、用户要刷新，或架构大变时：
 | 换技术栈、加/删应用边界、改分层、拆/合包                                      | 更新 `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                                 |
 | 全栈架构形态                                                                  | 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                  |
 | 触及 [code-map-update.md](references/code-map-update.md) 的要改项、但架构没变 | 只更新 `CODE-MAP.md`（implement 也会做）                                                     |
-| `.agents/scripts/` 缺失任一脚本或与技能包不一致                               | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
+| `.agents/scripts/` 缺失任一脚本 / 模板或与技能包不一致                        | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
 | 规范/偏好变了                                                                 | 更新 `DEV-STANDARDS.md`                                                                      |
 | `.agents/docs/SMELLS.md` 缺失或与 [smells.md](references/smells.md) 不一致     | 从技能包模板原样覆写                                                                         |
 | `AGENTS.md` 又变长了或掺了短注                                                | 按当前类别模板覆写                                                                           |

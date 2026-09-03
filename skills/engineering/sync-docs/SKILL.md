@@ -6,17 +6,17 @@ description: >
 
 # sync-docs
 
-只改**已经存在**的持久文档。禁止新建文件。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。禁止啰嗦和故作高深。改动推翻了已有持久文档时当场改那一份。
+只改**已经存在**的持久文档。禁止新建文件。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。禁止啰嗦和故作高深。
 
 不由 review 自动触发。走 `implement` / `rush` 时文档对齐在实现当轮完成，review 只检查有没有漏。
 
 ## 前置检查
 
-运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，按输出提示用户执行 `setup`（只缺脚本类缺失项时走 `setup` 更新模式），不要代跑。PASS 输出携带项目类别；按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
+本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`（只缺脚本时走 `setup` 更新模式），不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 统一工具定义
 
-- `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等.
+- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
 
 ## 输入
 
