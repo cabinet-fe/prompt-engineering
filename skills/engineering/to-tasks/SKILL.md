@@ -14,14 +14,15 @@ description: >
 
 ## 参数
 
-标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。列出已有标识时只枚举子目录名，不要读目录正文。
+标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。已有标识用 `node .agents/scripts/cooking.mjs status`（不带标识）列出：每个单位一行，带「下一步」；不 ls、不读目录正文。
 
 - **命中标识**：拆该单位。
-- **参数为空**：有 spec 的 cooking 0 个则停止，告诉用户先 `to-spec`；1 个则用它；多个则问。
+- **参数为空**：有 spec 的 cooking（总览「下一步」不是 to-spec / explore 的）0 个则停止，告诉用户先 `to-spec`；1 个则用它；多个则问。
 - **未命中且参数非空**：列出已有标识，停止。不要把句子当成新需求去拆。
 
-无 `spec.md`：停止，告诉用户先执行 `to-spec`。
-该单位已有 `goal.md` 且确认是 `未确认`：停止，正在 explore，不要按可能过期的 spec 拆任务。
+运行 `node .agents/scripts/cooking.mjs status <feature>`，不读 `goal.md` 判断：
+`spec.md：无` → 停止，告诉用户先执行 `to-spec`。
+`goal.md：未确认` → 停止，正在 explore，不要按可能过期的 spec 拆任务。
 `spec.md`「架构影响」非 `无`：检索 `ARCHITECTURE.md` / `CODE-MAP.md` 是否已收录这些路径（标「规划」的也算）；未收录则停止，让用户先跑 `setup` 更新模式再回来拆。不在这里改架构文档。
 
 ## 阶段怎么切

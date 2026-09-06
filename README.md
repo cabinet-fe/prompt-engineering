@@ -111,7 +111,7 @@ setup（可选 acceptance）
 | `archive` | 确认已有文档已对齐后删掉该 feature 的 cooking 目录 |
 | `rush` | 编排整条链；简单改动不要用 |
 
-工程技能发现仓库还没 `setup` 会停，不代跑。前置检查是 `node .agents/scripts/precheck.mjs`，需要本机有 Node；同一对话只跑一次，子代理沿用主对话的结果。阶段状态由 `node .agents/scripts/cooking.mjs` 读写，不由模型手改。
+工程技能发现仓库还没 `setup` 会停，不代跑。前置检查是 `node .agents/scripts/precheck.mjs`，需要本机有 Node；同一对话只跑一次，子代理沿用主对话的结果。阶段状态由 `node .agents/scripts/cooking.mjs` 读写，不由模型手改。做到一半停掉、下次续做：`cooking.mjs status`（带或不带标识）直接给出每个单位的「下一步」和各阶段状态，技能按它接着跑，不逐个读 goal / spec / tasks / reviews。
 
 ### 语言 / 框架
 

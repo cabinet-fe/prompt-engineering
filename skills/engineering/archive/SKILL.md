@@ -14,7 +14,7 @@ cooking 只是进行中的工作区，完成后删掉。禁止啰嗦和故作高
 
 ## 参数
 
-标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。列出已有标识时只枚举子目录名，不要读目录正文。
+标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。已有标识用 `node .agents/scripts/cooking.mjs status`（不带标识）列出，不 ls、不读目录正文。
 
 - **命中标识**：归档该单位。
 - **参数为空**：cooking 0 个则停止；1 个则用它；多个则问。
@@ -22,12 +22,12 @@ cooking 只是进行中的工作区，完成后删掉。禁止啰嗦和故作高
 
 ## 完成才可归档
 
-同时满足：
+只看 `node .agents/scripts/cooking.mjs status <feature>` 的输出判断，不读 `goal.md`、各 `Pn.md`、`reviews/`。须同时满足：
 
-- `spec.md` 存在
-- 若有 `goal.md`，确认不是 `未确认`
-- `node .agents/scripts/cooking.mjs status <feature>` 输出「可归档：是」（每个 Pn 实现完成且评审通过）；不读各 `Pn.md` 判断
-- 每个 Pn 都有 `reviews/Pn.md` 且结论为通过
+- `spec.md：有`
+- `goal.md` 不是 `未确认`
+- `可归档：是`（每个 Pn 实现完成且评审通过）
+- `评审文件：一致`（每个已评审的 Pn 都有 `reviews/Pn.md` 且「结论」与状态一致）
 
 否则列出缺什么，停止。用户坚持归档：「可归档：否」则拒绝；只缺其它项时警告后可删。
 

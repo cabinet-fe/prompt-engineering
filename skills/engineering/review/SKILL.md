@@ -18,7 +18,7 @@ description: >
 派发方只做：
 
 1. 做第 2 节前置检查。
-2. 只凭参数判定路径（第 3 节）、标识、`Pn`、`defer-commit`、git 基点。阶段路径定 `Pn`：调用方指定了就用它；未指定则运行 `node .agents/scripts/cooking.mjs status <feature>`，取「待评审」行的阶段，多个则问用户，没有则停止；不读各 `P*.md`。只给了 `P<n>` 未给标识：含该阶段的单位 0 个则停，1 个则用，多个则问。
+2. 只凭参数判定路径（第 3 节）、标识、`Pn`、`defer-commit`、git 基点。阶段路径定 `Pn`：调用方指定了就用它；未指定则运行 `node .agents/scripts/cooking.mjs status <feature>`，取「待评审」行的阶段，多个则问用户，没有则停止；不读各 `P*.md`。只给了 `P<n>` 未给标识：看 `node .agents/scripts/cooking.mjs status`（不带标识）总览里哪些单位列出了该阶段，0 个则停，1 个则用，多个则问；不 ls、不读目录正文。
 3. 按 [subagent-prompt.md](references/subagent-prompt.md) 填任务书并启动。不要把本对话过程写进任务书。
 4. 没有子代理工具：停止，不能在本对话降级代评。
 5. 子代理返回后只转述：结论、阻塞项。
@@ -68,7 +68,7 @@ description: >
 
 ## 6. 阶段评审
 
-`goal.md` 确认是 `未确认`：停止，正在 explore。
+`node .agents/scripts/cooking.mjs status <feature>` 输出 `goal.md：未确认`：停止，正在 explore。不读 `goal.md` 判断。
 
 1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件；做第 4、5 节。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
