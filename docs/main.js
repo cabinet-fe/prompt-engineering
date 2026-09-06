@@ -14,39 +14,39 @@
   }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-  /* ---------- 先挑路：处方 ---------- */
+  /* ---------- 场景指引：推荐做法 ---------- */
   const PICKS = {
     first: {
       cmd: "setup",
-      desc: "一次性。访谈后分类，写 PROJECT.md、铺 .agents/docs/ 和脚本、覆写根 AGENTS.md。跑完 node .agents/scripts/precheck.mjs 应为 PASS。其它技能发现没 setup，会停下来让你先跑，不代跑。"
+      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成技术规范、模块地图并配置辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。"
     },
     vague: {
       cmd: "explore → to-spec → to-tasks → implement → archive",
-      desc: "从 explore 起步，分步走。它只问不写代码：把「不问就可能做错」的歧义逐条记进 goal.md，每轮最多问 5 题，未决清零、范围经你确认才往下走。"
+      desc: "需求含糊或边界不清时使用。explore 只沟通梳理、不写代码，逐一澄清歧义并在你确认无误后才推进到后续环节，避免方向跑偏。"
     },
     rush: {
-      cmd: "rush 审批单想支持批量转办",
-      desc: "编排器不是另一套流程——产物、模板、阶段并行规则跟单独调用完全一样。可并行的阶段同时开 implement，一返回就立刻单独 review，不通过自动返工，单阶段最多 3 轮。"
+      cmd: "rush 审批单支持批量转办",
+      desc: "全自动任务编排器：自动完成需求规格制定、任务拆解、并行编码与代码审查。做完一个阶段立即审查，不通过自动返工修复，适合大中型功能。"
     },
     steps: {
       cmd: "to-spec → to-tasks → implement → review → archive",
-      desc: "需求本来就明确的话跳过 explore，从 to-spec 起步，每一步你自己把关：spec 验收标准必须可判定，implement 一次只做一个未阻塞阶段。"
+      desc: "需求明确时可跳过前期探讨，直接进入技术规格拆解与分步实现。每一步你都可以手动检查验收标准与实际代码，节奏完全由你掌控。"
     },
     small: {
       cmd: "implement 把 UserCard 的头像换成懒加载",
-      desc: "参数既不是 cooking 标识、也不是单独的 P<n> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。说错的已有文档当场改。改完派 review 子代理，通过后 git-commit auto。"
+      desc: "改个 Bug、加个字段等日常小改动，无需复杂的规格拆解，直接描述需求即可编码。改完自动调用代码审查子代理，审查通过后自动生成本地提交。"
     },
     review: {
-      cmd: "review  /  review main  /  review <feature> P2",
-      desc: "只评不改，必须在子代理里评：主会话只派发、只听结论，不读 diff。评审轴：Spec、Standards（含已有文档有没有被说错）、正确性（仅 git 路径）。"
+      cmd: "review  /  review main  /  review <需求名> P2",
+      desc: "只做代码审查，不修改代码。在独立子代理中比对功能契约、代码规范与逻辑正确性，通过后协助提交，未通过则列出具体阻断项。"
     },
     sync: {
       cmd: "sync-docs src/modules/approval",
-      desc: "未走 implement 时点名。只改已经被代码说错的已有文档；没有被说错就结束。禁止新建文件。"
+      desc: "手动修改代码导致现有文档与代码不一致时调用。精准修正受影响的架构说明与规范，未受影响的内容绝不乱动，且不新建多余文件。"
     },
     accept: {
       cmd: "acceptance",
-      desc: "先检索仓库已有的测试 / e2e / HTTP / 构建命令，再结合项目类别推荐手段——检索完之前不会点名具体工具。之后 to-tasks 按它追加完成标准，review 按它评。代价是 token 和工时明显增加。"
+      desc: "为项目配置自动化验收标准。先自动扫描现有的测试与构建命令，针对性生成端到端测试或接口验收规范，作为后续开发与审查的硬性指标。"
     }
   };
   const pickNote = document.getElementById("pick-note");
@@ -69,39 +69,39 @@
   /* ---------- 流程：节点详情 ---------- */
   const FLOWS = {
     setup: {
-      title: "🧱 setup",
+      title: "🧱 setup · 初始化底座",
       cmd: "setup",
-      desc: "每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。"
+      desc: "新仓库运行一次。通过简要沟通识别项目类型，生成架构规范、模块地图与辅助脚本。其他所有工程技能都会基于这套底座运行。"
     },
     explore: {
-      title: "🧭 explore",
-      cmd: "explore 审批单想支持批量转办",
-      desc: "只问不写代码。把「不问就可能做错」的歧义逐条写进 goal.md 的「未决问题」，每轮挑最阻塞的问、最多 5 题；查得到的事实派子代理，不问你。未决清零、范围经你确认，才写「确认：已确认」。"
+      title: "🧭 explore · 需求探索",
+      cmd: "explore 审批单支持批量转办",
+      desc: "只沟通梳理、不改写代码。逐条分析并澄清需求中的不明确之处，向你提问确认。直到所有关键疑惑消除并经你确认，才进入下一阶段。"
     },
     "to-spec": {
-      title: "📜 to-spec",
+      title: "📜 to-spec · 制定规格",
       cmd: "to-spec approval-batch-transfer",
-      desc: "把明确需求写成 spec.md。验收标准必须可判定——「体验好」这种不收；「影响文件」只写新增/删除/修改的仓库相对路径，写完要能被 spec-files.mjs parse 通过。"
+      desc: "把明确需求转化为技术设计规格。制定客观可判定的验收标准，并精确划定本次改动涉及的文件范围。"
     },
     "to-tasks": {
-      title: "✂️ to-tasks",
+      title: "✂️ to-tasks · 拆解阶段任务",
       cmd: "to-tasks approval-batch-transfer",
-      desc: "把 spec.md 拆成 tasks/P1.md、P2.md…。Pn 是阶段 id，不是必须串行的序号——前置为「无」的阶段一上来就能并行。"
+      desc: "将大功能细化拆解为多个独立阶段任务（P1、P2 等），理清任务依赖关系。无前后依赖的任务可直接并行开发。"
     },
     implement: {
-      title: "🔨 implement",
+      title: "🔨 implement · 编码实现",
       cmd: "implement approval-batch-transfer P1",
-      desc: "一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。说错的已有文档当场改。参数既不是标识也不是 P<n> 时走直写：不碰 cooking，小 diff，对照 SMELLS.md 收掉本次引入的坏味道。"
+      desc: "按阶段任务编写代码（或针对小需求直接修改）。严格遵循既有代码风格，完成必要测试并同步修正受影响的文档，随后自动发起审查。"
     },
     review: {
-      title: "🔍 review",
+      title: "🔍 review · 独立审查",
       cmd: "review approval-batch-transfer P2",
-      desc: "只评不改，必须在子代理里评。通过后由派发方 git-commit auto（本地提交，不 push）；不通过就把阻塞项列出来返工，再评一轮，该阶段下游不许开工。"
+      desc: "在独立子代理中审查代码，主会话只接收审查结果。比对功能实现与代码规范，通过后自动在本地提交，不通过则指出具体问题并返工。"
     },
     archive: {
-      title: "🗃️ archive",
+      title: "🗃️ archive · 交付与归档",
       cmd: "archive approval-batch-transfer",
-      desc: "要求每个阶段都「实现：完成 + 评审：通过」。确认已有文档已对齐后删掉整个 cooking 目录。"
+      desc: "所有阶段均完成并审查通过后，核对项目文档状态，清理开发过程中的临时记录（cooking 目录），完成交付。"
     }
   };
   const flowNote = document.getElementById("flow-note");
@@ -177,7 +177,7 @@
   const copyText = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
-      showToast("复制好了！✎");
+      showToast("已复制到剪贴板！");
     } catch {
       const ta = document.createElement("textarea");
       ta.value = text;
@@ -185,8 +185,8 @@
       ta.style.opacity = "0";
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand("copy"); showToast("复制好了！✎"); }
-      catch { showToast("复制失败，手动来吧"); }
+      try { document.execCommand("copy"); showToast("已复制到剪贴板！"); }
+      catch { showToast("复制失败，请手动复制"); }
       ta.remove();
     }
   };

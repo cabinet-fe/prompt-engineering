@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Engineering · 面向 Agent 的技能包</title>
-<meta name="description" content="面向 Agent 的技能包：工程流程、语言/框架写法、角色规范、工具。让 Agent 不凭过时记忆写 API，不另建一层过时文档。">
+<title>Prompt Engineering · 面向 AI Agent 的工程技能库</title>
+<meta name="description" content="专为 AI Agent 设计的工程化技能库：涵盖标准化开发流程、语言框架现代规范、角色把关与实用工具，让 AI 编码告别过时 API 与文档脱节。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Patrick+Hand&family=Permanent+Marker&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
@@ -30,14 +30,14 @@
 <header class="nav" id="top">
   <a class="nav-logo" href="#top">
     <svg viewBox="0 0 40 40" class="logo-pen" aria-hidden="true"><path d="M8 32 L12 22 L28 6 L34 12 L18 28 Z M12 22 L18 28 M28 6 L30 4 L36 10 L34 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>技能包</span>
+    <span>工程技能库</span>
   </a>
   <nav class="nav-links">
-    <a href="#highlights">亮点</a>
-    <a href="#pick">先挑路</a>
-    <a href="#flow">流程</a>
-    <a href="#skills">技能</a>
-    <a href="#start">上手</a>
+    <a href="#highlights">核心优势</a>
+    <a href="#pick">场景指引</a>
+    <a href="#flow">标准流程</a>
+    <a href="#skills">技能清单</a>
+    <a href="#start">快速上手</a>
   </nav>
   <a class="nav-gh" href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">GitHub ↗</a>
 </header>
@@ -56,11 +56,11 @@
 
   <p class="hero-eyebrow reveal">cabinet-fe / prompt-engineering</p>
   <h1 class="hero-title reveal">
-    给 Agent 的<br>
-    <span class="marker-word">技能百宝袋</span>
+    专为 AI Agent 打造的<br>
+    <span class="marker-word">工程化技能库</span>
     <svg class="title-squiggle" viewBox="0 0 420 24" aria-hidden="true"><path d="M8 14 C 70 6, 140 18, 210 12 C 280 6, 350 16, 412 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
   </h1>
-  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>23</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不另建一层过时文档。</p>
+  <p class="hero-sub reveal">涵盖工程流程、语言框架、角色规范与辅助工具，共 <b>23</b> 个即插即用技能。<br>基于项目实际版本与现有代码工作，告别过时 API 与文档脱节。</p>
 
   <div class="install-box reveal">
     <span class="install-prompt">$</span>
@@ -68,17 +68,17 @@
     <button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制安装命令">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 8 V6 a2 2 0 0 0 -2 -2 H6 a2 2 0 0 0 -2 2 v8 a2 2 0 0 0 2 2 h2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
     </button>
-    <span class="install-note">← 先装我！</span>
+    <span class="install-note">← 复制并在终端运行</span>
   </div>
 
   <div class="hero-cta reveal">
-    <a class="btn btn-primary" href="#pick">先挑条路</a>
-    <a class="btn" href="#skills">翻翻技能</a>
+    <a class="btn btn-primary" href="#pick">查看场景推荐</a>
+    <a class="btn" href="#skills">浏览全部技能</a>
   </div>
 
   <div class="hero-scroll" aria-hidden="true">
     <svg viewBox="0 0 40 60"><path d="M20 6 C 16 22, 24 34, 20 50 M20 50 l-8 -10 M20 50 l8 -10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>往下翻</span>
+    <span>向下滚动</span>
   </div>
 </section>
 
@@ -93,37 +93,37 @@
 <!-- ================= 亮点 ================= -->
 <section id="highlights" class="section">
   <h2 class="section-title reveal">
-    <span class="hl">凭什么不一样</span>
+    <span class="hl">它解决了什么问题</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 4, 110 16, 160 10 C 210 4, 260 14, 294 8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
-  <p class="section-sub reveal">项目一直在变，过时文档会让 Agent 幻觉。这套技能包管的是已有文档，不另建一层摘要。</p>
+  <p class="section-sub reveal">传统 AI 编程经常遇到“引用废弃 API”、“文档与代码脱节”、“临时任务记录堆积”等痛点。这套技能库给出了务实解法：</p>
 
   <div class="card-row">
     <article class="hl-card wobble tilt-l reveal">
       <div class="hl-icon" aria-hidden="true">
         <svg viewBox="0 0 60 60"><path d="M30 8 C 14 8, 8 20, 10 32 C 12 46, 26 54, 38 50 C 50 46, 54 32, 48 20 C 44 12, 34 8, 26 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M30 22 L30 34 L40 38" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h3>已有文档跟着代码走</h3>
-      <p>改动把 <code>CODE-MAP</code>、技能、包内 <code>AGENTS.md</code> 说错了，当场改那一份。没说错就不动。<code>sync-docs</code> 可以单独点名，只改已有文档。</p>
-      <p class="hl-tag">只改已有的 · 禁止另建一层</p>
+      <h3>文档与代码实时对齐</h3>
+      <p>代码改动如果影响了架构、规范或模块说明，当场直接更新对应文档，确保文档永远不说假话。没受影响的内容绝不乱碰，坚决不建冗余重复的摘要。</p>
+      <p class="hl-tag">精准更新 · 拒绝冗余</p>
     </article>
 
     <article class="hl-card wobble tilt-r reveal">
       <div class="hl-icon" aria-hidden="true">
         <svg viewBox="0 0 60 60"><path d="M12 44 L22 16 L32 38 L42 12 L50 34" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 50 C 24 46, 40 52, 54 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
       </div>
-      <h3>版本感知，不背旧 API</h3>
-      <p>语言/框架技能先看<b>已安装</b>版本（lockfile、<code>go.mod</code>、<code>rustc</code>），再打开对应的 <code>references/&lt;版本&gt;.md</code>。训练数据里的过时写法？不存在的。</p>
-      <p class="hl-tag">8 个技术栈 · 按版本分档</p>
+      <h3>识别实际版本，杜绝幻觉</h3>
+      <p>语言和框架技能自动读取项目实际安装版本（如 <code>package.json</code>、<code>go.mod</code>、<code>Cargo.lock</code>），只使用对应版本的官方规范，杜绝凭旧训练数据写出废弃 API。</p>
+      <p class="hl-tag">8 个主流技术栈 · 精确对齐版本</p>
     </article>
 
     <article class="hl-card wobble tilt-l reveal">
       <div class="hl-icon" aria-hidden="true">
         <svg viewBox="0 0 60 60"><path d="M10 14 L50 12 L48 48 L12 50 Z M18 24 L42 22 M18 32 L40 31 M18 40 L34 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <h3>cooking 用完即删</h3>
-      <p>进行中的功能写在 <code>cooking/</code>，完成后删掉。长期事实在代码和已有地图里。</p>
-      <p class="hl-tag">不留验收复印件</p>
+      <h3>临时过程记录用完即清</h3>
+      <p>开发中的需求讨论与任务拆解仅保存在 <code>cooking/</code> 临时目录中。全部任务完成后自动清理，只保留最终代码与必要核心文档，保持仓库整洁。</p>
+      <p class="hl-tag">用完即清 · 保持仓库清爽</p>
     </article>
   </div>
 </section>
@@ -131,28 +131,28 @@
 <!-- ================= 先挑路 ================= -->
 <section id="pick" class="section">
   <h2 class="section-title reveal">
-    <span class="hl">先挑路，再动手</span>
+    <span class="hl">按场景快速选用</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 70 16, 130 4, 190 12 C 240 18, 270 8, 294 12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
-  <p class="section-sub reveal">对号入座：你现在是哪种情况？点一下，给你开张处方。</p>
+  <p class="section-sub reveal">对号入座：你当前需要完成什么？点击查看推荐的命令与指引。</p>
 
   <div class="pick-wrap reveal">
     <div class="pick-list" role="tablist" aria-label="选择你的情况">
-      <button class="pick-chip wobble-sm" data-pick="first" role="tab">仓库第一次接入</button>
-      <button class="pick-chip wobble-sm" data-pick="vague" role="tab">需求含糊，边界没定</button>
-      <button class="pick-chip wobble-sm" data-pick="rush" role="tab">需求明确，想一次跑完</button>
-      <button class="pick-chip wobble-sm" data-pick="steps" role="tab">需求明确，想自己把关</button>
-      <button class="pick-chip wobble-sm" data-pick="small" role="tab">改个 bug、加个字段</button>
-      <button class="pick-chip wobble-sm" data-pick="review" role="tab">只想让人评一遍改动</button>
-      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完，已有文档可能撒谎</button>
-      <button class="pick-chip wobble-sm" data-pick="accept" role="tab">想给编码加层验收</button>
+      <button class="pick-chip wobble-sm" data-pick="first" role="tab">新仓库首次接入</button>
+      <button class="pick-chip wobble-sm" data-pick="vague" role="tab">需求还不明确，需要梳理</button>
+      <button class="pick-chip wobble-sm" data-pick="rush" role="tab">需求明确，想全自动跑完</button>
+      <button class="pick-chip wobble-sm" data-pick="steps" role="tab">需求明确，想每步手动把关</button>
+      <button class="pick-chip wobble-sm" data-pick="small" role="tab">简单改个 Bug 或字段</button>
+      <button class="pick-chip wobble-sm" data-pick="review" role="tab">仅对现有改动做代码审查</button>
+      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完代码，更新失真文档</button>
+      <button class="pick-chip wobble-sm" data-pick="accept" role="tab">为项目增加自动化验收</button>
     </div>
 
     <div class="pick-note sticky-note" id="pick-note" aria-live="polite">
       <div class="tape" aria-hidden="true"></div>
-      <p class="pick-note-label">处方 ✎</p>
+      <p class="pick-note-label">推荐命令 ✎</p>
       <p class="pick-note-cmd"><code id="pick-cmd">setup</code></p>
-      <p class="pick-note-desc" id="pick-desc">一次性。访谈后分类，写 PROJECT.md、铺 .agents/docs/ 和脚本、覆写根 AGENTS.md。跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。</p>
+      <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成技术规范、模块地图并配置辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。</p>
     </div>
   </div>
 </section>
@@ -160,10 +160,10 @@
 <!-- ================= 流程 ================= -->
 <section id="flow" class="section">
   <h2 class="section-title reveal">
-    <span class="hl">一条链，从 setup 到归档</span>
+    <span class="hl">标准工程流程：从初始化到交付归档</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 50 6, 120 16, 180 8 C 230 2, 270 14, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
-  <p class="section-sub reveal">点每个节点看看它在干嘛、卡在哪。<code>rush</code> 只是编排器，不是另一套流程——产物、模板、并行规则跟单独调用完全一样。</p>
+  <p class="section-sub reveal">支持分步手动执行，也支持用 <code>rush</code> 一键自动编排。点击各个环节查看具体分工与运转逻辑：</p>
 
   <div class="flow-board reveal">
     <div class="flow-track" role="tablist" aria-label="工程流程各环节">
@@ -184,9 +184,9 @@
 
     <div class="flow-note sticky-note" id="flow-note" aria-live="polite">
       <div class="tape" aria-hidden="true"></div>
-      <p class="flow-note-title" id="flow-title">🧱 setup</p>
+      <p class="flow-note-title" id="flow-title">🧱 setup · 初始化底座</p>
       <p class="flow-note-cmd"><code id="flow-cmd">setup</code></p>
-      <p class="flow-note-desc" id="flow-desc">每个目标仓库先跑一次。访谈后分类，写 PROJECT.md（代码类还有架构/规范/地图/坏味道）、复制脚本、覆写根 AGENTS.md。其它技能发现没 setup 会停下让你先跑，不代跑。</p>
+      <p class="flow-note-desc" id="flow-desc">新仓库运行一次。通过简要沟通识别项目类型，生成架构规范、模块地图与辅助脚本。其他所有工程技能都会基于这套底座运行。</p>
     </div>
   </div>
 </section>
@@ -194,10 +194,10 @@
 <!-- ================= 技能一览 ================= -->
 <section id="skills" class="section">
   <h2 class="section-title reveal">
-    <span class="hl">技能一览 · 23 件家伙事儿</span>
+    <span class="hl">技能清单 · 23 个内置技能</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 66 16, 126 4, 186 12 C 236 18, 272 6, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
-  <p class="section-sub reveal">点开卡片看用法。多数工程技能<b>点名才跑</b>；语言/框架技能不用点名，写对应代码时它自己就来。</p>
+  <p class="section-sub reveal">点击卡片展开详情。工程流程类技能需<b>显式输入命令调用</b>；语言与框架规范在编辑对应代码文件时<b>自动生效</b>。</p>
 
   <div class="skill-filter reveal" role="group" aria-label="按类别筛选">
     <button class="filter-chip wobble-sm active" data-filter="all">全部</button>
@@ -212,259 +212,264 @@
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">setup</span>
-      <span class="skill-one">初始化 / 更新仓库工程底座，一次性</span>
+      <span class="skill-one">为仓库初始化或更新工程底座规范</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>仓库第一次接入；换栈、改分层、加删应用边界时再跑更新模式。</p>
-        <p><b>干什么：</b>访谈后分类，写 <code>PROJECT.md</code>（代码类还有 <code>ARCHITECTURE.md</code> / <code>DEV-STANDARDS.md</code> / <code>CODE-MAP.md</code> / <code>SMELLS.md</code>），复制 <code>.agents/scripts/</code>，覆写根 <code>AGENTS.md</code>，把 <code>.agents/cooking/</code> 加进 .gitignore。</p>
-        <p><b>用法：</b><code>setup</code></p>
-        <p><b>注意：</b>跑完 <code>node .agents/scripts/precheck.mjs</code> 应为 PASS。其它工程技能 precheck FAIL 会停下让你 setup，不代跑。收尾会问要不要验收层，选了也只是提示你去调 <code>acceptance</code>。</p>
+        <p><b>适用场景：</b>新仓库首次接入，或技术栈、架构分层发生重大调整时。</p>
+        <p><b>具体功能：</b>与你沟通确认项目类型，生成技术规范、模块地图及辅助脚本，写入 <code>PROJECT.md</code> 等底座文件。其他工程技能均依赖此底座。</p>
+        <p><b>常用命令：</b><code>setup</code></p>
+        <p><b>使用提示：</b>完成后运行预检脚本应显示 PASS。其他工程技能若发现未初始化会暂停并提示先运行 setup。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">explore</span>
-      <span class="skill-one">只问不写，把含糊需求问明白、定下 goal</span>
+      <span class="skill-one">梳理澄清含糊需求，明确功能边界</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>需求含糊、边界还没定，「不问就可能做错」时。</p>
-        <p><b>干什么：</b>把歧义逐条写进 <code>cooking/&lt;feature&gt;/goal.md</code> 的「未决问题」，每轮挑最阻塞的问、最多 5 题；查得到的事实派子代理，不问你。未决清零、范围经你确认，才写「确认：已确认」。</p>
-        <p><b>用法：</b><code>explore 审批单想支持批量转办</code></p>
-        <p><b>注意：</b>中途改需求，对同一个未归档单位再 explore：goal 打回未确认，删掉该单位的 spec/tasks/reviews——但不回滚代码。</p>
+        <p><b>适用场景：</b>需求想法还不成熟、业务逻辑存在模糊点，需要提前澄清时。</p>
+        <p><b>具体功能：</b>只沟通不写代码。将潜在疑问整理为清单并向你提问，直到核心问题全部澄清并经你确认，才推进到规格制定环节。</p>
+        <p><b>常用命令：</b><code>explore 审批单支持批量转办</code></p>
+        <p><b>使用提示：</b>若后续需求发生大幅改动，可再次对该需求运行 explore 重新梳理方案。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">to-spec</span>
-      <span class="skill-one">把明确需求写成可判定的 spec.md</span>
+      <span class="skill-one">将明确需求转化为可量化验收的技术规格</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>需求已经明确（或 explore 确认完毕），要落成规格。</p>
-        <p><b>干什么：</b>写 <code>cooking/&lt;feature&gt;/spec.md</code>。验收标准必须可判定——「体验好」这种不收；「影响文件」只写新增/删除/修改的仓库相对路径，写完要能被 <code>spec-files.mjs parse</code> 通过。</p>
-        <p><b>用法：</b><code>to-spec approval-batch-transfer</code></p>
-        <p><b>注意：</b>需求本来就明确可跳过 explore，没有 goal.md 也能写 spec。</p>
+        <p><b>适用场景：</b>需求已经完全明确（或已通过 explore 梳理完毕），准备沉淀技术设计时。</p>
+        <p><b>具体功能：</b>编写清晰的技术规格文档，制定客观、可判定的验收标准，并精确划定本次预计改动或新增的文件范围。</p>
+        <p><b>常用命令：</b><code>to-spec approval-batch-transfer</code></p>
+        <p><b>使用提示：</b>若需求本身就足够清晰，可直接调用此命令跳过 explore。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">to-tasks</span>
-      <span class="skill-one">把 spec 拆成能动手的阶段任务 Pn</span>
+      <span class="skill-one">将规格拆解为可独立编码的阶段任务清单</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>spec 写好后，拆成能动手的一个个阶段。</p>
-        <p><b>干什么：</b>拆 <code>tasks/P1.md</code>、<code>P2.md</code>…。<code>Pn</code> 是阶段 id，不是必须串行的序号——前置为「无」的阶段一上来就能并行。</p>
-        <p><b>用法：</b><code>to-tasks approval-batch-transfer</code></p>
-        <p><b>注意：</b>存在 <code>ACCEPTANCE.md</code> 时，会按它给各阶段「完成标准」追加条目。</p>
+        <p><b>适用场景：</b>技术规格编写完成后，将大功能切分为细粒度、低耦合的开发步骤。</p>
+        <p><b>具体功能：</b>把规格拆分为多个阶段任务（P1、P2 等），明确前后依赖关系。无依赖的任务可直接并行开发。</p>
+        <p><b>常用命令：</b><code>to-tasks approval-batch-transfer</code></p>
+        <p><b>使用提示：</b>若项目配置了自动化验收规则，会自动将验收指标追加到各任务的完成标准中。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">implement</span>
-      <span class="skill-one">做一个未阻塞阶段，或按描述直写</span>
+      <span class="skill-one">执行具体阶段的编码实现，或处理轻量改动</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>按阶段任务实现；或改个 bug、加个字段直接描述。</p>
-        <p><b>干什么：</b>一次只做一个未阻塞阶段，做完在同一对话派 review 子代理——不自己评、不提交。本轮若把已有文档说错，当场改那一份。参数既不是 cooking 标识也不是 <code>P&lt;n&gt;</code> 时走直写：不读 spec/tasks，不碰 cooking，小 diff。</p>
-        <p><b>用法：</b><code>implement approval-batch-transfer P1</code> / <code>implement 把 UserCard 的头像换成懒加载</code></p>
-        <p><b>注意：</b>参数为空会先问你：做哪个 cooking 阶段，还是直写。对照 <code>SMELLS.md</code> 把本次引入的坏味道当场收掉，不扩到无关重构；仓库已有 lint / typecheck / 测试就跑一遍，不过不算完成。改动等于换栈/加边界/改分层会停下来让你先 setup。</p>
+        <p><b>适用场景：</b>按拆解的任务分步编写代码；或直接处理改 Bug、增减字段等轻量改动。</p>
+        <p><b>具体功能：</b>严格按现有代码规范编写代码，运行测试验证，当场同步受影响的现有文档，并在编码完成后自动发起代码审查。</p>
+        <p><b>常用命令：</b><code>implement approval-batch-transfer P1</code> 或 <code>implement 将 UserCard 头像改为懒加载</code></p>
+        <p><b>使用提示：</b>小改动直接在命令后附带描述即可（直写模式），无需走规格与任务拆解。遇到重构分层变动会提示先重新初始化底座。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">review</span>
-      <span class="skill-one">只评不改，必须在子代理里评</span>
+      <span class="skill-one">在独立子代理中严格审查代码改动</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>阶段做完、或想让人评一遍现有改动（工作区 / 相对基点）。</p>
-        <p><b>干什么：</b>评审轴：Spec（仅阶段路径）、Standards（规范 + CODE-MAP + 已有文档有没有被说错 + 坏味道基线）、正确性（仅 git 路径）。</p>
-        <p><b>用法：</b><code>review</code> / <code>review main</code> / <code>review approval-batch-transfer P2</code></p>
-        <p><b>注意：</b>主会话只派发、只听结论，不读 diff；没有子代理工具就停止，不降级代评。通过后由派发方 <code>git-commit</code> auto（不 push）；不通过列出阻塞项，该阶段下游不许开工。</p>
+        <p><b>适用场景：</b>阶段编码完成、或想对当前工作区 / 分支变动做一次严格质量把关时。</p>
+        <p><b>具体功能：</b>只做审查不改代码。在独立子代理中比对功能契约、代码规范、文档同步与逻辑正确性，防止自写自审带来盲区。</p>
+        <p><b>常用命令：</b><code>review</code>、<code>review main</code> 或 <code>review approval-batch-transfer P2</code></p>
+        <p><b>使用提示：</b>审查通过后自动生成本地提交；发现阻断问题则列出清单要求返工修复，未通过前禁止推进下游任务。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">sync-docs</span>
-      <span class="skill-one">只改已被代码说错的已有文档</span>
+      <span class="skill-one">定向同步与最新代码不一致的现有文档</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>人手改的、或不走 implement 直接改文件，已有文档可能撒谎时点名。走 implement / rush 时不用管。</p>
-        <p><b>干什么：</b>对照当前代码，只改被说错的 CODE-MAP / 技能 / 包内 AGENTS.md / ACCEPTANCE.md。没有被说错就结束。</p>
-        <p><b>用法：</b><code>sync-docs</code> / <code>sync-docs src/modules/approval</code></p>
-        <p><b>注意：</b>禁止新建文件。只改已经存在、被代码说错的文档。</p>
+        <p><b>适用场景：</b>手动改动代码后，导致现有架构说明、模块地图或开发规范过时失效时。</p>
+        <p><b>具体功能：</b>核对最新代码，仅修订被改动影响的现有文档，未受影响的内容绝不乱动，且禁止新建多余文档。</p>
+        <p><b>常用命令：</b><code>sync-docs</code> 或 <code>sync-docs src/modules/approval</code></p>
+        <p><b>使用提示：</b>正常走 implement 流程时会自动同步；本命令主要用于脱离流程手动修改代码后的兜底对齐。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">archive</span>
-      <span class="skill-one">确认已有文档已对齐后删掉 cooking</span>
+      <span class="skill-one">功能全部完成交付后，清理临时过程记录</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>功能完成：每个阶段都「实现：完成 + 评审：通过」。</p>
-        <p><b>干什么：</b>确认 CODE-MAP / 技能等已有文档没撒谎，然后删掉整个 cooking 目录。</p>
-        <p><b>用法：</b><code>archive approval-batch-transfer</code></p>
-        <p><b>注意：</b>有阶段没实现完或没评审通过就列出缺什么并停止；强行归档会先警告，仍缺评审则拒绝。文档仍说错则停止，不要另写一份来补。</p>
+        <p><b>适用场景：</b>某个功能的所有阶段任务均已实现并通过代码审查，准备正式交付时。</p>
+        <p><b>具体功能：</b>最终确认对外文档与代码完全对齐，清理开发过程中的临时目录（cooking/），使仓库恢复整洁。</p>
+        <p><b>常用命令：</b><code>archive approval-batch-transfer</code></p>
+        <p><b>使用提示：</b>若仍有任务未完成或审查未通过，会明确提示阻断原因并拒绝归档。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">rush</span>
-      <span class="skill-one">编排整条链，一条命令跑完</span>
+      <span class="skill-one">一键编排端到端开发：从拆解到交付</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>需求明确，想一次跑完整个功能。简单改动别用 rush，直接 implement 直写。</p>
-        <p><b>干什么：</b>编排器，不是另一套流程。需求含糊时主代理亲自 explore，确认后建议你新开会话再 rush；可并行阶段同时开 implement；某阶段一返回就立刻单独 review；不通过自动返工闭环，单阶段最多 3 轮。</p>
-        <p><b>用法：</b><code>rush 审批单想支持批量转办</code> / <code>rush approval-batch-transfer</code>（继续推进）</p>
-        <p><b>注意：</b>收尾阶段 review 带 defer-commit：通过后不提交；archive 之后一次提交。spec 判出架构级变更会在开工前停下来让你先 setup。中途改需求：停掉后续子代理，回到 explore。</p>
+        <p><b>适用场景：</b>需求明确的大中型功能开发，希望全流程自动推进任务拆解、并行编码、逐阶段审查与自动提交。</p>
+        <p><b>具体功能：</b>全流程自动编排调度：需求含糊时先引导梳理，无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
+        <p><b>常用命令：</b><code>rush 审批单支持批量转办</code> 或 <code>rush approval-batch-transfer</code></p>
+        <p><b>使用提示：</b>适合多阶段大功能；日常简单修改建议直接使用 <code>implement</code> 直写更轻巧。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
       <span class="skill-name">acceptance</span>
-      <span class="skill-one">给编码加一层可执行的验收</span>
+      <span class="skill-one">为项目配置可执行的自动化验收标准</span>
       <span class="skill-cat">工程流程</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>想给编码加一层验收保障。setup 收尾会问一次，但不代跑，要就显式调用。</p>
-        <p><b>干什么：</b>先检索仓库已有的测试 / e2e / HTTP / 构建命令，再结合项目类别推荐手段——检索完成前不会点名 Playwright、Maestro 这类工具。产出 <code>.agents/docs/ACCEPTANCE.md</code>。</p>
-        <p><b>用法：</b><code>acceptance</code></p>
-        <p><b>注意：</b>之后 to-tasks 按它给各阶段追加完成标准，review 按它评。纯原型或日常工作类仓库不会生成可执行脚手架。代价是 token 和工时明显增加。</p>
+        <p><b>适用场景：</b>需要给项目增加端到端测试或接口自动化验证，提高交付质量时。</p>
+        <p><b>具体功能：</b>扫描项目现有的测试和构建命令，针对性推荐适合的自动化测试方案，生成验收规范 <code>ACCEPTANCE.md</code>。</p>
+        <p><b>常用命令：</b><code>acceptance</code></p>
+        <p><b>使用提示：</b>配置后，拆解的任务会自动追加验收要求，审查时也会以此为硬性标准。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-langs reveal" data-cat="langs">
       <span class="skill-name">typescript</span>
-      <span class="skill-one">类型系统、tsconfig 与编译器行为</span>
+      <span class="skill-one">对齐已安装版本，规范类型定义与编译配置</span>
       <span class="skill-cat">语言 · 5 / 6 / 7</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>TypeScript major 5 / 6 / 7。先看已安装版本，再打开 <code>references/&lt;版本&gt;.md</code>。</p>
-        <p><b>边界：</b>只管类型、<code>tsconfig.json</code>、编译器行为。如何用 Node 跑 <code>.ts</code> 交给 node 技能；Vue SFC / Volar 交给 vue 技能。构建工具、CSS、状态库跟项目走。</p>
-        <p><b>触发：</b>编辑 <code>.ts</code> / <code>.tsx</code>、tsconfig.json 或处理类型与编译选项时。不用点名。</p>
+        <p><b>版本覆盖：</b>TypeScript 5.x / 6.x / 7.x，优先读取项目实际安装版本规范。</p>
+        <p><b>职责范围：</b>专注于类型系统、tsconfig.json 配置及编译器行为，避免旧版本过时写法。</p>
+        <p><b>生效方式：</b>编辑 <code>.ts</code> / <code>.tsx</code> 或编译配置时自动生效，无需手动调用。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-langs reveal" data-cat="langs">
       <span class="skill-name">node</span>
-      <span class="skill-one">Node 运行时,以及 V8 已稳定的 JS 写法</span>
+      <span class="skill-one">遵循对应 Node.js 版本的现代 API 与实践</span>
       <span class="skill-cat">语言 · 22 / 24 / 26</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>偶数 major 22 / 24 / 26，该 V8 已稳定的 JS 写法。</p>
-        <p><b>边界：</b>运行时、标准库（<code>node:</code> 前缀模块）、CLI、测试。框架跟项目走。</p>
-        <p><b>触发：</b>编写 Node 脚本、服务、CLI，编辑 <code>.js/.mjs/.cjs</code>、由 Node 直接跑的 <code>.ts</code>、package.json、<code>.nvmrc</code> 时。</p>
+        <p><b>版本覆盖：</b>Node.js 偶数 LTS 版本（22 / 24 / 26）及稳定现代 JS 特性。</p>
+        <p><b>职责范围：</b>负责内置标准库（<code>node:</code> 前缀模块）、运行环境、CLI 脚本与测试配置。</p>
+        <p><b>生效方式：</b>编写 Node 脚本、处理 package.json 或服务端逻辑时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-langs reveal" data-cat="langs">
       <span class="skill-name">go</span>
-      <span class="skill-one">按 go.mod 的 go 行选版本写法</span>
+      <span class="skill-one">根据 go.mod 声明版本选用标准库与现代语法</span>
       <span class="skill-cat">语言 · 1.24–1.27</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>Go 1.24 / 1.25 / 1.26 / 1.27。按项目 <code>go.mod</code> 的 go 行选用该版本语言与标准库 API。</p>
-        <p><b>边界：</b>语言与标准库。框架、构建工具、HTTP 库跟项目走，不在本技能里指定。</p>
-        <p><b>触发：</b>编辑 <code>.go</code>、go.mod、go.work、<code>*_test.go</code> 或处理 Go 工具链时。</p>
+        <p><b>版本覆盖：</b>Go 1.24 至 1.27，严格依据 <code>go.mod</code> 声明的版本进行编码。</p>
+        <p><b>职责范围：</b>规范 Go 语法、标准库调用及单元测试编写，不强行捆绑第三方框架。</p>
+        <p><b>生效方式：</b>编辑 <code>.go</code>、<code>go.mod</code>、<code>go.work</code> 或测试文件时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-langs reveal" data-cat="langs">
       <span class="skill-name">rust</span>
-      <span class="skill-one">先定 rustc 1.y，再读对应 reference</span>
+      <span class="skill-one">根据工具链版本采用对应的 Rust 现代特性</span>
       <span class="skill-cat">语言 · 1.95–1.97</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>rustc 1.95 / 1.96 / 1.97。禁止凭训练数据写 API——先定 <b>rustc 1.y</b>，再读对应 reference。</p>
-        <p><b>边界：</b>语言、Cargo、测试与宏。Axum / Actix / Rocket 等 web 框架不在本技能里指定。</p>
-        <p><b>触发：</b>编辑 <code>.rs</code>、Cargo.toml / Cargo.lock、rust-toolchain.toml 时。</p>
+        <p><b>版本覆盖：</b>Rust 1.95 至 1.97，基于项目实际 rustc 版本查阅规范。</p>
+        <p><b>职责范围：</b>负责 Rust 核心语法、所有权模式、Cargo 配置与单元测试，拒绝凭模型旧记忆瞎写。</p>
+        <p><b>生效方式：</b>编辑 <code>.rs</code>、<code>Cargo.toml</code> 或工具链配置文件时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
       <span class="skill-name">vue</span>
-      <span class="skill-one">默认 script setup + Composition API</span>
+      <span class="skill-one">规范 Vue 3 组合式 API 与单文件组件最佳实践</span>
       <span class="skill-cat">框架 · 3.4 / 3.5</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>Vue 3.4 / 3.5，按项目 minor 选用该版本 API。</p>
-        <p><b>约定：</b>默认 <code>&lt;script setup&gt;</code> + Composition API。构建工具、CSS、状态库、TS 版本跟项目走，不在本技能里指定。</p>
-        <p><b>触发：</b>编辑 <code>.vue</code>、Vue TSX/JSX 组件或编写组合式函数时。</p>
+        <p><b>版本覆盖：</b>Vue 3.4 / 3.5，根据项目实际依赖版本选用对应特性。</p>
+        <p><b>开发约定：</b>推荐 <code>&lt;script setup&gt;</code> 搭配 Composition API；构建工具与状态库遵循项目既有选型。</p>
+        <p><b>生效方式：</b>编辑 <code>.vue</code> 文件或编写 Vue 组合式函数时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
       <span class="skill-name">react</span>
-      <span class="skill-one">默认函数组件 + Hooks</span>
+      <span class="skill-one">规范 React 19 函数组件与 Hooks 编写范式</span>
       <span class="skill-cat">框架 · 19.0–19.2</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>React 19.0 / 19.1 / 19.2，按项目 minor 选用该版本 API。</p>
-        <p><b>约定：</b>默认函数组件 + Hooks。路由、数据请求、CSS、状态库、构建工具跟项目走——不指定 Next / Remix / Vite。</p>
-        <p><b>触发：</b>编辑 <code>.jsx</code> / <code>.tsx</code>、React 组件、Hooks 或处理 react / react-dom 时。</p>
+        <p><b>版本覆盖：</b>React 19.0 至 19.2，精确对齐项目安装版本。</p>
+        <p><b>开发约定：</b>标准函数组件与 Hooks 模式；路由、请求与状态管理严格跟随项目既有约定，不强推特定框架。</p>
+        <p><b>生效方式：</b>编辑 <code>.jsx</code> / <code>.tsx</code>、编写 React 组件或自定义 Hook 时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
       <span class="skill-name">svelte</span>
-      <span class="skill-one">默认 runes 模式</span>
+      <span class="skill-one">规范 Svelte 5 现代 Runes 响应式语法</span>
       <span class="skill-cat">框架 · 5</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>Svelte 5，按已安装的 5.x minor 选用该版本 rune / 模板写法。</p>
-        <p><b>约定：</b>默认 <b>runes 模式</b>。SvelteKit、CSS、状态库跟项目走，不在本技能里指定。</p>
-        <p><b>触发：</b>编辑 <code>.svelte</code>、<code>.svelte.ts</code> / <code>.svelte.js</code> 或编写 Svelte 组件时。</p>
+        <p><b>版本覆盖：</b>Svelte 5.x 系列。</p>
+        <p><b>开发约定：</b>默认采用 Svelte 5 的 <b>Runes</b> 响应式机制，遵循官方推荐的现代状态管理写法。</p>
+        <p><b>生效方式：</b>编辑 <code>.svelte</code> 或相关逻辑文件时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
       <span class="skill-name">gin</span>
-      <span class="skill-one">按 go.mod 里 gin 的 1.y 选 API</span>
+      <span class="skill-one">规范 Gin Web 框架路由、中间件与处理函数</span>
       <span class="skill-cat">框架 · 1.10–1.12</span>
       <div class="skill-detail" hidden>
-        <p><b>覆盖：</b>Gin 1.10 / 1.11 / 1.12，按 <code>go.mod</code> 里 github.com/gin-gonic/gin 的 1.y 选用该版本 API。</p>
-        <p><b>约定：</b>Go 语法交给 go 技能；ORM、日志库、鉴权方案跟项目走。用户没点名就不要顺手加完整鉴权中间件。</p>
-        <p><b>触发：</b>编写 Gin 路由、handler、中间件、绑定与渲染时。</p>
+        <p><b>版本覆盖：</b>Gin 1.10 至 1.12，依据依赖版本适配。</p>
+        <p><b>开发约定：</b>聚焦路由组织、参数绑定与中间件编写；克制过度设计，不擅自引入无关重型依赖。</p>
+        <p><b>生效方式：</b>编写 Gin 路由、handler 及接口渲染逻辑时自动生效。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-roles reveal" data-cat="roles">
       <span class="skill-name">frontend-expert</span>
-      <span class="skill-one">前端简洁优先，克制膨胀</span>
+      <span class="skill-one">前端架构把关：防过度封装，拒绝代码膨胀</span>
       <span class="skill-cat">角色</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>编写或修改前端页面、组件、表单、样式、重构前端代码，或你提到简洁、代码膨胀、过度封装、兼容性代码、造轮子时。</p>
-        <p><b>干什么：</b>像多年经验的前端专家一样写简洁代码：字段对齐、不顺手加兼容层、不造轮子、改完做减法。references 里是一套坏味道清单（表单、样式、过度工程、兼容、死代码、重复造轮子）。</p>
+        <p><b>适用场景：</b>编写或重构前端页面、组件、表单与样式，需要防范代码臃肿时。</p>
+        <p><b>核心原则：</b>像经验丰富的前端专家一样编写简洁实用的代码：避免多余抽象层、不随意造重复轮子、改完及时清理废弃死代码。</p>
+        <p><b>内置参考：</b>内置详尽的前端坏味道自查清单（过度工程、样式滥用、无用兼容代码等）。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-roles reveal" data-cat="roles">
       <span class="skill-name">backend-expert</span>
-      <span class="skill-one">后端同样：少透传层、少封装</span>
+      <span class="skill-one">后端架构把关：精简分层，避免过度抽象</span>
       <span class="skill-cat">角色</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>编写或修改后端 API、handler、DTO、中间件、仓储与服务分层时。</p>
-        <p><b>干什么：</b>克制代码膨胀与过度设计：少透传层、少造轮子、少过度封装、DTO 映射别铺满每一层。references 同样是一套坏味道清单。</p>
+        <p><b>适用场景：</b>编写或重构后端 API、中间件、DTO、仓储与服务分层时。</p>
+        <p><b>核心原则：</b>克制后端过度设计：减少无意义的数据透传层、杜绝过度封装、避免在每一层之间无脑做 DTO 转换。</p>
+        <p><b>内置参考：</b>内置后端架构常见坏味道清单，确保业务逻辑直接清晰、接口健壮。</p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-tools reveal" data-cat="tools">
       <span class="skill-name">git-commit</span>
-      <span class="skill-one">交互提交可问 push；auto 只本地</span>
+      <span class="skill-one">规范化本地 Git 提交，安全不越权</span>
       <span class="skill-cat">工具</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>要求提交代码、写 commit message、执行 commit / push / amend 时，或被流程指定。</p>
-        <p><b>干什么：</b>交互模式会问要不要 push；被流程调用时一律 auto——只本地提交、禁止 push、禁止 add <code>.agents/cooking/</code>。</p>
+        <p><b>适用场景：</b>需要规范化提交代码、生成符合标准的 commit message 时。</p>
+        <p><b>行为特征：</b>手动交互模式下会征询是否推送；在自动化流水线中只执行本地安全提交，绝不擅自 push，且严格忽略过程临时目录。</p>
+        <p><b>常用命令：</b><code>git-commit</code></p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-tools reveal" data-cat="tools">
       <span class="skill-name">build-lib-skill</span>
-      <span class="skill-one">给私有库 / 小众库写伴生技能</span>
+      <span class="skill-one">为私有库与内部 SDK 自动提炼专属技能</span>
       <span class="skill-cat">工具</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>目标仓库是库项目，库代码更新、或你提出创建/更新它的伴生技能时。</p>
-        <p><b>干什么：</b>为库、SDK 或 package 创建/更新文档型伴生 Agent Skill。事实只来自源码和公共 API，不脑补。</p>
+        <p><b>适用场景：</b>当前项目是工具库、内部组件库或 SDK，需要教会 AI 正确调用时。</p>
+        <p><b>核心功能：</b>从源码结构和对外导出的公共 API 中提取真实用法，生成结构清晰的伴生技能文档，绝不凭空捏造。</p>
+        <p><b>常用命令：</b><code>build-lib-skill</code></p>
       </div>
     </button>
 
     <button class="skill-card wobble cat-tools reveal" data-cat="tools">
       <span class="skill-name">analysis</span>
-      <span class="skill-one">点名后按固定打法分析，只读不改代码</span>
+      <span class="skill-one">多维度拆解复杂问题，只分析不改代码</span>
       <span class="skill-cat">工具</span>
       <div class="skill-detail" hidden>
-        <p><b>何时用：</b>显式点名，抛出任意想搞清楚的问题，要结论与建议但不改仓库时。</p>
-        <p><b>干什么：</b>拆维度、并行派子代理分头分析，按固定模板汇总成结论与建议。全程只读；代码改动评审归 <code>review</code>，需求收敛归 <code>explore</code>。</p>
+        <p><b>适用场景：</b>遇到复杂的架构选型、性能排查或方案论证，需要全面调研但暂不改动仓库时。</p>
+        <p><b>核心功能：</b>将问题拆分为多个专业维度，并行派发子代理深入调研，汇总为结构化的分析结论与落地方案，全程保持只读。</p>
+        <p><b>常用命令：</b><code>analysis 分析现有状态管理方案的瓶颈与迁移成本</code></p>
       </div>
     </button>
 
@@ -480,20 +485,20 @@
 
   <div class="start-grid">
     <div class="start-col reveal">
-      <h3 class="start-h">① 装进你的 Agent</h3>
+      <h3 class="start-h">① 安装技能到 Agent</h3>
       <div class="cmd-block wobble-sm">
         <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制">⧉</button></div>
         <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --list</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --list" aria-label="复制">⧉</button></div>
         <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush" aria-label="复制">⧉</button></div>
         <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering -g</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering -g" aria-label="复制">⧉</button></div>
       </div>
-      <p class="start-note">列技能、只装一部分、装到用户级（所有项目）。多数工程技能只在点名时跑。</p>
+      <p class="start-note">支持查看列表、按需挑选技能安装，或全局安装（-g）以在所有项目中生效。</p>
     </div>
 
     <div class="start-col reveal">
-      <h3 class="start-h">② 挑一种姿势跑起来</h3>
+      <h3 class="start-h">② 两种常见使用方式</h3>
       <div class="cmd-block wobble-sm">
-        <p class="cmd-comment"># 分步走：需求含糊也不怕</p>
+        <p class="cmd-comment"># 方式 A：分步执行（适合探索与精细把关）</p>
         <div class="cmd-line"><code>explore 审批单想支持批量转办</code></div>
         <div class="cmd-line"><code>to-spec approval-batch-transfer</code></div>
         <div class="cmd-line"><code>to-tasks approval-batch-transfer</code></div>
@@ -501,24 +506,23 @@
         <div class="cmd-line"><code>archive approval-batch-transfer</code></div>
       </div>
       <div class="cmd-block wobble-sm">
-        <p class="cmd-comment"># 或者：一条命令跑完</p>
+        <p class="cmd-comment"># 方式 B：全流程自动编排（适合大需求一键跑完）</p>
         <div class="cmd-line"><code>rush 审批单想支持批量转办</code></div>
       </div>
     </div>
 
     <div class="start-col reveal">
-      <h3 class="start-h">③ 目标仓库会多出什么</h3>
+      <h3 class="start-h">③ 初始化后的项目目录结构</h3>
       <div class="cmd-block wobble-sm tree-block">
 <pre>.agents/
-├── docs/       PROJECT；
-│               代码类还有架构/规范/地图/坏味道
-├── scripts/    precheck、spec-files、cooking
-│               与根 AGENTS 模板
-└── cooking/    进行中的功能（gitignore，别提交）
-AGENTS.md       短索引，按需打开 docs，
-                禁止一次加载全部</pre>
+├── docs/       项目概况 PROJECT；
+│               代码类含架构/规范/地图/坏味道自查
+├── scripts/    预检 precheck、任务管理 cooking
+│               与规范模板
+└── cooking/    临时开发记录（gitignore，不提交）
+AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
       </div>
-      <p class="start-note">跑过 <code>acceptance</code> 还会多出 <code>ACCEPTANCE.md</code> 和可选的 <code>acceptance/</code> 脚手架。cooking 完成后删掉。</p>
+      <p class="start-note">若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
     </div>
   </div>
 </section>
@@ -527,9 +531,9 @@ AGENTS.md       短索引，按需打开 docs，
 
 <footer class="footer">
   <svg class="footer-squiggle" viewBox="0 0 1200 30" aria-hidden="true"><path d="M10 16 C 200 6, 400 24, 600 12 C 800 2, 1000 22, 1190 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
-  <p class="footer-big">马克笔手绘 · 谢绝完美 ✎</p>
+  <p class="footer-big">简洁务实 · 规范编码 ✎</p>
   <p><a href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">github.com/cabinet-fe/prompt-engineering</a></p>
-  <p class="footer-license">MIT License © 前端小分队 · 细节在各技能的 <code>references/</code>，别整夹盲读</p>
+  <p class="footer-license">MIT License © 前端小分队 · 按需读取规则文档，保持精准高效</p>
 </footer>
 
 <!-- 技能详情弹层 -->
@@ -544,7 +548,7 @@ AGENTS.md       短索引，按需打开 docs，
   </div>
 </div>
 
-<div class="toast" id="toast" role="status">复制好了！✎</div>
+<div class="toast" id="toast" role="status">已复制到剪贴板！</div>
 
 <script src="./main.js"></script>
 </body>
