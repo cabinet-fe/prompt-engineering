@@ -82,7 +82,7 @@ skills/
 ├── langs/         语言：先读已安装版本，再打开对应 reference
 ├── frameworks/    框架：同上
 ├── roles/         前后端写法约束，克制膨胀
-└── tools/         git 提交、给库写伴生技能
+└── tools/         git 提交、给库写伴生技能、点名分析
 docs/              手绘风门户站点（GitHub Pages，main 分支 /docs 目录）
 ```
 
@@ -141,6 +141,7 @@ setup（可选 acceptance）
 | --- | --- |
 | `git-commit` | 交互提交可问是否 push；auto 模式只本地提交、不 push |
 | `build-lib-skill` | 给私有库 / 小众库写文档型伴生技能，事实只来自源码和公共 API |
+| `analysis` | 点名后按固定打法分析并给出结论与建议、只读不改代码 |
 
 ## 目标仓库里会多出什么
 

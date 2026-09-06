@@ -60,7 +60,7 @@
     <span class="marker-word">技能百宝袋</span>
     <svg class="title-squiggle" viewBox="0 0 420 24" aria-hidden="true"><path d="M8 14 C 70 6, 140 18, 210 12 C 280 6, 350 16, 412 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
   </h1>
-  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>22</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不另建一层过时文档。</p>
+  <p class="hero-sub reveal">工程流程 × 语言/框架 × 角色规范 × 工具，共 <b>23</b> 个技能。<br>让 Agent 不凭过时记忆写 API，也不另建一层过时文档。</p>
 
   <div class="install-box reveal">
     <span class="install-prompt">$</span>
@@ -85,8 +85,8 @@
 <!-- ================= 跑马灯分隔带 ================= -->
 <div class="ticker" aria-hidden="true">
   <div class="ticker-inner">
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳&nbsp;</span>
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
+    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
   </div>
 </div>
 
@@ -194,7 +194,7 @@
 <!-- ================= 技能一览 ================= -->
 <section id="skills" class="section">
   <h2 class="section-title reveal">
-    <span class="hl">技能一览 · 22 件家伙事儿</span>
+    <span class="hl">技能一览 · 23 件家伙事儿</span>
     <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 66 16, 126 4, 186 12 C 236 18, 272 6, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
   </h2>
   <p class="section-sub reveal">点开卡片看用法。多数工程技能<b>点名才跑</b>；语言/框架技能不用点名，写对应代码时它自己就来。</p>
@@ -455,6 +455,16 @@
       <div class="skill-detail" hidden>
         <p><b>何时用：</b>目标仓库是库项目，库代码更新、或你提出创建/更新它的伴生技能时。</p>
         <p><b>干什么：</b>为库、SDK 或 package 创建/更新文档型伴生 Agent Skill。事实只来自源码和公共 API，不脑补。</p>
+      </div>
+    </button>
+
+    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
+      <span class="skill-name">analysis</span>
+      <span class="skill-one">点名后按固定打法分析，只读不改代码</span>
+      <span class="skill-cat">工具</span>
+      <div class="skill-detail" hidden>
+        <p><b>何时用：</b>显式点名，抛出任意想搞清楚的问题，要结论与建议但不改仓库时。</p>
+        <p><b>干什么：</b>拆维度、并行派子代理分头分析，按固定模板汇总成结论与建议。全程只读；代码改动评审归 <code>review</code>，需求收敛归 <code>explore</code>。</p>
       </div>
     </button>
 
