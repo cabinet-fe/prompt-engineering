@@ -25,7 +25,7 @@ description: >
 1. **从「下一步」接着跑**：已有单位运行 `node .agents/scripts/cooking.mjs status <feature>`，按输出的「下一步」行进入对应环节：explore / to-spec / to-tasks / implement 与 review（实现循环）/ archive。不自己查 `goal.md`、`spec.md`、`tasks/` 是否存在，不读 `goal.md` 判确认状态。脚本判不了需求是否含糊：「下一步」为 to-spec 且 `goal.md：无` 时，需求含糊才 explore，否则直接 to-spec。新开单位（目录尚不存在，不跑脚本）：需求含糊 → explore，否则 to-spec。
 2. **explore 必须留在主对话执行**：读 `explore/SKILL.md` 并执行，直到该 feature 的 `goal.md` 为 `已确认`。查事实派子代理。确认后停止，建议用户新开会话执行 `rush <feature>` 继续：问答已占用本对话上下文，不在这里往下派。
 3. 其余环节按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec` → `to-tasks` → 实现循环（见「并行」）→ 全部阶段评审通过后 `archive`。不要派 `sync-docs`。
-4. **架构闸门在 to-spec 之后，不在实现中途**：to-spec 子代理汇报「架构影响」非「无」→ 停下，把条目给用户，让用户先跑 `setup` 更新模式，再 `rush <feature>`（会从 to-tasks 接着跑）。不派 to-tasks，不在 rush 里改架构文档。实现中子代理仍汇报需要更新 `ARCHITECTURE.md` 的，同样停下。
+4. **架构闸门在 to-spec 之后，不在实现中途**：to-spec 子代理汇报「架构影响」非「无」→ 停下，把条目给用户，让用户先跑 `sync-docs`，再 `rush <feature>`（会从 to-tasks 接着跑）。不派 to-tasks，不在 rush 里改架构文档。实现中子代理仍汇报需要更新 `ARCHITECTURE.md` 的，同样停下。
 5. 提交节奏：本对话当 review 派发方。中间阶段 review 通过后 `git-commit` auto；收尾阶段 review 带 `defer-commit`，不提交，由 archive 子代理删完目录后一次 `git-commit` auto（最后阶段代码 + 本轮改过的已有文档），不拆成两笔。
 6. 主对话只读：`goal.md` 的「需求目标」、`node .agents/scripts/cooking.mjs status` 的输出（总览与单位详情）、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`，不把 spec 全文、任务清单、`reviews/` 正文加载进主对话。脚本报错（前置成环、状态非法）：停下，原文给用户。
 7. review 不通过：派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。

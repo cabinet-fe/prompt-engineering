@@ -1,6 +1,6 @@
 # CODE-MAP 更新契约
 
-implement / review / sync-docs / archive / setup 更新模式都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。
+implement / review / sync-docs / archive / setup 都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。
 
 只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接。
 
@@ -23,12 +23,13 @@ implement / review / sync-docs / archive / setup 更新模式都引用本文，�
 
 | 场景 | 谁 |
 | --- | --- |
-| 首次生成；换栈/改分层/加应用边界/拆合包 | setup（可一并改 ARCHITECTURE + CODE-MAP） |
+| 首次生成 | setup |
+| 换栈/改分层/加应用边界/拆合包 | sync-docs（一并改 ARCHITECTURE + CODE-MAP） |
 | 本轮实现触及上面 1～6 | implement（阶段或直写） |
 | 用户点名 sync-docs 且路径或职责已被代码推翻 | sync-docs |
-| 归档时地图明显过期 | 停止，列出要改的行，让 implement 修；若新目录等于新分层，让用户先 setup |
+| 归档时地图明显过期 | 停止，列出要改的行，让 implement 修；若新目录等于新分层，让用户先 `sync-docs` |
 
-全栈架构形态变化：setup 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步本文件。
+全栈架构形态变化：`sync-docs` 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步本文件。
 
 ## review 阻塞
 
@@ -36,4 +37,4 @@ implement / review / sync-docs / archive / setup 更新模式都引用本文，�
 
 ## implement 停止
 
-若改动等于换栈、新应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `setup` 更新 `ARCHITECTURE.md`，再由 setup 同步本文件。
+若改动等于换栈、新应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`，再由 sync-docs 同步本文件。

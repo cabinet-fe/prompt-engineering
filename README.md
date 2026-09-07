@@ -107,7 +107,7 @@ setup（可选 acceptance）
 | `to-tasks` | `spec.md` 拆成 `tasks/Pn.md`，可并行的阶段标出来 |
 | `implement` | 做一个未阻塞阶段，或按用户描述直写；当场对齐被说错的已有文档；仓库已有 lint / 测试就跑一遍 |
 | `review` | 只评不改，必须在子代理里评；通过后派发方 `git-commit`（不 push） |
-| `sync-docs` | 只改已被代码说错的已有文档。不走 implement 的直接改文件可点名；禁止新建 |
+| `sync-docs` | 对齐 `.agents/docs/`；可新增自定义文档并写入根 `AGENTS.md` 索引 |
 | `archive` | 确认已有文档已对齐后删掉该 feature 的 cooking 目录 |
 | `rush` | 编排整条链；简单改动不要用 |
 

@@ -40,4 +40,4 @@ description: >
 
 ## 结束
 
-「架构影响」非 `无`：告诉用户先跑 `setup` 更新模式，把这些新包 / 新分层写进 `ARCHITECTURE.md` 与 `CODE-MAP.md`（未建目录可标「规划」），之后再 `to-tasks`。否则下一步：请用户显式调用 `to-tasks`（带上本次标识）。都不要自动继续。
+「架构影响」非 `无`：告诉用户先跑 `sync-docs`，把这些新包 / 新分层写进 `ARCHITECTURE.md` 与 `CODE-MAP.md`（未建目录可标「规划」），之后再 `to-tasks`。否则下一步：请用户显式调用 `to-tasks`（带上本次标识）。都不要自动继续。

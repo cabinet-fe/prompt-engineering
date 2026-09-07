@@ -17,7 +17,7 @@
 完成后只汇报：spec 路径、是否用了 goal、「架构影响」（无，或条目原文）。
 ```
 
-「架构影响」非「无」：主对话停下让用户跑 `setup` 更新模式，不派 to-tasks。
+「架构影响」非「无」：主对话停下让用户跑 `sync-docs`，不派 to-tasks。
 
 ## to-tasks
 
@@ -27,7 +27,7 @@
 先读 <engineering>/to-tasks/SKILL.md 并完整执行。
 输入：.agents/cooking/<feature>/spec.md
 输出：.agents/cooking/<feature>/tasks/Pn.md
-不要改代码。完成后只汇报：阶段列表、依赖、现在可做的 Pn（以 cooking.mjs status 输出为准）。因「架构影响」未收录而停止时，汇报需要先 setup。
+不要改代码。完成后只汇报：阶段列表、依赖、现在可做的 Pn（以 cooking.mjs status 输出为准）。因「架构影响」未收录而停止时，汇报需要先 sync-docs。
 ```
 
 ## implement（每个可做阶段单独一个子代理）
@@ -41,7 +41,7 @@
 <返工行>
 由 rush 派发：不要自行派 review，不要提交，不要实现其它阶段。状态只经 cooking.mjs set 改。
 不要改 ARCHITECTURE.md；发现架构级变更则停止编码，在汇报里说明。
-完成后只汇报：改了哪些路径、清单是否全部勾选、跑了哪些 lint / typecheck / 测试命令及结果、CODE-MAP 及其它已有文档是否更新、是否需要 setup 更新架构。
+完成后只汇报：改了哪些路径、清单是否全部勾选、跑了哪些 lint / typecheck / 测试命令及结果、CODE-MAP 及其它已有文档是否更新、是否需要 sync-docs 更新架构。
 ```
 
 ## review（每个刚完成实现的阶段单独一个子代理）

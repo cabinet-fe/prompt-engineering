@@ -23,7 +23,7 @@ description: >
 运行 `node .agents/scripts/cooking.mjs status <feature>`，不读 `goal.md` 判断：
 `spec.md：无` → 停止，告诉用户先执行 `to-spec`。
 `goal.md：未确认` → 停止，正在 explore，不要按可能过期的 spec 拆任务。
-`spec.md`「架构影响」非 `无`：检索 `ARCHITECTURE.md` / `CODE-MAP.md` 是否已收录这些路径（标「规划」的也算）；未收录则停止，让用户先跑 `setup` 更新模式再回来拆。不在这里改架构文档。
+`spec.md`「架构影响」非 `无`：检索 `ARCHITECTURE.md` / `CODE-MAP.md` 是否已收录这些路径（标「规划」的也算）；未收录则停止，让用户先跑 `sync-docs` 再回来拆。不在这里改架构文档。
 
 ## 阶段怎么切
 

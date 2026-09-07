@@ -48,11 +48,11 @@ description: >
 
 ### 4. 覆写根 `AGENTS.md`
 
-按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打，禁止追加短注、流程章、项目特例。
+按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打必有行。禁止短注、流程章、把项目特例写成正文。
 
 - **没有**：直接复制
-- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；能对应上的原文尽量搬迁。然后复制覆写
-- **已有且已是索引**：仍按当前类别模板复制覆写，不要保留旧短注
+- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；能对应上的原文尽量搬迁。然后按下一则处理
+- **已有且已是索引**：复制模板后，把原表里自定义 `.agents/docs/` 行追加回表末（不是 `PROJECT.md` / `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `SMELLS.md` / `CODE-MAP.md` 的才算自定义）。丢掉短注、流程章。禁止改模板必有行的文案
 
 用户全局规则（例如个人 `AGENTS.md`）不要复制进本仓库 docs。
 
@@ -69,11 +69,11 @@ description: >
 | `CODE-MAP.md`      | 扫真实目录；模块怎么切拿不准才问                                             | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
 | `SMELLS.md`        | 从 [smells.md](references/smells.md) **原样复制**；已有则覆写为当前模板      | 同左。禁止按项目改写、追加或删条                             |
 
-CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。全栈架构形态变化时同步更新 `PROJECT.md` + `ARCHITECTURE.md` + `CODE-MAP.md`。
+CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。`.agents/docs` 已有文件之后由 `sync-docs` 更新。
 
 ### 6. 汇报
 
-列出写入的路径，每个文件一句话。不要把流程教程写进 `AGENTS.md`。提醒：流程可选；技能默认不自动触发；架构大变再跑更新模式。
+列出写入的路径，每个文件一句话。不要把流程教程写进 `AGENTS.md`。提醒：流程可选；技能默认不自动触发；`.agents/docs` 过时跑 `sync-docs`；脚本 / 根 `AGENTS.md` 走样再跑更新模式。
 
 工作流第 6 步汇报之后、以及更新模式正常结束之后：用 `交互式提问` 询问是否为编码加一层验收保障（token 与工时会明显增加）。
 选否或跳过：不生成验收文件、不代跑 `acceptance`。选是：只提示显式调用 `acceptance`。
@@ -81,18 +81,15 @@ CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已�
 
 ## 更新模式
 
-docs 已存在、用户要刷新，或架构大变时：
+docs 已存在、用户要刷新底座，或 precheck 缺项时：
 
 | 变更                                                                          | 做                                                                                           |
 | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 类别、组织结构、全栈形态                                                      | 更新 `PROJECT.md`；代码/非代码切换则改用对应 AGENTS 模板。从代码改为非代码不强制删旧的代码类 docs |
-| 换技术栈、加/删应用边界、改分层、拆/合包                                      | 更新 `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                                 |
-| 全栈架构形态                                                                  | 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步 `CODE-MAP.md`                                  |
-| 触及 [code-map-update.md](references/code-map-update.md) 的要改项、但架构没变 | 只更新 `CODE-MAP.md`（implement 也会做）                                                     |
+| 代码/非代码切换                                                               | 改用对应 AGENTS 模板；按第 5 步补缺的代码类 docs。从代码改为非代码不强制删旧的代码类 docs     |
 | `.agents/scripts/` 缺失任一脚本 / 模板或与技能包不一致                        | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
-| 规范/偏好变了                                                                 | 更新 `DEV-STANDARDS.md`                                                                      |
-| `.agents/docs/SMELLS.md` 缺失或与 [smells.md](references/smells.md) 不一致     | 从技能包模板原样覆写                                                                         |
-| `AGENTS.md` 又变长了或掺了短注                                                | 按当前类别模板覆写                                                                           |
+| `AGENTS.md` 掺了短注、流程章，或缺模板必有行                                  | 按第 4 步重建必有行，保留用户追加的 `.agents/docs/` 索引行                                   |
+| 代码类必有 docs 缺失                                                          | 按第 5 步补写                                                                                |
+| `.agents/docs/` 已有文档内容过时                                              | 让用户跑 `sync-docs`，不要在这里改                                                           |
 
 禁止：删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。
 正常结束后执行上文验收保障询问。

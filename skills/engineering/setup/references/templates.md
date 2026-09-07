@@ -4,14 +4,14 @@
 
 ## 根目录 `AGENTS.md`
 
-按类别用 shell 从 `.agents/scripts/` 复制对应模板文件（setup 第 2 步已把它们连同脚本一起复制过去），禁止追加短注、流程章、项目特例。不要把规范全文、技术栈清单、目录树塞进来。precheck 运行时读同一份模板做比对。
+按类别用 shell 从 `.agents/scripts/` 复制对应模板文件（setup 第 2 步已把它们连同脚本一起复制过去）。模板是必有行；允许在文档表追加其它 `.agents/docs/` 行。禁止短注、流程章、把规范全文/技术栈/目录树塞进本文件。setup 覆写时保留追加行。precheck：模板每行都在即可，多出的行不算失败。
 
 - 代码类：[root-agents-code.md](../scripts/root-agents-code.md)
 - 非代码：[root-agents-non-code.md](../scripts/root-agents-non-code.md)
 
 ## `.agents/docs/PROJECT.md`
 
-始终写入。只留这几项。禁止塞规范、流程、目录树。
+始终写入。只留这几项。禁止塞规范、流程、目录树。首次由 setup 写入；之后由 `sync-docs` 更新。代码/非代码切换先 setup。
 
 ```markdown
 # 项目
@@ -29,7 +29,7 @@
 
 ## `.agents/docs/ARCHITECTURE.md`
 
-仅代码类。由 setup 首次生成，架构大变时由 setup 更新。implement 禁止改本文件。模块表行变更若未换栈/改分层/加应用边界，不要改本文件（改 `CODE-MAP.md`，见 [code-map-update.md](code-map-update.md)）。
+仅代码类。由 setup 首次生成，之后由 `sync-docs` 更新。implement 禁止改本文件。模块表行变更若未换栈/改分层/加应用边界，不要改本文件（改 `CODE-MAP.md`，见 [code-map-update.md](code-map-update.md)）。
 
 ```markdown
 # 架构
@@ -62,7 +62,7 @@
 
 ## `.agents/docs/DEV-STANDARDS.md`
 
-仅代码类。只写本仓库真正执行的规范。现有项目以代码和配置为准；新项目以用户回答为准。没有的章节整节删除，不要保留空标题。
+仅代码类。由 setup 首次生成。之后由 `sync-docs` 更新。implement 禁止自行发明规范。只写本仓库真正执行的规范。现有项目以代码和配置为准；新项目以用户回答为准。没有的章节整节删除，不要保留空标题。
 
 ```markdown
 # 开发规范
@@ -104,7 +104,7 @@
 
 ## `.agents/docs/SMELLS.md`
 
-仅代码类。从 [smells.md](smells.md) **原样复制**到 `.agents/docs/SMELLS.md`。禁止按项目改写、追加或删条。写代码时按清单边写边收；review 对照。即使仓库没写任何其它规范也适用。
+仅代码类。从 [smells.md](smells.md) **原样复制**到 `.agents/docs/SMELLS.md`。之后不一致时由 `sync-docs` 原样覆写。禁止按项目改写、追加或删条。写代码时按清单边写边收；review 对照。即使仓库没写任何其它规范也适用。
 
 ## `.agents/docs/CODE-MAP.md`
 
