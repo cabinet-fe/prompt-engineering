@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>工程技能库 · 面向 AI Agent 的工程化技能集</title>
-<meta name="description" content="专为 AI Agent 设计的工程化技能库：涵盖标准化开发流程、语言框架现代规范、角色把关与实用工具，让 AI 编码告别过时 API 与文档脱节。">
+<title>提示词工程 · 面向 AI Agent 的技能与文档库引擎</title>
+<meta name="description" content="面向 AI Agent 的提示词工程：25 个即装即用的工程技能（流程、语言框架、角色、工具），加一套 docs-server 文档库引擎——让内部库文档跟得上代码、能被 AI 直接检索。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Serif+SC:wght@400..900&family=Source+Serif+4:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -18,28 +18,28 @@
   <div class="masthead">
     <div class="edition-line hairline-top">
       <span class="mono-caps">cabinet-fe</span>
-      <span class="masthead-date mono-caps">25 个技能 · 即装即用</span>
+      <span class="masthead-date mono-caps">工作流 · 技能库 · 文档库引擎</span>
       <span class="mono-caps">prompt-engineering</span>
     </div>
     <h1 class="masthead-title">
-      <span class="masthead-main">工程技能库</span>
+      <span class="masthead-main">提示词工程</span>
       <span class="masthead-sub">PROMPT ENGINEERING · FOR AI AGENTS</span>
     </h1>
     <div class="edition-line hairline-bottom double-under">
-      <span class="mono-caps">工程流程</span>
-      <span class="mono-caps">语言与框架规范</span>
-      <span class="mono-caps">角色把关 · 实用工具</span>
+      <span class="mono-caps">工作流</span>
+      <span class="mono-caps">25 个即装即用技能</span>
+      <span class="mono-caps">文档库引擎 docs-server</span>
     </div>
   </div>
 
   <!-- ============ 页眉导航栏 ============ -->
   <nav class="navbar" aria-label="页面导航">
-    <a class="navbar-logo mono-caps" href="#top">工程技能库</a>
+    <a class="navbar-logo mono-caps" href="#top">提示词工程</a>
     <div class="navbar-links mono-caps">
       <a href="#highlights">它解决了什么</a>
-      <a href="#pick">场景选读</a>
-      <a href="#flow">标准流程</a>
-      <a href="#skills">技能清单</a>
+      <a href="#workflow">工作流</a>
+      <a href="#skills">技能库</a>
+      <a href="#docs">文档库引擎</a>
       <a href="#start">快速上手</a>
     </div>
     <a class="navbar-gh mono-caps" href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">GitHub ↗</a>
@@ -50,13 +50,13 @@
 
   <!-- ================= 首屏导读 ================= -->
   <section class="front-page" id="highlights">
-    <div class="kicker mono-caps">工程化技能集</div>
-    <h2 class="headline-xl">专为 AI Agent 打造的工程技能库</h2>
-    <p class="deck">涵盖工程流程、语言框架、角色规范与辅助工具。基于项目实际版本与现有代码工作，告别过时 API 与文档脱节。</p>
+    <div class="kicker mono-caps">工作流 + 技能库 + 文档库引擎</div>
+    <h2 class="headline-xl">不止是技能包：一套真正的提示词工程</h2>
+    <p class="deck">工作流管住从需求到交付的过程，技能库对齐语言框架的真实写法，文档库引擎让内部库文档跟得上代码、能被 AI 直接检索。</p>
 
     <div class="front-cols">
       <div class="lead-article">
-        <p class="drop-cap">AI 写代码最常翻车的三件事：引用已经废弃的 API、文档和代码对不上、临时记录堆得到处都是。这套技能库就是为解决这些问题而生——把标准开发流程、语言框架的现代规范、角色把关经验，打包成 25 个即插即用的技能，装进你的 AI Agent。</p>
+        <p class="drop-cap">这个仓库分三块。<b>工作流</b>：从需求梳理到交付归档的标准管线，治临时记录乱堆、过程不可控。<b>技能库</b>：25 个即装即用的 Agent 技能，让 AI 对齐项目实际版本、按角色把关，不靠训练数据猜 API。<b>文档库引擎</b>：库维护者把内部库文档推上 docs-server 建全文索引，使用者的 AI 用一个技能检索所有库——内部库的真实用法，不再靠模型猜。</p>
         <p>工程流程类技能需要<b>显式输入命令调用</b>；语言与框架规范在你编辑对应代码文件时<b>自动生效</b>。安装只要一条命令：</p>
         <div class="install-box bordered-boxout">
           <span class="install-prompt mono">$</span>
@@ -79,9 +79,9 @@
           <p class="brief-meta mono-caps">8 个主流技术栈 · 精确对齐版本</p>
         </article>
         <article class="brief">
-          <h4>临时过程记录用完即清</h4>
-          <p>开发中的需求讨论与任务拆解仅保存在 <code>cooking/</code> 临时目录中。全部任务完成后自动清理，只保留最终代码与必要核心文档。</p>
-          <p class="brief-meta mono-caps">用完即清 · 保持仓库清爽</p>
+          <h4>内部库文档，AI 直接检索</h4>
+          <p>私有库、小众库的用法推上 docs-server 建好全文索引，AI 经 <code>docs-search</code> 技能按需检索，文档跟着库代码同步更新。一个技能覆盖所有库，无需逐库写技能、无需配 MCP。</p>
+          <p class="brief-meta mono-caps">docs-server · 全文检索 · 用完即查</p>
         </article>
       </aside>
     </div>
@@ -90,16 +90,20 @@
   <!-- ================= 跑马灯分隔带 ================= -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-inner mono-caps">
-      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳&nbsp;</span>
+      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳ docs-server ✳&nbsp;</span>
     </div>
   </div>
 
-  <!-- ================= 场景选读 ================= -->
-  <section id="pick" class="section">
+  <!-- ================= PART Ⅰ 工作流 ================= -->
+  <section id="workflow" class="section">
+    <div class="section-part mono-caps">PART Ⅰ</div>
     <header class="section-head">
-      <h2 class="section-title">按场景快速选用</h2>
+      <h2 class="section-title">工作流</h2>
     </header>
-    <p class="section-deck">对号入座：你当前需要完成什么？点击查看推荐的命令与指引。</p>
+    <p class="section-deck">从含糊需求到交付归档的标准管线。先对号入座选走法，再按环节推进；rush 可在任意环节介入，自动跑完剩余流程。</p>
+
+    <h3 class="sub-title">按场景快速选用</h3>
+    <p class="sub-deck">对号入座：你当前需要完成什么？点击查看推荐的命令与指引。</p>
 
     <div class="pick-wrap">
       <div class="pick-list" role="tablist" aria-label="选择你的情况">
@@ -119,14 +123,9 @@
         <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。</p>
       </div>
     </div>
-  </section>
 
-  <!-- ================= 流程 ================= -->
-  <section id="flow" class="section">
-    <header class="section-head">
-      <h2 class="section-title">标准工程流程：从初始化到交付归档</h2>
-    </header>
-    <p class="section-deck">支持分步手动执行，也支持用 <code>rush</code> 一键自动编排。点击各个环节查看具体分工与运转逻辑：</p>
+    <h3 class="sub-title">标准工程流程：从初始化到交付归档</h3>
+    <p class="sub-deck">支持分步手动执行，也支持用 <code>rush</code> 在任意环节介入、自动跑完剩余流程。点击各个环节查看具体分工与运转逻辑：</p>
 
     <div class="flow-board">
       <div class="flow-track" role="tablist" aria-label="工程流程各环节">
@@ -145,6 +144,19 @@
         <button class="flow-node" data-flow="archive"><span class="flow-step mono">STEP 7</span><span class="flow-name">archive</span></button>
       </div>
 
+      <div class="rush-strip">
+        <p class="rush-strip-tag mono-caps">rush ⚡ 任意环节介入</p>
+        <p class="rush-strip-text">不必从第一步手动走到最后：只要 setup 底座就绪，rush 会读取当前进度，在下面任意位置接手，自动跑完剩余环节直至交付归档。</p>
+        <div class="rush-strip-points mono-caps">
+          <span>流程起点</span>
+          <span>explore 后</span>
+          <span>to-spec 后</span>
+          <span>to-tasks 后</span>
+          <span>implement 后</span>
+          <span>review 后</span>
+        </div>
+      </div>
+
       <div class="flow-note bordered-boxout" id="flow-note" aria-live="polite">
         <p class="flow-note-title" id="flow-title">STEP 1 · setup · 初始化底座</p>
         <p class="flow-note-cmd"><code id="flow-cmd" class="mono">setup</code></p>
@@ -153,12 +165,13 @@
     </div>
   </section>
 
-  <!-- ================= 技能一览 ================= -->
+  <!-- ================= PART Ⅱ 技能库 ================= -->
   <section id="skills" class="section">
+    <div class="section-part mono-caps">PART Ⅱ</div>
     <header class="section-head">
-      <h2 class="section-title">技能清单 · 25 个内置技能</h2>
+      <h2 class="section-title">技能库 · 25 个内置技能</h2>
     </header>
-    <p class="section-deck">点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
+    <p class="section-deck">工程流程、语言、框架、角色、工具五类。点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
 
     <div class="skill-filter" role="group" aria-label="按类别筛选">
       <button class="filter-chip mono-caps active" data-filter="all">全部</button>
@@ -269,11 +282,11 @@
 
       <button class="skill-card cat-engineering" data-cat="engineering">
         <span class="skill-name mono">rush</span>
-        <span class="skill-one">一键编排端到端开发：从拆解到交付</span>
+        <span class="skill-one">自动编排开发全流程，可在任意环节介入接手</span>
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>需求明确的大中型功能开发，希望全流程自动推进任务拆解、并行编码、逐阶段审查与自动提交。</p>
-          <p><b>具体功能：</b>全流程自动编排调度：需求含糊时先引导梳理，无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
+          <p><b>适用场景：</b>需求明确的大中型功能开发，希望自动推进任务拆解、并行编码、逐阶段审查与提交；或流程进行到一半，想从当前进度继续。</p>
+          <p><b>具体功能：</b>读取当前进度断点续跑：可在流程起点、explore / to-spec / to-tasks / implement / review 之后的任意位置接手，自动补齐剩余环节。无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
           <p><b>常用命令：</b><code>rush 审批单支持批量转办</code> 或 <code>rush approval-batch-transfer</code></p>
           <p><b>使用提示：</b>适合多阶段大功能；日常简单修改建议直接使用 <code>implement</code> 直写更轻巧。</p>
         </div>
@@ -459,6 +472,42 @@
     </div>
   </section>
 
+  <!-- ================= PART Ⅲ 文档库引擎 ================= -->
+  <section id="docs" class="section">
+    <div class="section-part mono-caps">PART Ⅲ</div>
+    <header class="section-head">
+      <h2 class="section-title">文档库引擎 · docs-server</h2>
+    </header>
+    <p class="section-deck">企业内部库文档检索系统：库维护者把文档推送到中心服务建全文索引，库使用者在编辑器里让 AI 经 Agent Skill 直接检索。一个技能覆盖所有库，无需逐库写技能、无需配 MCP。</p>
+
+    <div class="engine-board bordered-boxout">
+      <pre class="mono engine-diagram">库维护者                     中心服务                    库使用者
+push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search 查询脚本
+（零依赖 Node 脚本）     SQLite + FTS5 全文索引    （Agent 运行）</pre>
+    </div>
+
+    <div class="engine-grid">
+      <article class="engine-card">
+        <h4>文档服务 <span class="engine-path mono-caps">server/</span></h4>
+        <p>Go 单进程 REST 服务：整库推送（单令牌 Bearer 鉴权）+ SQLite FTS5 全文检索（读路径免鉴权），编译为 CGO 关闭的单文件静态二进制，拷到服务器直接运行。</p>
+      </article>
+      <article class="engine-card">
+        <h4>推送脚本 <span class="engine-path mono-caps">push-docs.mjs</span></h4>
+        <p>零依赖单文件 Node 脚本（Node ≥ 18），复制到库仓库即可用：解析 frontmatter、本地校验、整库全量推送，手动或挂 CI 执行。</p>
+      </article>
+      <article class="engine-card">
+        <h4>docs-gen <span class="engine-path mono-caps">库维护者技能</span></h4>
+        <p>按「文档读者是 AI」的标准生成与修订库文档；库代码改动后判定并同步受影响文档，再执行推送，让索引里的文档永远不说假话。</p>
+      </article>
+      <article class="engine-card">
+        <h4>docs-search <span class="engine-path mono-caps">库使用者技能</span></h4>
+        <p>AI 运行内嵌零依赖查询脚本：列库、全文检索、按章节取文档。服务地址只读 <code>DOCS_SERVER_URL</code>，换库只换参数。</p>
+      </article>
+    </div>
+
+    <p class="engine-note">部署、配置、REST API 与旧版 MCP 接入迁移，见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/server/README.md" target="_blank" rel="noopener">server/README.md ↗</a>。</p>
+  </section>
+
   <!-- ================= 上手 ================= -->
   <section id="start" class="section">
     <header class="section-head">
@@ -488,7 +537,7 @@
           <div class="cmd-line"><code class="mono">archive approval-batch-transfer</code></div>
         </div>
         <div class="cmd-block">
-          <p class="cmd-comment mono-caps"># 方式 B：全流程自动编排（适合大需求一键跑完）</p>
+          <p class="cmd-comment mono-caps"># 方式 B：rush 自动编排（任意环节可介入，大需求一键跑完）</p>
           <div class="cmd-line"><code class="mono">rush 审批单想支持批量转办</code></div>
         </div>
       </div>
@@ -506,13 +555,27 @@ AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
         </div>
         <p class="start-note">若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
       </div>
+
+      <div class="start-col">
+        <h3 class="start-h">④ 文档库引擎：三步接入</h3>
+        <div class="cmd-block">
+          <p class="cmd-comment mono-caps"># 维护者：推送库文档（脚本复制到自己仓库后执行）</p>
+          <div class="cmd-line"><code class="mono">DOCS_SERVER_URL=… DOCS_TOKEN=… DOCS_LIBRARY=my-lib node scripts/push-docs.mjs</code></div>
+        </div>
+        <div class="cmd-block">
+          <p class="cmd-comment mono-caps"># 使用者：装检索技能，配服务地址</p>
+          <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering --skill docs-search</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering --skill docs-search" aria-label="复制">复制</button></div>
+          <div class="cmd-line"><code class="mono">export DOCS_SERVER_URL=http://docs-server.internal:8080</code></div>
+        </div>
+        <p class="start-note">服务端部署、二进制下载与配置说明见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/server/README.md" target="_blank" rel="noopener">server/README.md</a>。</p>
+      </div>
     </div>
   </section>
 
 </main>
 
 <footer class="footer">
-  <div class="footer-mast mono-caps">工程技能库 · PROMPT ENGINEERING</div>
+  <div class="footer-mast mono-caps">提示词工程 · PROMPT ENGINEERING</div>
   <p class="footer-link"><a href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">github.com/cabinet-fe/prompt-engineering</a></p>
   <p class="footer-license mono-caps">MIT License © 前端小分队 · 按需读取规则文档，保持精准高效</p>
 </footer>

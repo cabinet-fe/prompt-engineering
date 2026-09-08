@@ -1,4 +1,4 @@
-/* 工程技能库门户 · 交互 */
+/* 提示词工程门户 · 交互 */
 (() => {
   "use strict";
 
@@ -18,7 +18,7 @@
     },
     rush: {
       cmd: "rush 审批单支持批量转办",
-      desc: "全自动任务编排器：自动完成需求规格制定、任务拆解、并行编码与代码审查。做完一个阶段立即审查，不通过自动返工修复，适合大中型功能。"
+      desc: "全自动编排器：可在流程起点或 explore / to-spec / to-tasks / implement / review 之后的任意位置介入，读取当前进度断点续跑。无依赖阶段并行开发，每阶段完成即审查，不通过自动返工，适合大中型功能。"
     },
     steps: {
       cmd: "to-spec → to-tasks → implement → review → archive",

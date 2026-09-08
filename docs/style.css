@@ -1,5 +1,5 @@
 /* ============================================================
-   工程技能库门户 · 古典报刊印刷风（Broadsheet Editorial）
+   提示词工程门户 · 古典报刊印刷风（Broadsheet Editorial）
    报头 / 栏线 / 粗细线条 / 衬线正文 / 等宽元数据
    ============================================================ */
 :root {
@@ -351,6 +351,34 @@ code {
   max-width: 66ch;
   margin: 6px 0 26px;
 }
+/* 三大板块级标（PART Ⅰ/Ⅱ/Ⅲ） */
+.section-part {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  color: var(--press-red);
+  border: var(--rule);
+  padding: 3px 12px;
+  margin-bottom: 14px;
+}
+/* 板块内小标题（工作流内部的分栏） */
+.sub-title {
+  font-size: 1.2rem;
+  margin: 36px 0 6px;
+}
+.sub-title::before {
+  content: "■";
+  font-size: .6em;
+  vertical-align: .25em;
+  margin-right: 7px;
+  color: var(--press-red);
+}
+.sub-deck {
+  color: var(--ink-2);
+  font-size: .95rem;
+  margin: 0 0 22px;
+}
 
 /* ============================================================
    场景选读（读者来信问答式）
@@ -440,6 +468,29 @@ code {
 .flow-note-cmd { margin-bottom: 12px; }
 .flow-note-desc { color: var(--ink-2); margin: 0; }
 
+/* ---------- rush 介入点（任意环节接手） ---------- */
+.rush-strip {
+  max-width: 720px;
+  margin: 0 auto 26px;
+  padding: 14px 20px 16px;
+  text-align: center;
+  background: var(--paper-crisp);
+  border: 1px dashed var(--press-red);
+}
+.rush-strip-tag { color: var(--press-red); margin: 0 0 8px; font-weight: 700; }
+.rush-strip-text { font-size: .92rem; color: var(--ink-2); margin: 0 0 14px; }
+.rush-strip-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
+}
+.rush-strip-points span {
+  border: var(--rule);
+  background: var(--paper);
+  padding: 3px 10px;
+}
+
 /* ============================================================
    技能清单（分类广告排布，但保持报风格）
    ============================================================ */
@@ -511,6 +562,54 @@ code {
 .cat-frameworks { --cat: var(--ink); }
 .cat-roles { --cat: var(--ink-2); }
 .cat-tools { --cat: var(--ink-3); }
+
+/* ============================================================
+   文档库引擎（docs-server 广告特稿）
+   ============================================================ */
+.engine-board {
+  max-width: 860px;
+  margin: 0 auto 26px;
+  padding: 16px 20px;
+  overflow-x: auto;
+}
+.engine-diagram {
+  margin: 0;
+  font-size: .84rem;
+  line-height: 1.9;
+  white-space: pre;
+  color: var(--ink);
+}
+.engine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0;
+  border-top: var(--rule);
+  border-left: var(--rule);
+  margin-bottom: 16px;
+}
+.engine-card {
+  background: var(--paper);
+  border-right: var(--rule);
+  border-bottom: var(--rule);
+  padding: 16px 18px 14px;
+}
+.engine-card h4 { font-size: 1.04rem; margin-bottom: 6px; }
+.engine-card h4::before {
+  content: "■";
+  font-size: .6em;
+  vertical-align: .25em;
+  margin-right: 7px;
+  color: var(--press-red);
+}
+.engine-path {
+  font-size: .68rem;
+  color: var(--ink-3);
+  letter-spacing: .05em;
+  margin-left: 6px;
+}
+.engine-card p { color: var(--ink-2); font-size: .9rem; line-height: 1.65; margin: 0; }
+.engine-card code { white-space: normal; word-break: break-all; }
+.engine-note { text-align: center; color: var(--ink-2); font-size: .92rem; margin: 0; }
 
 /* ============================================================
    三分钟上手（操作手册）
