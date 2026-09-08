@@ -1,0 +1,35 @@
+name: CI
+
+# 只测 docs-server 子项目：技能/门户类提交不触发 Go 测试
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+      - "scripts/push-docs.mjs"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "server/**"
+      - "scripts/push-docs.mjs"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 测试与静态检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: go vet
+        working-directory: server
+        run: go vet ./...
+      - name: go test
+        working-directory: server
+        run: go test ./...

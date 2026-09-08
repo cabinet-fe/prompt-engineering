@@ -2,7 +2,7 @@
 
 面向 Agent 的技能包：工程流程、语言/框架写法、角色规范、工具。源码在 `skills/`，每个技能一个目录，入口是 `SKILL.md`。
 
-门户站点（手绘风）：<https://cabinet-fe.github.io/prompt-engineering/>，源码在 `docs/`，由 GitHub Pages 直接发布。
+门户站点（报刊风）：<https://cabinet-fe.github.io/prompt-engineering/>，源码在 `docs/`，由 GitHub Pages 直接发布。
 
 **规则只有一份真相源：各技能的 `SKILL.md` 与其 `references/`。** 本文只讲怎么选、怎么点名，不复述规则；两处说法不一致时以 `SKILL.md` 为准。
 
@@ -82,11 +82,21 @@ skills/
 ├── langs/         语言：先读已安装版本，再打开对应 reference
 ├── frameworks/    框架：同上
 ├── roles/         前后端写法约束，克制膨胀
-└── tools/         git 提交、给库写伴生技能、点名分析
-docs/              手绘风门户站点（GitHub Pages，main 分支 /docs 目录）
+└── tools/         git 提交、给库写伴生技能、点名分析、文档生成与检索
+docs/              报刊风门户站点（GitHub Pages，main 分支 /docs 目录）
+server/  scripts/  docs-server 子项目：文档检索服务 + 推送脚本
 ```
 
 细节放在各技能的 `references/`，不要整夹盲读。
+
+## docs-server 子项目
+
+仓库内含 [docs-server](server/README.md)：企业内部库文档检索系统。中心 Go 服务（`server/`）用 SQLite FTS5 建全文索引，零依赖推送脚本（`scripts/push-docs.mjs`）把库文档整库推上去，配套两个工具技能：
+
+| 技能 | 做什么 |
+| --- | --- |
+| `docs-gen` | 库维护者用：AI-first 文档标准、库代码改动后同步受影响文档、执行推送 |
+| `docs-search` | 库使用者用：AI 运行内嵌脚本经 REST 检索文档，一个技能覆盖所有库 |
 
 ## 技能一览
 
@@ -142,6 +152,8 @@ setup（可选 acceptance）
 | `git-commit` | 交互提交可问是否 push；auto 模式只本地提交、不 push |
 | `build-lib-skill` | 给私有库 / 小众库写文档型伴生技能，事实只来自源码和公共 API |
 | `analysis` | 点名后按固定打法分析并给出结论与建议、只读不改代码 |
+| `docs-gen` | 为内部库生成检索友好的文档并推送到 docs-server；库代码改动后同步受影响文档 |
+| `docs-search` | 经 REST 检索 docs-server 里的库文档，一个技能覆盖所有库 |
 
 ## 目标仓库里会多出什么
 

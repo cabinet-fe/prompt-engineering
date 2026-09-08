@@ -18,7 +18,7 @@
   <div class="masthead">
     <div class="edition-line hairline-top">
       <span class="mono-caps">cabinet-fe</span>
-      <span class="masthead-date mono-caps">23 个技能 · 即装即用</span>
+      <span class="masthead-date mono-caps">25 个技能 · 即装即用</span>
       <span class="mono-caps">prompt-engineering</span>
     </div>
     <h1 class="masthead-title">
@@ -56,7 +56,7 @@
 
     <div class="front-cols">
       <div class="lead-article">
-        <p class="drop-cap">AI 写代码最常翻车的三件事：引用已经废弃的 API、文档和代码对不上、临时记录堆得到处都是。这套技能库就是为解决这些问题而生——把标准开发流程、语言框架的现代规范、角色把关经验，打包成 23 个即插即用的技能，装进你的 AI Agent。</p>
+        <p class="drop-cap">AI 写代码最常翻车的三件事：引用已经废弃的 API、文档和代码对不上、临时记录堆得到处都是。这套技能库就是为解决这些问题而生——把标准开发流程、语言框架的现代规范、角色把关经验，打包成 25 个即插即用的技能，装进你的 AI Agent。</p>
         <p>工程流程类技能需要<b>显式输入命令调用</b>；语言与框架规范在你编辑对应代码文件时<b>自动生效</b>。安装只要一条命令：</p>
         <div class="install-box bordered-boxout">
           <span class="install-prompt mono">$</span>
@@ -90,7 +90,7 @@
   <!-- ================= 跑马灯分隔带 ================= -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-inner mono-caps">
-      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
+      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳&nbsp;</span>
     </div>
   </div>
 
@@ -156,7 +156,7 @@
   <!-- ================= 技能一览 ================= -->
   <section id="skills" class="section">
     <header class="section-head">
-      <h2 class="section-title">技能清单 · 23 个内置技能</h2>
+      <h2 class="section-title">技能清单 · 25 个内置技能</h2>
     </header>
     <p class="section-deck">点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
 
@@ -431,6 +431,28 @@
           <p><b>适用场景：</b>遇到复杂的架构选型、性能排查或方案论证，需要全面调研但暂不改动仓库时。</p>
           <p><b>核心功能：</b>将问题拆分为多个专业维度，并行派发子代理深入调研，汇总为结构化的分析结论与落地方案，全程保持只读。</p>
           <p><b>常用命令：</b><code>analysis 分析现有状态管理方案的瓶颈与迁移成本</code></p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">docs-gen</span>
+        <span class="skill-one">为内部库生成检索友好的文档并推送到检索服务</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>你是库维护者，要让内部库文档能被 AI 直接检索到，或库代码改动后文档需要跟着更新时。</p>
+          <p><b>核心功能：</b>按「文档读者是 AI」的标准生成与修订库文档，代码改动后判定并同步受影响文档，再用零依赖脚本整库推送到 docs-server 建全文索引。</p>
+          <p><b>常用命令：</b><code>docs-gen</code></p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">docs-search</span>
+        <span class="skill-one">经 REST 检索内部库文档，一个技能覆盖所有库</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需要查询公司内部库的用法文档时——让 AI 调用 docs-server 的检索接口，而不是凭训练数据猜 API。</p>
+          <p><b>核心功能：</b>运行内嵌零依赖查询脚本，列库、全文检索、按章节取文档；服务地址只读 <code>DOCS_SERVER_URL</code>，读路径免鉴权。</p>
+          <p><b>常用命令：</b><code>docs-search</code></p>
         </div>
       </button>
 

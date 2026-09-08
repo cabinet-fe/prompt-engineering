@@ -3,3 +3,18 @@ node_modules/
 *.tsbuildinfo
 .agents/cooking/
 .DS_Store
+
+# docs-server 子项目：Go 构建产物与本地数据
+server/docs-mcp
+/bin/
+*.test
+*.out
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+/data/
+.env
+.env.*
+!.env.example
