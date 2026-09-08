@@ -1,24 +1,16 @@
-/* Prompt Engineering 门户 · 交互 */
+/* 工程技能库门户 · 交互 */
 (() => {
   "use strict";
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- 滚动进场 ---------- */
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting) {
-        e.target.classList.add("in");
-        io.unobserve(e.target);
-      }
-    }
-  }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
-  document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+  /* ---------- 跑马灯：克隆轨道内容实现无缝循环 ---------- */
+  const tickerInner = document.querySelector(".ticker-inner");
+  if (tickerInner) tickerInner.appendChild(tickerInner.firstElementChild.cloneNode(true));
 
-  /* ---------- 场景指引：推荐做法 ---------- */
+  /* ---------- 场景选读：推荐做法 ---------- */
   const PICKS = {
     first: {
       cmd: "setup",
-      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成技术规范、模块地图并配置辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。"
+      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。"
     },
     vague: {
       cmd: "explore → to-spec → to-tasks → implement → archive",
@@ -49,79 +41,64 @@
       desc: "为项目配置自动化验收标准。先自动扫描现有的测试与构建命令，针对性生成端到端测试或接口验收规范，作为后续开发与审查的硬性指标。"
     }
   };
-  const pickNote = document.getElementById("pick-note");
-  const pickCmd = document.getElementById("pick-cmd");
-  const pickDesc = document.getElementById("pick-desc");
-  const pickChips = [...document.querySelectorAll(".pick-chip")];
+  const pickChips = [...document.querySelectorAll(".pick-row")];
   const selectPick = (key) => {
     const p = PICKS[key];
     if (!p) return;
     pickChips.forEach((c) => c.classList.toggle("active", c.dataset.pick === key));
-    pickCmd.textContent = p.cmd;
-    pickDesc.textContent = p.desc;
-    pickNote.classList.remove("pop");
-    void pickNote.offsetWidth; // 重触发动画
-    pickNote.classList.add("pop");
+    document.getElementById("pick-cmd").textContent = p.cmd;
+    document.getElementById("pick-desc").textContent = p.desc;
   };
   pickChips.forEach((c) => c.addEventListener("click", () => selectPick(c.dataset.pick)));
-  selectPick("first");
 
   /* ---------- 流程：节点详情 ---------- */
   const FLOWS = {
     setup: {
-      title: "🧱 setup · 初始化底座",
+      title: "STEP 1 · setup · 初始化底座",
       cmd: "setup",
-      desc: "新仓库运行一次。通过简要沟通识别项目类型，生成架构规范、模块地图与辅助脚本。其他所有工程技能都会基于这套底座运行。"
+      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本。其他工程技能都会基于这套底座运行。"
     },
     explore: {
-      title: "🧭 explore · 需求探索",
+      title: "STEP 2 · explore · 需求探索",
       cmd: "explore 审批单支持批量转办",
       desc: "只沟通梳理、不改写代码。逐条分析并澄清需求中的不明确之处，向你提问确认。直到所有关键疑惑消除并经你确认，才进入下一阶段。"
     },
     "to-spec": {
-      title: "📜 to-spec · 制定规格",
+      title: "STEP 3 · to-spec · 制定规格",
       cmd: "to-spec approval-batch-transfer",
       desc: "把明确需求转化为技术设计规格。制定客观可判定的验收标准，并精确划定本次改动涉及的文件范围。"
     },
     "to-tasks": {
-      title: "✂️ to-tasks · 拆解阶段任务",
+      title: "STEP 4 · to-tasks · 拆解阶段任务",
       cmd: "to-tasks approval-batch-transfer",
       desc: "将大功能细化拆解为多个独立阶段任务（P1、P2 等），理清任务依赖关系。无前后依赖的任务可直接并行开发。"
     },
     implement: {
-      title: "🔨 implement · 编码实现",
+      title: "STEP 5 · implement · 编码实现",
       cmd: "implement approval-batch-transfer P1",
       desc: "按阶段任务编写代码（或针对小需求直接修改）。严格遵循既有代码风格，完成必要测试并同步修正受影响的文档，随后自动发起审查。"
     },
     review: {
-      title: "🔍 review · 独立审查",
+      title: "STEP 6 · review · 独立审查",
       cmd: "review approval-batch-transfer P2",
       desc: "在独立子代理中审查代码，主会话只接收审查结果。比对功能实现与代码规范，通过后自动在本地提交，不通过则指出具体问题并返工。"
     },
     archive: {
-      title: "🗃️ archive · 交付与归档",
+      title: "STEP 7 · archive · 交付与归档",
       cmd: "archive approval-batch-transfer",
       desc: "所有阶段均完成并审查通过后，核对项目文档状态，清理开发过程中的临时记录（cooking 目录），完成交付。"
     }
   };
-  const flowNote = document.getElementById("flow-note");
-  const flowTitle = document.getElementById("flow-title");
-  const flowCmd = document.getElementById("flow-cmd");
-  const flowDesc = document.getElementById("flow-desc");
   const flowNodes = [...document.querySelectorAll(".flow-node")];
   const selectFlow = (key) => {
     const f = FLOWS[key];
     if (!f) return;
     flowNodes.forEach((n) => n.classList.toggle("active", n.dataset.flow === key));
-    flowTitle.textContent = f.title;
-    flowCmd.textContent = f.cmd;
-    flowDesc.textContent = f.desc;
-    flowNote.classList.remove("pop");
-    void flowNote.offsetWidth;
-    flowNote.classList.add("pop");
+    document.getElementById("flow-title").textContent = f.title;
+    document.getElementById("flow-cmd").textContent = f.cmd;
+    document.getElementById("flow-desc").textContent = f.desc;
   };
   flowNodes.forEach((n) => n.addEventListener("click", () => selectFlow(n.dataset.flow)));
-  selectFlow("setup");
 
   /* ---------- 技能筛选 ---------- */
   const filterChips = [...document.querySelectorAll(".filter-chip")];
@@ -130,11 +107,7 @@
     chip.addEventListener("click", () => {
       filterChips.forEach((c) => c.classList.toggle("active", c === chip));
       const f = chip.dataset.filter;
-      skillCards.forEach((card) => {
-        const show = f === "all" || card.dataset.cat === f;
-        card.classList.toggle("hide", !show);
-        if (show) card.classList.add("in");
-      });
+      skillCards.forEach((card) => card.classList.toggle("hide", !(f === "all" || card.dataset.cat === f)));
     });
   });
 
@@ -198,7 +171,7 @@
   });
 
   /* ---------- 导航当前区块 ---------- */
-  const navLinks = [...document.querySelectorAll(".nav-links a")];
+  const navLinks = [...document.querySelectorAll(".navbar-links a")];
   const sections = navLinks
     .map((a) => document.querySelector(a.getAttribute("href")))
     .filter(Boolean);
@@ -210,23 +183,4 @@
     }
   }, { rootMargin: "-38% 0px -55% 0px" });
   sections.forEach((s) => navIO.observe(s));
-
-  /* ---------- 涂鸦视差 ---------- */
-  if (!reduced) {
-    const px = [...document.querySelectorAll("[data-parallax]")];
-    let ticking = false;
-    const applyParallax = () => {
-      ticking = false;
-      const y = scrollY;
-      for (const el of px) {
-        el.style.translate = `0 ${(y * parseFloat(el.dataset.parallax)).toFixed(1)}px`;
-      }
-    };
-    addEventListener("scroll", () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(applyParallax);
-      }
-    }, { passive: true });
-  }
 })();

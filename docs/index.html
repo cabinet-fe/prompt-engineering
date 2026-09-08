@@ -3,552 +3,510 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prompt Engineering · 面向 AI Agent 的工程技能库</title>
+<title>工程技能库 · 面向 AI Agent 的工程化技能集</title>
 <meta name="description" content="专为 AI Agent 设计的工程化技能库：涵盖标准化开发流程、语言框架现代规范、角色把关与实用工具，让 AI 编码告别过时 API 与文档脱节。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Patrick+Hand&family=Permanent+Marker&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Serif+SC:wght@400..900&family=Source+Serif+4:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./style.css">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%8F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B0%3C/text%3E%3C/svg%3E">
 </head>
 <body>
 
-<!-- 手绘抖动滤镜：让所有边框像马克笔画的 -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.03" numOctaves="2" seed="7" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
-    </filter>
-    <filter id="wobble-soft" x="-5%" y="-5%" width="110%" height="110%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.02 0.05" numOctaves="2" seed="3" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5"/>
-    </filter>
-  </defs>
-</svg>
+<header class="site-head" id="top">
+  <!-- ============ 报头 Masthead（仅视觉形态，不装假信息） ============ -->
+  <div class="masthead">
+    <div class="edition-line hairline-top">
+      <span class="mono-caps">cabinet-fe</span>
+      <span class="masthead-date mono-caps">23 个技能 · 即装即用</span>
+      <span class="mono-caps">prompt-engineering</span>
+    </div>
+    <h1 class="masthead-title">
+      <span class="masthead-main">工程技能库</span>
+      <span class="masthead-sub">PROMPT ENGINEERING · FOR AI AGENTS</span>
+    </h1>
+    <div class="edition-line hairline-bottom double-under">
+      <span class="mono-caps">工程流程</span>
+      <span class="mono-caps">语言与框架规范</span>
+      <span class="mono-caps">角色把关 · 实用工具</span>
+    </div>
+  </div>
 
-<header class="nav" id="top">
-  <a class="nav-logo" href="#top">
-    <svg viewBox="0 0 40 40" class="logo-pen" aria-hidden="true"><path d="M8 32 L12 22 L28 6 L34 12 L18 28 Z M12 22 L18 28 M28 6 L30 4 L36 10 L34 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>工程技能库</span>
-  </a>
-  <nav class="nav-links">
-    <a href="#highlights">核心优势</a>
-    <a href="#pick">场景指引</a>
-    <a href="#flow">标准流程</a>
-    <a href="#skills">技能清单</a>
-    <a href="#start">快速上手</a>
+  <!-- ============ 页眉导航栏 ============ -->
+  <nav class="navbar" aria-label="页面导航">
+    <a class="navbar-logo mono-caps" href="#top">工程技能库</a>
+    <div class="navbar-links mono-caps">
+      <a href="#highlights">它解决了什么</a>
+      <a href="#pick">场景选读</a>
+      <a href="#flow">标准流程</a>
+      <a href="#skills">技能清单</a>
+      <a href="#start">快速上手</a>
+    </div>
+    <a class="navbar-gh mono-caps" href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">GitHub ↗</a>
   </nav>
-  <a class="nav-gh" href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">GitHub ↗</a>
 </header>
 
-<main>
+<main class="sheet">
 
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <div class="hero-doodles" aria-hidden="true">
-    <svg class="doodle d-star" data-parallax="0.05" viewBox="0 0 100 100"><path d="M51 8 L60 37 L91 36 L66 55 L75 86 L51 67 L26 87 L35 56 L10 37 L41 37 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
-    <svg class="doodle d-spiral" data-parallax="-0.04" viewBox="0 0 100 100"><path d="M50 50 c0 -6 9 -6 9 0 c0 10 -16 12 -21 3 c-6 -12 6 -26 21 -24 c17 3 24 22 15 35 c-10 15 -33 16 -45 3" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
-    <svg class="doodle d-arrow" data-parallax="0.08" viewBox="0 0 160 120"><path d="M12 14 C 55 70, 95 72, 128 96 M128 96 l-18 -6 M128 96 l-4 -18" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <svg class="doodle d-circle" data-parallax="-0.06" viewBox="0 0 120 120"><path d="M62 12 C 25 12, 8 38, 13 64 C 18 94, 52 112, 82 100 C 108 90, 116 58, 102 36 C 92 20, 70 10, 52 14" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
-    <div class="coffee-stain" data-parallax="0.03"></div>
-  </div>
+  <!-- ================= 首屏导读 ================= -->
+  <section class="front-page" id="highlights">
+    <div class="kicker mono-caps">工程化技能集</div>
+    <h2 class="headline-xl">专为 AI Agent 打造的工程技能库</h2>
+    <p class="deck">涵盖工程流程、语言框架、角色规范与辅助工具。基于项目实际版本与现有代码工作，告别过时 API 与文档脱节。</p>
 
-  <p class="hero-eyebrow reveal">cabinet-fe / prompt-engineering</p>
-  <h1 class="hero-title reveal">
-    专为 AI Agent 打造的<br>
-    <span class="marker-word">工程化技能库</span>
-    <svg class="title-squiggle" viewBox="0 0 420 24" aria-hidden="true"><path d="M8 14 C 70 6, 140 18, 210 12 C 280 6, 350 16, 412 10" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
-  </h1>
-  <p class="hero-sub reveal">涵盖工程流程、语言框架、角色规范与辅助工具，共 <b>23</b> 个即插即用技能。<br>基于项目实际版本与现有代码工作，告别过时 API 与文档脱节。</p>
-
-  <div class="install-box reveal">
-    <span class="install-prompt">$</span>
-    <code>npx skills add cabinet-fe/prompt-engineering</code>
-    <button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制安装命令">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 8 V6 a2 2 0 0 0 -2 -2 H6 a2 2 0 0 0 -2 2 v8 a2 2 0 0 0 2 2 h2" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-    </button>
-    <span class="install-note">← 复制并在终端运行</span>
-  </div>
-
-  <div class="hero-cta reveal">
-    <a class="btn btn-primary" href="#pick">查看场景推荐</a>
-    <a class="btn" href="#skills">浏览全部技能</a>
-  </div>
-
-  <div class="hero-scroll" aria-hidden="true">
-    <svg viewBox="0 0 40 60"><path d="M20 6 C 16 22, 24 34, 20 50 M20 50 l-8 -10 M20 50 l8 -10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>向下滚动</span>
-  </div>
-</section>
-
-<!-- ================= 跑马灯分隔带 ================= -->
-<div class="ticker" aria-hidden="true">
-  <div class="ticker-inner">
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
-    <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
-  </div>
-</div>
-
-<!-- ================= 亮点 ================= -->
-<section id="highlights" class="section">
-  <h2 class="section-title reveal">
-    <span class="hl">它解决了什么问题</span>
-    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 4, 110 16, 160 10 C 210 4, 260 14, 294 8" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
-  </h2>
-  <p class="section-sub reveal">传统 AI 编程经常遇到“引用废弃 API”、“文档与代码脱节”、“临时任务记录堆积”等痛点。这套技能库给出了务实解法：</p>
-
-  <div class="card-row">
-    <article class="hl-card wobble tilt-l reveal">
-      <div class="hl-icon" aria-hidden="true">
-        <svg viewBox="0 0 60 60"><path d="M30 8 C 14 8, 8 20, 10 32 C 12 46, 26 54, 38 50 C 50 46, 54 32, 48 20 C 44 12, 34 8, 26 10" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M30 22 L30 34 L40 38" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="front-cols">
+      <div class="lead-article">
+        <p class="drop-cap">AI 写代码最常翻车的三件事：引用已经废弃的 API、文档和代码对不上、临时记录堆得到处都是。这套技能库就是为解决这些问题而生——把标准开发流程、语言框架的现代规范、角色把关经验，打包成 23 个即插即用的技能，装进你的 AI Agent。</p>
+        <p>工程流程类技能需要<b>显式输入命令调用</b>；语言与框架规范在你编辑对应代码文件时<b>自动生效</b>。安装只要一条命令：</p>
+        <div class="install-box bordered-boxout">
+          <span class="install-prompt mono">$</span>
+          <code class="install-code mono">npx skills add cabinet-fe/prompt-engineering</code>
+          <button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制安装命令">复制</button>
+        </div>
+        <p>下面分别说说它解决了什么问题、怎么选、怎么用。</p>
       </div>
-      <h3>文档与代码实时对齐</h3>
-      <p>代码改动如果影响了架构、规范或模块说明，当场直接更新对应文档，确保文档永远不说假话。没受影响的内容绝不乱碰，坚决不建冗余重复的摘要。</p>
-      <p class="hl-tag">精准更新 · 拒绝冗余</p>
-    </article>
 
-    <article class="hl-card wobble tilt-r reveal">
-      <div class="hl-icon" aria-hidden="true">
-        <svg viewBox="0 0 60 60"><path d="M12 44 L22 16 L32 38 L42 12 L50 34" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 50 C 24 46, 40 52, 54 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-      </div>
-      <h3>识别实际版本，杜绝幻觉</h3>
-      <p>语言和框架技能自动读取项目实际安装版本（如 <code>package.json</code>、<code>go.mod</code>、<code>Cargo.lock</code>），只使用对应版本的官方规范，杜绝凭旧训练数据写出废弃 API。</p>
-      <p class="hl-tag">8 个主流技术栈 · 精确对齐版本</p>
-    </article>
-
-    <article class="hl-card wobble tilt-l reveal">
-      <div class="hl-icon" aria-hidden="true">
-        <svg viewBox="0 0 60 60"><path d="M10 14 L50 12 L48 48 L12 50 Z M18 24 L42 22 M18 32 L40 31 M18 40 L34 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <h3>临时过程记录用完即清</h3>
-      <p>开发中的需求讨论与任务拆解仅保存在 <code>cooking/</code> 临时目录中。全部任务完成后自动清理，只保留最终代码与必要核心文档，保持仓库整洁。</p>
-      <p class="hl-tag">用完即清 · 保持仓库清爽</p>
-    </article>
-  </div>
-</section>
-
-<!-- ================= 先挑路 ================= -->
-<section id="pick" class="section">
-  <h2 class="section-title reveal">
-    <span class="hl">按场景快速选用</span>
-    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 70 16, 130 4, 190 12 C 240 18, 270 8, 294 12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
-  </h2>
-  <p class="section-sub reveal">对号入座：你当前需要完成什么？点击查看推荐的命令与指引。</p>
-
-  <div class="pick-wrap reveal">
-    <div class="pick-list" role="tablist" aria-label="选择你的情况">
-      <button class="pick-chip wobble-sm" data-pick="first" role="tab">新仓库首次接入</button>
-      <button class="pick-chip wobble-sm" data-pick="vague" role="tab">需求还不明确，需要梳理</button>
-      <button class="pick-chip wobble-sm" data-pick="rush" role="tab">需求明确，想全自动跑完</button>
-      <button class="pick-chip wobble-sm" data-pick="steps" role="tab">需求明确，想每步手动把关</button>
-      <button class="pick-chip wobble-sm" data-pick="small" role="tab">简单改个 Bug 或字段</button>
-      <button class="pick-chip wobble-sm" data-pick="review" role="tab">仅对现有改动做代码审查</button>
-      <button class="pick-chip wobble-sm" data-pick="sync" role="tab">手动改完代码，更新失真文档</button>
-      <button class="pick-chip wobble-sm" data-pick="accept" role="tab">为项目增加自动化验收</button>
+      <aside class="side-briefs">
+        <h3 class="brief-title">三个核心优势</h3>
+        <article class="brief">
+          <h4>文档与代码实时对齐</h4>
+          <p>代码改动如果影响了架构、规范或模块说明，当场直接更新对应文档，确保文档永远不说假话。没受影响的内容绝不乱碰，坚决不建冗余重复的摘要。</p>
+          <p class="brief-meta mono-caps">精准更新 · 拒绝冗余</p>
+        </article>
+        <article class="brief">
+          <h4>识别实际版本，杜绝幻觉</h4>
+          <p>语言和框架技能自动读取项目实际安装版本（如 <code>package.json</code>、<code>go.mod</code>、<code>Cargo.lock</code>），只使用对应版本的官方规范。</p>
+          <p class="brief-meta mono-caps">8 个主流技术栈 · 精确对齐版本</p>
+        </article>
+        <article class="brief">
+          <h4>临时过程记录用完即清</h4>
+          <p>开发中的需求讨论与任务拆解仅保存在 <code>cooking/</code> 临时目录中。全部任务完成后自动清理，只保留最终代码与必要核心文档。</p>
+          <p class="brief-meta mono-caps">用完即清 · 保持仓库清爽</p>
+        </article>
+      </aside>
     </div>
+  </section>
 
-    <div class="pick-note sticky-note" id="pick-note" aria-live="polite">
-      <div class="tape" aria-hidden="true"></div>
-      <p class="pick-note-label">推荐命令 ✎</p>
-      <p class="pick-note-cmd"><code id="pick-cmd">setup</code></p>
-      <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成技术规范、模块地图并配置辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。</p>
+  <!-- ================= 跑马灯分隔带 ================= -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-inner mono-caps">
+      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳&nbsp;</span>
     </div>
   </div>
-</section>
 
-<!-- ================= 流程 ================= -->
-<section id="flow" class="section">
-  <h2 class="section-title reveal">
-    <span class="hl">标准工程流程：从初始化到交付归档</span>
-    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 50 6, 120 16, 180 8 C 230 2, 270 14, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
-  </h2>
-  <p class="section-sub reveal">支持分步手动执行，也支持用 <code>rush</code> 一键自动编排。点击各个环节查看具体分工与运转逻辑：</p>
+  <!-- ================= 场景选读 ================= -->
+  <section id="pick" class="section">
+    <header class="section-head">
+      <h2 class="section-title">按场景快速选用</h2>
+    </header>
+    <p class="section-deck">对号入座：你当前需要完成什么？点击查看推荐的命令与指引。</p>
 
-  <div class="flow-board reveal">
-    <div class="flow-track" role="tablist" aria-label="工程流程各环节">
-      <button class="flow-node wobble-sm" data-flow="setup"><span class="flow-emoji">🧱</span><span>setup</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="explore"><span class="flow-emoji">🧭</span><span>explore</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="to-spec"><span class="flow-emoji">📜</span><span>to-spec</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="to-tasks"><span class="flow-emoji">✂️</span><span>to-tasks</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="implement"><span class="flow-emoji">🔨</span><span>implement</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 6, 36 18, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="review"><span class="flow-emoji">🔍</span><span>review</span></button>
-      <svg class="flow-arrow" viewBox="0 0 60 24" aria-hidden="true"><path d="M4 12 C 20 18, 36 6, 48 12 M48 12 l-8 -5 M48 12 l-8 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <button class="flow-node wobble-sm" data-flow="archive"><span class="flow-emoji">🗃️</span><span>archive</span></button>
-    </div>
-
-    <div class="flow-note sticky-note" id="flow-note" aria-live="polite">
-      <div class="tape" aria-hidden="true"></div>
-      <p class="flow-note-title" id="flow-title">🧱 setup · 初始化底座</p>
-      <p class="flow-note-cmd"><code id="flow-cmd">setup</code></p>
-      <p class="flow-note-desc" id="flow-desc">新仓库运行一次。通过简要沟通识别项目类型，生成架构规范、模块地图与辅助脚本。其他所有工程技能都会基于这套底座运行。</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 技能一览 ================= -->
-<section id="skills" class="section">
-  <h2 class="section-title reveal">
-    <span class="hl">技能清单 · 23 个内置技能</span>
-    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 10 C 66 16, 126 4, 186 12 C 236 18, 272 6, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
-  </h2>
-  <p class="section-sub reveal">点击卡片展开详情。工程流程类技能需<b>显式输入命令调用</b>；语言与框架规范在编辑对应代码文件时<b>自动生效</b>。</p>
-
-  <div class="skill-filter reveal" role="group" aria-label="按类别筛选">
-    <button class="filter-chip wobble-sm active" data-filter="all">全部</button>
-    <button class="filter-chip wobble-sm" data-filter="engineering">工程流程</button>
-    <button class="filter-chip wobble-sm" data-filter="langs">语言</button>
-    <button class="filter-chip wobble-sm" data-filter="frameworks">框架</button>
-    <button class="filter-chip wobble-sm" data-filter="roles">角色</button>
-    <button class="filter-chip wobble-sm" data-filter="tools">工具</button>
-  </div>
-
-  <div class="skill-grid" id="skill-grid">
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">setup</span>
-      <span class="skill-one">为仓库初始化或更新工程底座规范</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>新仓库首次接入，或技术栈、架构分层发生重大调整时。</p>
-        <p><b>具体功能：</b>与你沟通确认项目类型，生成技术规范、模块地图及辅助脚本，写入 <code>PROJECT.md</code> 等底座文件。其他工程技能均依赖此底座。</p>
-        <p><b>常用命令：</b><code>setup</code></p>
-        <p><b>使用提示：</b>完成后运行预检脚本应显示 PASS。其他工程技能若发现未初始化会暂停并提示先运行 setup。</p>
+    <div class="pick-wrap">
+      <div class="pick-list" role="tablist" aria-label="选择你的情况">
+        <button class="pick-row active" data-pick="first" role="tab">新仓库首次接入</button>
+        <button class="pick-row" data-pick="vague" role="tab">需求还不明确，需要梳理</button>
+        <button class="pick-row" data-pick="rush" role="tab">需求明确，想全自动跑完</button>
+        <button class="pick-row" data-pick="steps" role="tab">需求明确，想每步手动把关</button>
+        <button class="pick-row" data-pick="small" role="tab">简单改个 Bug 或字段</button>
+        <button class="pick-row" data-pick="review" role="tab">仅对现有改动做代码审查</button>
+        <button class="pick-row" data-pick="sync" role="tab">手动改完代码，更新失真文档</button>
+        <button class="pick-row" data-pick="accept" role="tab">为项目增加自动化验收</button>
       </div>
-    </button>
 
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">explore</span>
-      <span class="skill-one">梳理澄清含糊需求，明确功能边界</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>需求想法还不成熟、业务逻辑存在模糊点，需要提前澄清时。</p>
-        <p><b>具体功能：</b>只沟通不写代码。将潜在疑问整理为清单并向你提问，直到核心问题全部澄清并经你确认，才推进到规格制定环节。</p>
-        <p><b>常用命令：</b><code>explore 审批单支持批量转办</code></p>
-        <p><b>使用提示：</b>若后续需求发生大幅改动，可再次对该需求运行 explore 重新梳理方案。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">to-spec</span>
-      <span class="skill-one">将明确需求转化为可量化验收的技术规格</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>需求已经完全明确（或已通过 explore 梳理完毕），准备沉淀技术设计时。</p>
-        <p><b>具体功能：</b>编写清晰的技术规格文档，制定客观、可判定的验收标准，并精确划定本次预计改动或新增的文件范围。</p>
-        <p><b>常用命令：</b><code>to-spec approval-batch-transfer</code></p>
-        <p><b>使用提示：</b>若需求本身就足够清晰，可直接调用此命令跳过 explore。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">to-tasks</span>
-      <span class="skill-one">将规格拆解为可独立编码的阶段任务清单</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>技术规格编写完成后，将大功能切分为细粒度、低耦合的开发步骤。</p>
-        <p><b>具体功能：</b>把规格拆分为多个阶段任务（P1、P2 等），明确前后依赖关系。无依赖的任务可直接并行开发。</p>
-        <p><b>常用命令：</b><code>to-tasks approval-batch-transfer</code></p>
-        <p><b>使用提示：</b>若项目配置了自动化验收规则，会自动将验收指标追加到各任务的完成标准中。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">implement</span>
-      <span class="skill-one">执行具体阶段的编码实现，或处理轻量改动</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>按拆解的任务分步编写代码；或直接处理改 Bug、增减字段等轻量改动。</p>
-        <p><b>具体功能：</b>严格按现有代码规范编写代码，运行测试验证，当场同步受影响的现有文档，并在编码完成后自动发起代码审查。</p>
-        <p><b>常用命令：</b><code>implement approval-batch-transfer P1</code> 或 <code>implement 将 UserCard 头像改为懒加载</code></p>
-        <p><b>使用提示：</b>小改动直接在命令后附带描述即可（直写模式），无需走规格与任务拆解。遇到重构分层变动会提示先重新初始化底座。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">review</span>
-      <span class="skill-one">在独立子代理中严格审查代码改动</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>阶段编码完成、或想对当前工作区 / 分支变动做一次严格质量把关时。</p>
-        <p><b>具体功能：</b>只做审查不改代码。在独立子代理中比对功能契约、代码规范、文档同步与逻辑正确性，防止自写自审带来盲区。</p>
-        <p><b>常用命令：</b><code>review</code>、<code>review main</code> 或 <code>review approval-batch-transfer P2</code></p>
-        <p><b>使用提示：</b>审查通过后自动生成本地提交；发现阻断问题则列出清单要求返工修复，未通过前禁止推进下游任务。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">sync-docs</span>
-      <span class="skill-one">定向同步与最新代码不一致的现有文档</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>手动改动代码后，导致现有架构说明、模块地图或开发规范过时失效时。</p>
-        <p><b>具体功能：</b>核对最新代码，仅修订被改动影响的现有文档，未受影响的内容绝不乱动，且禁止新建多余文档。</p>
-        <p><b>常用命令：</b><code>sync-docs</code> 或 <code>sync-docs src/modules/approval</code></p>
-        <p><b>使用提示：</b>正常走 implement 流程时会自动同步；本命令主要用于脱离流程手动修改代码后的兜底对齐。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">archive</span>
-      <span class="skill-one">功能全部完成交付后，清理临时过程记录</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>某个功能的所有阶段任务均已实现并通过代码审查，准备正式交付时。</p>
-        <p><b>具体功能：</b>最终确认对外文档与代码完全对齐，清理开发过程中的临时目录（cooking/），使仓库恢复整洁。</p>
-        <p><b>常用命令：</b><code>archive approval-batch-transfer</code></p>
-        <p><b>使用提示：</b>若仍有任务未完成或审查未通过，会明确提示阻断原因并拒绝归档。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">rush</span>
-      <span class="skill-one">一键编排端到端开发：从拆解到交付</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>需求明确的大中型功能开发，希望全流程自动推进任务拆解、并行编码、逐阶段审查与自动提交。</p>
-        <p><b>具体功能：</b>全流程自动编排调度：需求含糊时先引导梳理，无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
-        <p><b>常用命令：</b><code>rush 审批单支持批量转办</code> 或 <code>rush approval-batch-transfer</code></p>
-        <p><b>使用提示：</b>适合多阶段大功能；日常简单修改建议直接使用 <code>implement</code> 直写更轻巧。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-engineering reveal" data-cat="engineering">
-      <span class="skill-name">acceptance</span>
-      <span class="skill-one">为项目配置可执行的自动化验收标准</span>
-      <span class="skill-cat">工程流程</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>需要给项目增加端到端测试或接口自动化验证，提高交付质量时。</p>
-        <p><b>具体功能：</b>扫描项目现有的测试和构建命令，针对性推荐适合的自动化测试方案，生成验收规范 <code>ACCEPTANCE.md</code>。</p>
-        <p><b>常用命令：</b><code>acceptance</code></p>
-        <p><b>使用提示：</b>配置后，拆解的任务会自动追加验收要求，审查时也会以此为硬性标准。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
-      <span class="skill-name">typescript</span>
-      <span class="skill-one">对齐已安装版本，规范类型定义与编译配置</span>
-      <span class="skill-cat">语言 · 5 / 6 / 7</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>TypeScript 5.x / 6.x / 7.x，优先读取项目实际安装版本规范。</p>
-        <p><b>职责范围：</b>专注于类型系统、tsconfig.json 配置及编译器行为，避免旧版本过时写法。</p>
-        <p><b>生效方式：</b>编辑 <code>.ts</code> / <code>.tsx</code> 或编译配置时自动生效，无需手动调用。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
-      <span class="skill-name">node</span>
-      <span class="skill-one">遵循对应 Node.js 版本的现代 API 与实践</span>
-      <span class="skill-cat">语言 · 22 / 24 / 26</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Node.js 偶数 LTS 版本（22 / 24 / 26）及稳定现代 JS 特性。</p>
-        <p><b>职责范围：</b>负责内置标准库（<code>node:</code> 前缀模块）、运行环境、CLI 脚本与测试配置。</p>
-        <p><b>生效方式：</b>编写 Node 脚本、处理 package.json 或服务端逻辑时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
-      <span class="skill-name">go</span>
-      <span class="skill-one">根据 go.mod 声明版本选用标准库与现代语法</span>
-      <span class="skill-cat">语言 · 1.24–1.27</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Go 1.24 至 1.27，严格依据 <code>go.mod</code> 声明的版本进行编码。</p>
-        <p><b>职责范围：</b>规范 Go 语法、标准库调用及单元测试编写，不强行捆绑第三方框架。</p>
-        <p><b>生效方式：</b>编辑 <code>.go</code>、<code>go.mod</code>、<code>go.work</code> 或测试文件时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-langs reveal" data-cat="langs">
-      <span class="skill-name">rust</span>
-      <span class="skill-one">根据工具链版本采用对应的 Rust 现代特性</span>
-      <span class="skill-cat">语言 · 1.95–1.97</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Rust 1.95 至 1.97，基于项目实际 rustc 版本查阅规范。</p>
-        <p><b>职责范围：</b>负责 Rust 核心语法、所有权模式、Cargo 配置与单元测试，拒绝凭模型旧记忆瞎写。</p>
-        <p><b>生效方式：</b>编辑 <code>.rs</code>、<code>Cargo.toml</code> 或工具链配置文件时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
-      <span class="skill-name">vue</span>
-      <span class="skill-one">规范 Vue 3 组合式 API 与单文件组件最佳实践</span>
-      <span class="skill-cat">框架 · 3.4 / 3.5</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Vue 3.4 / 3.5，根据项目实际依赖版本选用对应特性。</p>
-        <p><b>开发约定：</b>推荐 <code>&lt;script setup&gt;</code> 搭配 Composition API；构建工具与状态库遵循项目既有选型。</p>
-        <p><b>生效方式：</b>编辑 <code>.vue</code> 文件或编写 Vue 组合式函数时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
-      <span class="skill-name">react</span>
-      <span class="skill-one">规范 React 19 函数组件与 Hooks 编写范式</span>
-      <span class="skill-cat">框架 · 19.0–19.2</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>React 19.0 至 19.2，精确对齐项目安装版本。</p>
-        <p><b>开发约定：</b>标准函数组件与 Hooks 模式；路由、请求与状态管理严格跟随项目既有约定，不强推特定框架。</p>
-        <p><b>生效方式：</b>编辑 <code>.jsx</code> / <code>.tsx</code>、编写 React 组件或自定义 Hook 时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
-      <span class="skill-name">svelte</span>
-      <span class="skill-one">规范 Svelte 5 现代 Runes 响应式语法</span>
-      <span class="skill-cat">框架 · 5</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Svelte 5.x 系列。</p>
-        <p><b>开发约定：</b>默认采用 Svelte 5 的 <b>Runes</b> 响应式机制，遵循官方推荐的现代状态管理写法。</p>
-        <p><b>生效方式：</b>编辑 <code>.svelte</code> 或相关逻辑文件时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-frameworks reveal" data-cat="frameworks">
-      <span class="skill-name">gin</span>
-      <span class="skill-one">规范 Gin Web 框架路由、中间件与处理函数</span>
-      <span class="skill-cat">框架 · 1.10–1.12</span>
-      <div class="skill-detail" hidden>
-        <p><b>版本覆盖：</b>Gin 1.10 至 1.12，依据依赖版本适配。</p>
-        <p><b>开发约定：</b>聚焦路由组织、参数绑定与中间件编写；克制过度设计，不擅自引入无关重型依赖。</p>
-        <p><b>生效方式：</b>编写 Gin 路由、handler 及接口渲染逻辑时自动生效。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-roles reveal" data-cat="roles">
-      <span class="skill-name">frontend-expert</span>
-      <span class="skill-one">前端架构把关：防过度封装，拒绝代码膨胀</span>
-      <span class="skill-cat">角色</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>编写或重构前端页面、组件、表单与样式，需要防范代码臃肿时。</p>
-        <p><b>核心原则：</b>像经验丰富的前端专家一样编写简洁实用的代码：避免多余抽象层、不随意造重复轮子、改完及时清理废弃死代码。</p>
-        <p><b>内置参考：</b>内置详尽的前端坏味道自查清单（过度工程、样式滥用、无用兼容代码等）。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-roles reveal" data-cat="roles">
-      <span class="skill-name">backend-expert</span>
-      <span class="skill-one">后端架构把关：精简分层，避免过度抽象</span>
-      <span class="skill-cat">角色</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>编写或重构后端 API、中间件、DTO、仓储与服务分层时。</p>
-        <p><b>核心原则：</b>克制后端过度设计：减少无意义的数据透传层、杜绝过度封装、避免在每一层之间无脑做 DTO 转换。</p>
-        <p><b>内置参考：</b>内置后端架构常见坏味道清单，确保业务逻辑直接清晰、接口健壮。</p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
-      <span class="skill-name">git-commit</span>
-      <span class="skill-one">规范化本地 Git 提交，安全不越权</span>
-      <span class="skill-cat">工具</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>需要规范化提交代码、生成符合标准的 commit message 时。</p>
-        <p><b>行为特征：</b>手动交互模式下会征询是否推送；在自动化流水线中只执行本地安全提交，绝不擅自 push，且严格忽略过程临时目录。</p>
-        <p><b>常用命令：</b><code>git-commit</code></p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
-      <span class="skill-name">build-lib-skill</span>
-      <span class="skill-one">为私有库与内部 SDK 自动提炼专属技能</span>
-      <span class="skill-cat">工具</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>当前项目是工具库、内部组件库或 SDK，需要教会 AI 正确调用时。</p>
-        <p><b>核心功能：</b>从源码结构和对外导出的公共 API 中提取真实用法，生成结构清晰的伴生技能文档，绝不凭空捏造。</p>
-        <p><b>常用命令：</b><code>build-lib-skill</code></p>
-      </div>
-    </button>
-
-    <button class="skill-card wobble cat-tools reveal" data-cat="tools">
-      <span class="skill-name">analysis</span>
-      <span class="skill-one">多维度拆解复杂问题，只分析不改代码</span>
-      <span class="skill-cat">工具</span>
-      <div class="skill-detail" hidden>
-        <p><b>适用场景：</b>遇到复杂的架构选型、性能排查或方案论证，需要全面调研但暂不改动仓库时。</p>
-        <p><b>核心功能：</b>将问题拆分为多个专业维度，并行派发子代理深入调研，汇总为结构化的分析结论与落地方案，全程保持只读。</p>
-        <p><b>常用命令：</b><code>analysis 分析现有状态管理方案的瓶颈与迁移成本</code></p>
-      </div>
-    </button>
-
-  </div>
-</section>
-
-<!-- ================= 上手 ================= -->
-<section id="start" class="section">
-  <h2 class="section-title reveal">
-    <span class="hl">三分钟上手</span>
-    <svg class="squiggle" viewBox="0 0 300 20" aria-hidden="true"><path d="M6 12 C 60 6, 130 16, 190 8 C 240 2, 275 14, 294 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
-  </h2>
-
-  <div class="start-grid">
-    <div class="start-col reveal">
-      <h3 class="start-h">① 安装技能到 Agent</h3>
-      <div class="cmd-block wobble-sm">
-        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制">⧉</button></div>
-        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --list</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --list" aria-label="复制">⧉</button></div>
-        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush" aria-label="复制">⧉</button></div>
-        <div class="cmd-line"><code>npx skills add cabinet-fe/prompt-engineering -g</code><button class="copy-btn" data-copy="npx skills add cabinet-fe/prompt-engineering -g" aria-label="复制">⧉</button></div>
-      </div>
-      <p class="start-note">支持查看列表、按需挑选技能安装，或全局安装（-g）以在所有项目中生效。</p>
-    </div>
-
-    <div class="start-col reveal">
-      <h3 class="start-h">② 两种常见使用方式</h3>
-      <div class="cmd-block wobble-sm">
-        <p class="cmd-comment"># 方式 A：分步执行（适合探索与精细把关）</p>
-        <div class="cmd-line"><code>explore 审批单想支持批量转办</code></div>
-        <div class="cmd-line"><code>to-spec approval-batch-transfer</code></div>
-        <div class="cmd-line"><code>to-tasks approval-batch-transfer</code></div>
-        <div class="cmd-line"><code>implement approval-batch-transfer P1</code></div>
-        <div class="cmd-line"><code>archive approval-batch-transfer</code></div>
-      </div>
-      <div class="cmd-block wobble-sm">
-        <p class="cmd-comment"># 方式 B：全流程自动编排（适合大需求一键跑完）</p>
-        <div class="cmd-line"><code>rush 审批单想支持批量转办</code></div>
+      <div class="pick-note bordered-boxout" id="pick-note" aria-live="polite">
+        <p class="pick-note-label mono-caps">推荐命令</p>
+        <p class="pick-note-cmd"><code id="pick-cmd" class="mono">setup</code></p>
+        <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。</p>
       </div>
     </div>
+  </section>
 
-    <div class="start-col reveal">
-      <h3 class="start-h">③ 初始化后的项目目录结构</h3>
-      <div class="cmd-block wobble-sm tree-block">
-<pre>.agents/
+  <!-- ================= 流程 ================= -->
+  <section id="flow" class="section">
+    <header class="section-head">
+      <h2 class="section-title">标准工程流程：从初始化到交付归档</h2>
+    </header>
+    <p class="section-deck">支持分步手动执行，也支持用 <code>rush</code> 一键自动编排。点击各个环节查看具体分工与运转逻辑：</p>
+
+    <div class="flow-board">
+      <div class="flow-track" role="tablist" aria-label="工程流程各环节">
+        <button class="flow-node active" data-flow="setup"><span class="flow-step mono">STEP 1</span><span class="flow-name">setup</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="explore"><span class="flow-step mono">STEP 2</span><span class="flow-name">explore</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="to-spec"><span class="flow-step mono">STEP 3</span><span class="flow-name">to-spec</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="to-tasks"><span class="flow-step mono">STEP 4</span><span class="flow-name">to-tasks</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="implement"><span class="flow-step mono">STEP 5</span><span class="flow-name">implement</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="review"><span class="flow-step mono">STEP 6</span><span class="flow-name">review</span></button>
+        <span class="flow-sep" aria-hidden="true">→</span>
+        <button class="flow-node" data-flow="archive"><span class="flow-step mono">STEP 7</span><span class="flow-name">archive</span></button>
+      </div>
+
+      <div class="flow-note bordered-boxout" id="flow-note" aria-live="polite">
+        <p class="flow-note-title" id="flow-title">STEP 1 · setup · 初始化底座</p>
+        <p class="flow-note-cmd"><code id="flow-cmd" class="mono">setup</code></p>
+        <p class="flow-note-desc" id="flow-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本。其他工程技能都会基于这套底座运行。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 技能一览 ================= -->
+  <section id="skills" class="section">
+    <header class="section-head">
+      <h2 class="section-title">技能清单 · 23 个内置技能</h2>
+    </header>
+    <p class="section-deck">点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
+
+    <div class="skill-filter" role="group" aria-label="按类别筛选">
+      <button class="filter-chip mono-caps active" data-filter="all">全部</button>
+      <button class="filter-chip mono-caps" data-filter="engineering">工程流程</button>
+      <button class="filter-chip mono-caps" data-filter="langs">语言</button>
+      <button class="filter-chip mono-caps" data-filter="frameworks">框架</button>
+      <button class="filter-chip mono-caps" data-filter="roles">角色</button>
+      <button class="filter-chip mono-caps" data-filter="tools">工具</button>
+    </div>
+
+    <div class="skill-grid" id="skill-grid">
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">setup</span>
+        <span class="skill-one">为仓库初始化或更新工程底座规范</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>新仓库首次接入，或技术栈、架构分层发生重大调整时。</p>
+          <p><b>具体功能：</b>与你沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，写入 <code>PROJECT.md</code> 等底座文件。其他工程技能均依赖此底座。</p>
+          <p><b>常用命令：</b><code>setup</code></p>
+          <p><b>使用提示：</b>完成后运行预检脚本应显示 PASS。其他工程技能若发现未初始化会暂停并提示先运行 setup。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">explore</span>
+        <span class="skill-one">梳理澄清含糊需求，明确功能边界</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需求想法还不成熟、业务逻辑存在模糊点，需要提前澄清时。</p>
+          <p><b>具体功能：</b>只沟通不写代码。将潜在疑问整理为清单并向你提问，直到核心问题全部澄清并经你确认，才推进到规格制定环节。</p>
+          <p><b>常用命令：</b><code>explore 审批单支持批量转办</code></p>
+          <p><b>使用提示：</b>若后续需求发生大幅改动，可再次对该需求运行 explore 重新梳理方案。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">to-spec</span>
+        <span class="skill-one">将明确需求转化为可量化验收的技术规格</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需求已经完全明确（或已通过 explore 梳理完毕），准备沉淀技术设计时。</p>
+          <p><b>具体功能：</b>编写清晰的技术规格文档，制定客观、可判定的验收标准，并精确划定本次预计改动或新增的文件范围。</p>
+          <p><b>常用命令：</b><code>to-spec approval-batch-transfer</code></p>
+          <p><b>使用提示：</b>若需求本身就足够清晰，可直接调用此命令跳过 explore。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">to-tasks</span>
+        <span class="skill-one">将规格拆解为可独立编码的阶段任务清单</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>技术规格编写完成后，将大功能切分为细粒度、低耦合的开发步骤。</p>
+          <p><b>具体功能：</b>把规格拆分为多个阶段任务（P1、P2 等），明确前后依赖关系。无依赖的任务可直接并行开发。</p>
+          <p><b>常用命令：</b><code>to-tasks approval-batch-transfer</code></p>
+          <p><b>使用提示：</b>若项目配置了自动化验收规则，会自动将验收指标追加到各任务的完成标准中。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">implement</span>
+        <span class="skill-one">执行具体阶段的编码实现，或处理轻量改动</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>按拆解的任务分步编写代码；或直接处理改 Bug、增减字段等轻量改动。</p>
+          <p><b>具体功能：</b>严格按现有代码规范编写代码，运行测试验证，当场同步受影响的现有文档，并在编码完成后自动发起代码审查。</p>
+          <p><b>常用命令：</b><code>implement approval-batch-transfer P1</code> 或 <code>implement 将 UserCard 头像改为懒加载</code></p>
+          <p><b>使用提示：</b>小改动直接在命令后附带描述即可（直写模式），无需走规格与任务拆解。遇到重构分层变动会提示先重新初始化底座。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">review</span>
+        <span class="skill-one">在独立子代理中严格审查代码改动</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>阶段编码完成、或想对当前工作区 / 分支变动做一次严格质量把关时。</p>
+          <p><b>具体功能：</b>只做审查不改代码。在独立子代理中比对功能契约、代码规范、文档同步与逻辑正确性，防止自写自审带来盲区。</p>
+          <p><b>常用命令：</b><code>review</code>、<code>review main</code> 或 <code>review approval-batch-transfer P2</code></p>
+          <p><b>使用提示：</b>审查通过后自动生成本地提交；发现阻断问题则列出清单要求返工修复，未通过前禁止推进下游任务。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">sync-docs</span>
+        <span class="skill-one">定向同步与最新代码不一致的现有文档</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>手动改动代码后，导致现有架构说明、模块地图或开发规范过时失效时。</p>
+          <p><b>具体功能：</b>核对最新代码，仅修订被改动影响的现有文档，未受影响的内容绝不乱动，且禁止新建多余文档。</p>
+          <p><b>常用命令：</b><code>sync-docs</code> 或 <code>sync-docs src/modules/approval</code></p>
+          <p><b>使用提示：</b>正常走 implement 流程时会自动同步；本命令主要用于脱离流程手动修改代码后的兜底对齐。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">archive</span>
+        <span class="skill-one">功能全部完成交付后，清理临时过程记录</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>某个功能的所有阶段任务均已实现并通过代码审查，准备正式交付时。</p>
+          <p><b>具体功能：</b>最终确认对外文档与代码完全对齐，清理开发过程中的临时目录（cooking/），使仓库恢复整洁。</p>
+          <p><b>常用命令：</b><code>archive approval-batch-transfer</code></p>
+          <p><b>使用提示：</b>若仍有任务未完成或审查未通过，会明确提示阻断原因并拒绝归档。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">rush</span>
+        <span class="skill-one">一键编排端到端开发：从拆解到交付</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需求明确的大中型功能开发，希望全流程自动推进任务拆解、并行编码、逐阶段审查与自动提交。</p>
+          <p><b>具体功能：</b>全流程自动编排调度：需求含糊时先引导梳理，无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
+          <p><b>常用命令：</b><code>rush 审批单支持批量转办</code> 或 <code>rush approval-batch-transfer</code></p>
+          <p><b>使用提示：</b>适合多阶段大功能；日常简单修改建议直接使用 <code>implement</code> 直写更轻巧。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-engineering" data-cat="engineering">
+        <span class="skill-name mono">acceptance</span>
+        <span class="skill-one">为项目配置可执行的自动化验收标准</span>
+        <span class="skill-cat mono-caps">工程流程</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需要给项目增加端到端测试或接口自动化验证，提高交付质量时。</p>
+          <p><b>具体功能：</b>扫描项目现有的测试和构建命令，针对性推荐适合的自动化测试方案，生成验收规范 <code>ACCEPTANCE.md</code>。</p>
+          <p><b>常用命令：</b><code>acceptance</code></p>
+          <p><b>使用提示：</b>配置后，拆解的任务会自动追加验收要求，审查时也会以此为硬性标准。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-langs" data-cat="langs">
+        <span class="skill-name mono">typescript</span>
+        <span class="skill-one">对齐已安装版本，规范类型定义与编译配置</span>
+        <span class="skill-cat mono-caps">语言 · 5 / 6 / 7</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>TypeScript 5.x / 6.x / 7.x，优先读取项目实际安装版本规范。</p>
+          <p><b>职责范围：</b>专注于类型系统、tsconfig.json 配置及编译器行为，避免旧版本过时写法。</p>
+          <p><b>生效方式：</b>编辑 <code>.ts</code> / <code>.tsx</code> 或编译配置时自动生效，无需手动调用。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-langs" data-cat="langs">
+        <span class="skill-name mono">node</span>
+        <span class="skill-one">遵循对应 Node.js 版本的现代 API 与实践</span>
+        <span class="skill-cat mono-caps">语言 · 22 / 24 / 26</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Node.js 偶数 LTS 版本（22 / 24 / 26）及稳定现代 JS 特性。</p>
+          <p><b>职责范围：</b>负责内置标准库（<code>node:</code> 前缀模块）、运行环境、CLI 脚本与测试配置。</p>
+          <p><b>生效方式：</b>编写 Node 脚本、处理 package.json 或服务端逻辑时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-langs" data-cat="langs">
+        <span class="skill-name mono">go</span>
+        <span class="skill-one">根据 go.mod 声明版本选用标准库与现代语法</span>
+        <span class="skill-cat mono-caps">语言 · 1.24–1.27</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Go 1.24 至 1.27，严格依据 <code>go.mod</code> 声明的版本进行编码。</p>
+          <p><b>职责范围：</b>规范 Go 语法、标准库调用及单元测试编写，不强行捆绑第三方框架。</p>
+          <p><b>生效方式：</b>编辑 <code>.go</code>、<code>go.mod</code>、<code>go.work</code> 或测试文件时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-langs" data-cat="langs">
+        <span class="skill-name mono">rust</span>
+        <span class="skill-one">根据工具链版本采用对应的 Rust 现代特性</span>
+        <span class="skill-cat mono-caps">语言 · 1.95–1.97</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Rust 1.95 至 1.97，基于项目实际 rustc 版本查阅规范。</p>
+          <p><b>职责范围：</b>负责 Rust 核心语法、所有权模式、Cargo 配置与单元测试，拒绝凭模型旧记忆瞎写。</p>
+          <p><b>生效方式：</b>编辑 <code>.rs</code>、<code>Cargo.toml</code> 或工具链配置文件时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-frameworks" data-cat="frameworks">
+        <span class="skill-name mono">vue</span>
+        <span class="skill-one">规范 Vue 3 组合式 API 与单文件组件最佳实践</span>
+        <span class="skill-cat mono-caps">框架 · 3.4 / 3.5</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Vue 3.4 / 3.5，根据项目实际依赖版本选用对应特性。</p>
+          <p><b>开发约定：</b>推荐 <code>&lt;script setup&gt;</code> 搭配 Composition API；构建工具与状态库遵循项目既有选型。</p>
+          <p><b>生效方式：</b>编辑 <code>.vue</code> 文件或编写 Vue 组合式函数时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-frameworks" data-cat="frameworks">
+        <span class="skill-name mono">react</span>
+        <span class="skill-one">规范 React 19 函数组件与 Hooks 编写范式</span>
+        <span class="skill-cat mono-caps">框架 · 19.0–19.2</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>React 19.0 至 19.2，精确对齐项目安装版本。</p>
+          <p><b>开发约定：</b>标准函数组件与 Hooks 模式；路由、请求与状态管理严格跟随项目既有约定，不强推特定框架。</p>
+          <p><b>生效方式：</b>编辑 <code>.jsx</code> / <code>.tsx</code>、编写 React 组件或自定义 Hook 时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-frameworks" data-cat="frameworks">
+        <span class="skill-name mono">svelte</span>
+        <span class="skill-one">规范 Svelte 5 现代 Runes 响应式语法</span>
+        <span class="skill-cat mono-caps">框架 · 5</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Svelte 5.x 系列。</p>
+          <p><b>开发约定：</b>默认采用 Svelte 5 的 <b>Runes</b> 响应式机制，遵循官方推荐的现代状态管理写法。</p>
+          <p><b>生效方式：</b>编辑 <code>.svelte</code> 或相关逻辑文件时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-frameworks" data-cat="frameworks">
+        <span class="skill-name mono">gin</span>
+        <span class="skill-one">规范 Gin Web 框架路由、中间件与处理函数</span>
+        <span class="skill-cat mono-caps">框架 · 1.10–1.12</span>
+        <div class="skill-detail" hidden>
+          <p><b>版本覆盖：</b>Gin 1.10 至 1.12，依据依赖版本适配。</p>
+          <p><b>开发约定：</b>聚焦路由组织、参数绑定与中间件编写；克制过度设计，不擅自引入无关重型依赖。</p>
+          <p><b>生效方式：</b>编写 Gin 路由、handler 及接口渲染逻辑时自动生效。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-roles" data-cat="roles">
+        <span class="skill-name mono">frontend-expert</span>
+        <span class="skill-one">前端架构把关：防过度封装，拒绝代码膨胀</span>
+        <span class="skill-cat mono-caps">角色</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>编写或重构前端页面、组件、表单与样式，需要防范代码臃肿时。</p>
+          <p><b>核心原则：</b>像经验丰富的前端专家一样编写简洁实用的代码：避免多余抽象层、不随意造重复轮子、改完及时清理废弃死代码。</p>
+          <p><b>内置参考：</b>内置详尽的前端坏味道自查清单（过度工程、样式滥用、无用兼容代码等）。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-roles" data-cat="roles">
+        <span class="skill-name mono">backend-expert</span>
+        <span class="skill-one">后端架构把关：精简分层，避免过度抽象</span>
+        <span class="skill-cat mono-caps">角色</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>编写或重构后端 API、中间件、DTO、仓储与服务分层时。</p>
+          <p><b>核心原则：</b>克制后端过度设计：减少无意义的数据透传层、杜绝过度封装、避免在每一层之间无脑做 DTO 转换。</p>
+          <p><b>内置参考：</b>内置后端架构常见坏味道清单，确保业务逻辑直接清晰、接口健壮。</p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">git-commit</span>
+        <span class="skill-one">规范化本地 Git 提交，安全不越权</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>需要规范化提交代码、生成符合标准的 commit message 时。</p>
+          <p><b>行为特征：</b>手动交互模式下会征询是否推送；在自动化流水线中只执行本地安全提交，绝不擅自 push，且严格忽略过程临时目录。</p>
+          <p><b>常用命令：</b><code>git-commit</code></p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">build-lib-skill</span>
+        <span class="skill-one">为私有库与内部 SDK 自动提炼专属技能</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>当前项目是工具库、内部组件库或 SDK，需要教会 AI 正确调用时。</p>
+          <p><b>核心功能：</b>从源码结构和对外导出的公共 API 中提取真实用法，生成结构清晰的伴生技能文档，绝不凭空捏造。</p>
+          <p><b>常用命令：</b><code>build-lib-skill</code></p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">analysis</span>
+        <span class="skill-one">多维度拆解复杂问题，只分析不改代码</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>遇到复杂的架构选型、性能排查或方案论证，需要全面调研但暂不改动仓库时。</p>
+          <p><b>核心功能：</b>将问题拆分为多个专业维度，并行派发子代理深入调研，汇总为结构化的分析结论与落地方案，全程保持只读。</p>
+          <p><b>常用命令：</b><code>analysis 分析现有状态管理方案的瓶颈与迁移成本</code></p>
+        </div>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ================= 上手 ================= -->
+  <section id="start" class="section">
+    <header class="section-head">
+      <h2 class="section-title">三分钟上手</h2>
+    </header>
+
+    <div class="start-grid">
+      <div class="start-col">
+        <h3 class="start-h">① 安装技能到 Agent</h3>
+        <div class="cmd-block">
+          <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering" aria-label="复制">复制</button></div>
+          <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering --list</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering --list" aria-label="复制">复制</button></div>
+          <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering --skill setup --skill rush" aria-label="复制">复制</button></div>
+          <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering -g</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering -g" aria-label="复制">复制</button></div>
+        </div>
+        <p class="start-note">支持查看列表、按需挑选技能安装，或全局安装（-g）以在所有项目中生效。</p>
+      </div>
+
+      <div class="start-col">
+        <h3 class="start-h">② 两种常见使用方式</h3>
+        <div class="cmd-block">
+          <p class="cmd-comment mono-caps"># 方式 A：分步执行（适合探索与精细把关）</p>
+          <div class="cmd-line"><code class="mono">explore 审批单想支持批量转办</code></div>
+          <div class="cmd-line"><code class="mono">to-spec approval-batch-transfer</code></div>
+          <div class="cmd-line"><code class="mono">to-tasks approval-batch-transfer</code></div>
+          <div class="cmd-line"><code class="mono">implement approval-batch-transfer P1</code></div>
+          <div class="cmd-line"><code class="mono">archive approval-batch-transfer</code></div>
+        </div>
+        <div class="cmd-block">
+          <p class="cmd-comment mono-caps"># 方式 B：全流程自动编排（适合大需求一键跑完）</p>
+          <div class="cmd-line"><code class="mono">rush 审批单想支持批量转办</code></div>
+        </div>
+      </div>
+
+      <div class="start-col">
+        <h3 class="start-h">③ 初始化后的项目目录结构</h3>
+        <div class="cmd-block tree-block">
+<pre class="mono">.agents/
 ├── docs/       项目概况 PROJECT；
 │               代码类含架构/规范/地图/坏味道自查
 ├── scripts/    预检 precheck、任务管理 cooking
 │               与规范模板
 └── cooking/    临时开发记录（gitignore，不提交）
 AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
+        </div>
+        <p class="start-note">若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
       </div>
-      <p class="start-note">若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
     </div>
-  </div>
-</section>
+  </section>
 
 </main>
 
 <footer class="footer">
-  <svg class="footer-squiggle" viewBox="0 0 1200 30" aria-hidden="true"><path d="M10 16 C 200 6, 400 24, 600 12 C 800 2, 1000 22, 1190 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
-  <p class="footer-big">简洁务实 · 规范编码 ✎</p>
-  <p><a href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">github.com/cabinet-fe/prompt-engineering</a></p>
-  <p class="footer-license">MIT License © 前端小分队 · 按需读取规则文档，保持精准高效</p>
+  <div class="footer-mast mono-caps">工程技能库 · PROMPT ENGINEERING</div>
+  <p class="footer-link"><a href="https://github.com/cabinet-fe/prompt-engineering" target="_blank" rel="noopener">github.com/cabinet-fe/prompt-engineering</a></p>
+  <p class="footer-license mono-caps">MIT License © 前端小分队 · 按需读取规则文档，保持精准高效</p>
 </footer>
 
 <!-- 技能详情弹层 -->
 <div class="modal" id="skill-modal" hidden>
   <div class="modal-backdrop" data-close></div>
-  <div class="modal-sheet wobble" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <div class="tape" aria-hidden="true"></div>
-    <button class="modal-close" data-close aria-label="关闭">✕</button>
-    <p class="modal-cat" id="modal-cat"></p>
-    <h3 class="modal-title" id="modal-title"></h3>
+  <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close mono-caps" data-close aria-label="关闭">✕ 关闭</button>
+    <p class="modal-cat mono-caps" id="modal-cat"></p>
+    <h3 class="modal-title mono" id="modal-title"></h3>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
-<div class="toast" id="toast" role="status">已复制到剪贴板！</div>
+<div class="toast mono-caps" id="toast" role="status">已复制到剪贴板！</div>
 
 <script src="./main.js"></script>
 </body>
