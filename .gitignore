@@ -4,6 +4,9 @@ node_modules/
 .agents/cooking/
 .DS_Store
 
+# ZCode 本地会话产物
+.zcode/
+
 # docs-server 子项目：Go 构建产物与本地数据
 server/docs-mcp
 /bin/
