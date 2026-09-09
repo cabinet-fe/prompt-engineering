@@ -1,5 +1,5 @@
-// docs-server 文档 UI：首屏库列表、按 path 层级折叠的目录树与文档查看入口。
-// marked 与 highlight.js 是 P4 渲染视图的 vendored 依赖，这里先完成同源模块直引。
+// docs-server 文档 UI：首屏库列表、按 path 层级折叠的目录树与 Markdown 阅读视图。
+// 渲染用的 marked 与 highlight.js 均为 vendored 单文件 ESM，直引同源路径。
 import { marked } from "/vendor/marked.esm.js";
 import hljs from "/vendor/highlight.esm.js";
 
@@ -109,13 +109,90 @@ function renderTree(container, node) {
   container.appendChild(list);
 }
 
-// openDocument 进入查看区域：本阶段先占位，Markdown 渲染留给下一阶段。
-function openDocument(doc) {
+// openDocument 进入查看：一次请求拿全文后整篇渲染，非流式、非分页。
+async function openDocument(doc) {
   state.activePath = doc.path;
   for (const button of docTree.querySelectorAll("button[data-path]")) {
     button.classList.toggle("active", button.dataset.path === doc.path);
   }
-  showPlaceholder(`「${doc.title}」（${doc.path}）已选中，文档渲染即将提供。`);
+  const url = `/api/v1/libraries/${encodeURIComponent(state.library)}/documents/${encodeDocPath(doc.path)}`;
+  let body;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    ({ content: body } = await res.json());
+  } catch (err) {
+    showNotice(viewer, `文档加载失败：${err.message}`);
+    return;
+  }
+  renderDocument(body);
+}
+
+// encodeDocPath 只编码路径段内的字符、保留分隔符「/」，与 docs-search 查询脚本一致。
+function encodeDocPath(docPath) {
+  return docPath.split("/").map(encodeURIComponent).join("/");
+}
+
+// renderDocument 把整篇 Markdown 一次性渲染进查看区：marked 裸用（内容自推送管道自控，
+// 无 DOMPurify），渲染后补标题 id、代码高亮与页内 TOC。
+function renderDocument(markdown) {
+  const article = document.createElement("div");
+  article.className = "doc-body";
+  article.innerHTML = marked.parse(markdown);
+
+  const headings = article.querySelectorAll("h1, h2, h3, h4, h5, h6");
+  const used = new Set();
+  for (const heading of headings) {
+    heading.id = uniqueId(slug(heading.textContent), used);
+  }
+
+  const fragment = document.createDocumentFragment();
+  const toc = buildToc(headings);
+  if (toc) fragment.appendChild(toc);
+  fragment.appendChild(article);
+  viewer.replaceChildren(fragment);
+
+  for (const block of article.querySelectorAll("pre code[class^='language-'], pre code[class*=' language-']")) {
+    hljs.highlightElement(block);
+  }
+}
+
+// slug 把标题文本压成锚点 id：保留字母数字（含中文），其余序列转连字符。
+function slug(text) {
+  return (
+    text.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") ||
+    "heading"
+  );
+}
+
+// uniqueId 在 base 撞号时追加数字后缀，保证同篇内 id 唯一。
+function uniqueId(base, used) {
+  let id = base;
+  for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+  used.add(id);
+  return id;
+}
+
+// buildToc 用渲染后的标题生成页内 TOC：按层级缩进，点击锚点滚动定位到对应标题。
+function buildToc(headings) {
+  if (headings.length === 0) return null;
+  const nav = document.createElement("nav");
+  nav.className = "toc";
+  const label = document.createElement("p");
+  label.className = "toc-title";
+  label.textContent = "目录";
+  const list = document.createElement("ul");
+  for (const heading of headings) {
+    const item = document.createElement("li");
+    item.className = `toc-l${heading.tagName[1]}`;
+    const link = document.createElement("a");
+    link.href = `#${heading.id}`;
+    link.textContent = heading.textContent;
+    item.appendChild(link);
+    list.appendChild(item);
+  }
+  nav.append(label, list);
+  return nav;
 }
 
 function showPlaceholder(message) {
