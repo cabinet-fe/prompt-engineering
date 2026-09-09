@@ -1,6 +1,6 @@
 # 开发规范
 
-> 范围：适用于 docs-server 子项目代码（`server/`、`scripts/push-docs.mjs`、技能内嵌脚本）。
+> 范围：适用于 docs-server 子项目代码（`docs-server/`、`scripts/push-docs.mjs`、技能内嵌脚本）。
 
 ## 命名
 
@@ -10,7 +10,7 @@
 
 ## 目录与代码结构
 
-- `server/internal/`：按 `api` / `ingest` / `search` 分包；依赖方向 api → ingest/search，禁止 internal 内循环依赖。
+- `docs-server/internal/`：按 `api` / `ingest` / `search` 分包；依赖方向 api → ingest/search，禁止 internal 内循环依赖。
 - `scripts/push-docs.mjs` 与 `skills/tools/docs-search/scripts/query.mjs`：保持零依赖单文件，只用 Node 内置 API（fetch、fs、path），保证复制即跑。
 
 ## 代码风格
@@ -45,4 +45,4 @@
 
 - cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
 - 查询脚本或检索技能保存文档副本或检索缓存（检索状态只在服务端 SQLite）
-- 在 `server/` 里引入 HTTP 框架依赖（已定标准库 net/http）
+- 在 `docs-server/` 里引入 HTTP 框架依赖（已定标准库 net/http）

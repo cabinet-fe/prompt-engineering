@@ -8,7 +8,7 @@ node_modules/
 .zcode/
 
 # docs-server 子项目：Go 构建产物与本地数据
-server/docs-mcp
+docs-server/docs-server
 /bin/
 *.test
 *.out

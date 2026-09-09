@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 零依赖推送脚本：扫描库内 Markdown，解析 frontmatter，整库全量推送到 docs-mcp 服务端。
+// 零依赖推送脚本：扫描库内 Markdown，解析 frontmatter，整库全量推送到 docs-server 服务端。
 // 仅使用 Node 内置能力（fs / path / 全局 fetch），Node >= 24 直接运行。
 //
 // 用法（环境变量写入 .env 后用 --env-file 加载，该参数为 Node 内置，全平台通用）：

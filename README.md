@@ -3,7 +3,7 @@
 面向 AI Agent 的提示词工程仓库，两大件：
 
 - **技能（`skills/`）**：工程流程、语言/框架规范、角色把关、实用工具，共 25 个，入口 `SKILL.md`。让 AI 按标准流程干活、对齐项目实际版本，不靠训练数据猜 API。
-- **文档库引擎（docs-server）**：企业内部库文档检索系统。中心 Go 服务（`server/`）用 SQLite FTS5 建全文索引，零依赖推送脚本（`scripts/push-docs.mjs`）把库文档整库推上去；配套 `docs-gen`（库维护者：生成、同步、推送文档）与 `docs-search`（库使用者：一个技能检索所有库）两个技能。
+- **文档库引擎（docs-server）**：企业内部库文档检索系统。中心 Go 服务（`docs-server/`）用 SQLite FTS5 建全文索引，零依赖推送脚本（`scripts/push-docs.mjs`）把库文档整库推上去；配套 `docs-gen`（库维护者：生成、同步、推送文档）与 `docs-search`（库使用者：一个技能检索所有库）两个技能。
 
 门户站点（报刊风）：<https://cabinet-fe.github.io/prompt-engineering/>，源码在 `docs/`。
 
@@ -36,13 +36,13 @@ npx skills add cabinet-fe/prompt-engineering -g              # 装到所有项�
 
 ## 文档库引擎
 
-部署服务、推送文档、接入检索三步，见 [server/README.md](server/README.md)。
+部署服务、推送文档、接入检索三步，见 [docs-server/README.md](docs-server/README.md)。
 
 ## 目录
 
 ```text
 skills/     技能源码：engineering / langs / frameworks / roles / tools
-server/     docs-server 文档服务（Go）
+docs-server/ docs-server 文档服务（Go）
 scripts/    push-docs.mjs 推送脚本（复制到库仓库使用）
 docs/       报刊风门户站点（GitHub Pages）
 ```

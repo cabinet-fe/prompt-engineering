@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/hodgewen/docs-mcp/server/internal/search"
+	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
 )
 
 // slugPattern 是库标识的合法形式：小写字母、数字与连字符。

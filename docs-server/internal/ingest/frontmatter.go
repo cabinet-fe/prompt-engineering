@@ -7,7 +7,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/hodgewen/docs-mcp/server/internal/search"
+	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
 )
 
 // errNoFrontmatter 表示文档缺少 YAML frontmatter 区块。

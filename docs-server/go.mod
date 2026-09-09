@@ -1,4 +1,4 @@
-module github.com/hodgewen/docs-mcp/server
+module github.com/cabinet-fe/prompt-engineering/docs-server
 
 go 1.26.6
 

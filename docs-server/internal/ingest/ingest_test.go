@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/hodgewen/docs-mcp/server/internal/search"
+	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
 )
 
 func openTestStore(t *testing.T) *search.Store {

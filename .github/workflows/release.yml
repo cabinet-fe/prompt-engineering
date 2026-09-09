@@ -17,13 +17,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: server/go.mod
-          cache-dependency-path: server/go.sum
+          go-version-file: docs-server/go.mod
+          cache-dependency-path: docs-server/go.sum
       - name: go vet
-        working-directory: server
+        working-directory: docs-server
         run: go vet ./...
       - name: go test
-        working-directory: server
+        working-directory: docs-server
         run: go test ./...
 
   release:
@@ -42,18 +42,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: server/go.mod
-          cache-dependency-path: server/go.sum
+          go-version-file: docs-server/go.mod
+          cache-dependency-path: docs-server/go.sum
       - name: 构建静态二进制
-        working-directory: server
+        working-directory: docs-server
         env:
           CGO_ENABLED: "0"
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
         run: |
           mkdir -p ../dist
-          go build -trimpath -ldflags="-s -w" -o "../dist/docs-mcp-${{ matrix.name }}" ./cmd/server
+          go build -trimpath -ldflags="-s -w" -o "../dist/docs-server-${{ matrix.name }}" ./cmd/docs-server
       - name: 发布到 GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/docs-mcp-${{ matrix.name }}
+          files: dist/docs-server-${{ matrix.name }}
