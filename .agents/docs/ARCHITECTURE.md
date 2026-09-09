@@ -12,14 +12,14 @@ docs-server 面向企业内部：库维护者把库文档推送到中心文档�
 
 1. 库维护者把 `scripts/push-docs.mjs` 复制到自己仓库（或经 `skills/tools/docs-gen` 安装），配环境变量（`DOCS_SERVER_URL`、`DOCS_TOKEN`、`DOCS_LIBRARY`），手动或在 CI 执行，把 Markdown 文档（含 frontmatter）经 HTTP 全量推送到文档服务。
 2. 文档服务接收推送，整库替换写入 SQLite 并重建 FTS5 全文索引。
-3. 使用者经 `npx skills add cabinet-fe/prompt-engineering` / `npx skills update` 安装 `skills/tools/docs-search`，配置 `DOCS_SERVER_URL`；AI 运行技能内嵌查询脚本，经 REST（`list_libraries` / `search` / `get_document`）检索文档。无需 MCP 配置。
+3. 使用者经 `npx skills add cabinet-fe/prompt-engineering` / `npx skills update` 安装 `skills/tools/docs-search`，配置 `DOCS_SERVER_URL`；AI 运行技能内嵌查询脚本，经 REST（`libraries` / `search` / `get` / `toc`）检索文档。无需 MCP 配置。
 
 ## 技术架构
 
 子项目三部分：
 
 - **文档服务（Go，`docs-server/`）**：唯一带状态、唯一部署的部分，单进程提供：
-  - REST API（`/api/v1/`）：推送（单令牌 Bearer 鉴权、整库全量覆盖）、搜索、取文档、列库、列库内文档；读路径免鉴权。标准库 `net/http`，零框架依赖。
+  - REST API（`/api/v1/`）：推送与下架（单令牌 Bearer 鉴权；推送整库全量覆盖，DELETE 下架整库）、搜索、取文档、列库、列库内文档；读路径免鉴权。标准库 `net/http`，零框架依赖。
   - 内置只读 Web UI（`internal/web`）：go:embed 原生 JS/CSS 单页（零构建，marked / highlight.js vendored），浏览器按库以目录树导航并阅读客户端渲染的 Markdown；随读路径免鉴权。
   - SQLite FTS5 全文索引：bm25 排序、标题列加权、高亮片段、按库过滤；纯 Go 驱动（modernc.org/sqlite），编译为静态二进制。
   - 部署：CGO 关闭的单文件静态二进制，拷到服务器直接运行；GitHub Actions CI 在 `v*` tag 构建 linux/darwin × amd64/arm64 发 Releases。

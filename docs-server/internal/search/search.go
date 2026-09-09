@@ -16,13 +16,15 @@ var ErrNotFound = errors.New("文档不存在")
 const defaultLimit = 20
 
 // Result 是一条检索命中，Snippet 为经 normalizeSnippet 归一化的高亮片段，
-// 命中词以 <mark> 连续包裹。
+// 命中词以 <mark> 连续包裹；Sections 为该文档全部二级标题，供调用方不经全文
+// 直接定位到目标章节。
 type Result struct {
-	Library     string `json:"library"`
-	Path        string `json:"path"`
-	Title       string `json:"title"`
-	Description string `json:"description,omitempty"`
-	Snippet     string `json:"snippet"`
+	Library     string   `json:"library"`
+	Path        string   `json:"path"`
+	Title       string   `json:"title"`
+	Description string   `json:"description,omitempty"`
+	Snippet     string   `json:"snippet"`
+	Sections    []string `json:"sections,omitempty"`
 }
 
 // Search 在 FTS5 索引中检索 query；library 非空时限定单库，缺省跨库。
@@ -60,7 +62,7 @@ func (s *Store) Search(ctx context.Context, query string, library string, limit 
 
 func (s *Store) searchWithMatch(ctx context.Context, match, library string, limit int) ([]Result, error) {
 	q := `
-		SELECT l.slug, d.path, d.title, d.description,
+		SELECT l.slug, d.path, d.title, d.description, d.content,
 			snippet(documents_fts, -1, '<mark>', '</mark>', '…', 64)
 		FROM documents_fts
 		JOIN documents d ON d.id = documents_fts.rowid
@@ -84,10 +86,12 @@ func (s *Store) searchWithMatch(ctx context.Context, match, library string, limi
 	var results []Result
 	for rows.Next() {
 		var r Result
-		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &r.Snippet); err != nil {
+		var content string
+		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &content, &r.Snippet); err != nil {
 			return nil, fmt.Errorf("读取检索结果: %w", err)
 		}
 		r.Snippet = normalizeSnippet(r.Snippet)
+		r.Sections = ExtractSections(content)
 		results = append(results, r)
 	}
 	if err := rows.Err(); err != nil {
@@ -168,24 +172,80 @@ func (s *Store) ListDocuments(ctx context.Context, library string) ([]DocMeta, e
 	return docs, nil
 }
 
-// ListLibraries 返回全部库 slug，按字母序排列。
-func (s *Store) ListLibraries(ctx context.Context) ([]string, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT slug FROM libraries ORDER BY slug`)
+// LibraryMeta 是库列表项的元数据，Documents 为库内文档数。
+type LibraryMeta struct {
+	Slug      string `json:"slug"`
+	Documents int    `json:"documents"`
+}
+
+// ListLibraries 返回全部库的 slug 与文档数，按 slug 字母序排列。
+func (s *Store) ListLibraries(ctx context.Context) ([]LibraryMeta, error) {
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT l.slug, COUNT(d.id)
+		FROM libraries l
+		LEFT JOIN documents d ON d.library_id = l.id
+		GROUP BY l.slug
+		ORDER BY l.slug`)
 	if err != nil {
 		return nil, fmt.Errorf("列出库: %w", err)
 	}
 	defer rows.Close()
 
-	var slugs []string
+	var libs []LibraryMeta
 	for rows.Next() {
-		var slug string
-		if err := rows.Scan(&slug); err != nil {
+		var l LibraryMeta
+		if err := rows.Scan(&l.Slug, &l.Documents); err != nil {
 			return nil, fmt.Errorf("读取库列表: %w", err)
 		}
-		slugs = append(slugs, slug)
+		libs = append(libs, l)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("遍历库列表: %w", err)
 	}
-	return slugs, nil
+	return libs, nil
+}
+
+// LibraryExists 判断 slug 库是否存在。
+func (s *Store) LibraryExists(ctx context.Context, slug string) (bool, error) {
+	var one int
+	err := s.db.QueryRowContext(ctx, `SELECT 1 FROM libraries WHERE slug = ?`, slug).Scan(&one)
+	if errors.Is(err, sql.ErrNoRows) {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("查询库 %q: %w", slug, err)
+	}
+	return true, nil
+}
+
+// DeleteLibrary 删除 slug 库及其全部文档与 FTS 索引；库不存在时返回 ErrNotFound。
+func (s *Store) DeleteLibrary(ctx context.Context, slug string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("开启事务: %w", err)
+	}
+	defer tx.Rollback()
+
+	var libraryID int64
+	err = tx.QueryRowContext(ctx, `SELECT id FROM libraries WHERE slug = ?`, slug).Scan(&libraryID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("查询库 %q: %w", slug, err)
+	}
+	if _, err := tx.ExecContext(ctx,
+		`DELETE FROM documents_fts WHERE rowid IN (SELECT id FROM documents WHERE library_id = ?)`, libraryID); err != nil {
+		return fmt.Errorf("清除库 %q 索引: %w", slug, err)
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM documents WHERE library_id = ?`, libraryID); err != nil {
+		return fmt.Errorf("清除库 %q 文档: %w", slug, err)
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM libraries WHERE id = ?`, libraryID); err != nil {
+		return fmt.Errorf("删除库 %q: %w", slug, err)
+	}
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("提交删除库 %q: %w", slug, err)
+	}
+	return nil
 }

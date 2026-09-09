@@ -6,16 +6,16 @@
 
 ## 读者 AI 的消费流程
 
-使用者的 AI 只有三种操作，它看到的字段只有下面这些：
+使用者的 AI 只有四种操作，它看到的字段只有下面这些：
 
-1. `libraries` → `{"libraries":["request","ui-core"]}`
-2. `search --q <关键词> [--library <slug>]` → 最多 20 条，按相关度降序，无分页：
+1. `libraries` → `{"libraries":[{"slug":"request","documents":12},{"slug":"ui-core","documents":8}]}`
+2. `search --q <关键词> [--library <slug>] [--limit 1~50]` → 缺省最多 20 条，按相关度降序，无分页：
 
    ```json
-   {"results":[{"library":"request","path":"apis/request.md","title":"Request HTTP 请求客户端","description":"…","snippet":"…401 时<mark>刷新 token</mark>并重放…"}]}
+   {"results":[{"library":"request","path":"apis/request.md","title":"Request HTTP 请求客户端","description":"…","snippet":"…401 时<mark>刷新 token</mark>并重放…","sections":["快速上手","API 签名","参数说明"]}]}
    ```
 
-   AI 只凭 `title` + `description` + `snippet`（64 token 的高亮片段，中文约 30 字）决定打开哪一篇。
+   AI 只凭 `title` + `description` + `snippet`（64 token 的高亮片段，中文约 30 字）决定打开哪一篇；`sections` 列出该文档全部 `## ` 章节名，AI 可据此直接按章节取，不必先拉全文。
 3. `get --library <slug> --path <path> [--section <章节名>]` →
 
    ```json
@@ -23,6 +23,9 @@
    ```
 
    带 `--section` 时 `content` 只含该 `## ` 章节，AI 看不到章节外的任何内容（包括 H1 后的概述与其他章节的 import）。
+4. `toc --library <slug> --path <path>` → 与 `get` 相同但**无 `content` 字段**：只取元数据与章节列表，供 AI 先看结构再按章节取。
+
+`--library` 指定了不存在的库时，search / get / list 均返回 404 `library_not_found`，与「库存在但无命中」的空结果区分。
 
 结论：**title / keywords / description 决定能否被打开；章节自包含决定打开后能否直接照做。**
 
@@ -60,6 +63,8 @@
 | 机制 | 当前实现 | 文档对策 |
 | --- | --- | --- |
 | 原子性 | 任一篇 frontmatter 解析失败，整批不写库；成功则整库覆盖，服务端旧文档全部删除 | 推送前逐篇自检；本地删掉的文件推送后服务端同步消失 |
-| frontmatter 边界 | 文件首字节起必须是 `---` 独占一行（`---\n` 或 `---\r\n`）；结尾分隔线是独占一行的 `---` | 无 BOM、无前导空行、分隔线行尾无空格。推送脚本本地校验会放过 BOM 与行尾空格，服务端会拒绝 |
+| 本地校验 | 推送脚本本地按服务端已知拒绝项严格校验（BOM、分隔线行尾空格、重复键、未引号的 `: ` 与 ` #`、引号未闭合、title 缺失/为空/非字符串），一次列出全部文件的全部问题后才发请求 | 本地报错就地修完再推，别指望服务端兜底 |
+| frontmatter 边界 | 文件首字节起必须是 `---` 独占一行（`---\n` 或 `---\r\n`）；结尾分隔线是独占一行的 `---` | 无 BOM、无前导空行、分隔线行尾无空格 |
 | YAML 解析 | 服务端严格 YAML（yaml.v3）：重复键、未闭合括号报错；值内 `: ` 未加引号报错；值内 ` #` 之后被当注释丢弃 | 值含 `: `、` #`、引号，或以 YAML 指示符（`[` `{` `*` `&` `!` `%` `@` `>` 竖线 引号）开头时用双引号包裹；不写多行标量 |
 | 字段 | 只读 `title`（必填非空白）、`description`、`aliases`、`keywords`；其他字段忽略 | `aliases` / `keywords` 三种写法等价：YAML 列表、内联数组 `[a, b]`、逗号分隔字符串（中英文逗号均可） |
+| 下架 | `push-docs.mjs --clear` 调 `DELETE /api/v1/libraries/{slug}`（Bearer 鉴权），删除该库全部文档与索引 | 库永久废弃时才用；服务端无法恢复，需用户确认后执行 |

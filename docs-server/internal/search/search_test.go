@@ -171,14 +171,49 @@ func TestGetDocument(t *testing.T) {
 func TestListLibraries(t *testing.T) {
 	s, _ := openTestStore(t)
 	mustReplace(t, s, "beta", nil)
-	mustReplace(t, s, "alpha", []Document{{Path: "a.md", Title: "A", Content: "内容"}})
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "a.md", Title: "A", Content: "内容"},
+		{Path: "b.md", Title: "B", Content: "内容"},
+	})
 
-	slugs, err := s.ListLibraries(context.Background())
+	libs, err := s.ListLibraries(context.Background())
 	if err != nil {
 		t.Fatalf("ListLibraries: %v", err)
 	}
-	if len(slugs) != 2 || slugs[0] != "alpha" || slugs[1] != "beta" {
-		t.Errorf("库列表不符: %v", slugs)
+	if len(libs) != 2 || libs[0].Slug != "alpha" || libs[1].Slug != "beta" {
+		t.Errorf("库列表不符: %v", libs)
+	}
+	if libs[0].Documents != 2 || libs[1].Documents != 0 {
+		t.Errorf("库文档数不符: %v", libs)
+	}
+}
+
+func TestLibraryExistsAndDelete(t *testing.T) {
+	s, _ := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "a.md", Title: "文档 A", Content: "unique 内容"},
+	})
+
+	exists, err := s.LibraryExists(context.Background(), "alpha")
+	if err != nil || !exists {
+		t.Errorf("alpha 库应存在，实际 exists=%v err=%v", exists, err)
+	}
+	exists, err = s.LibraryExists(context.Background(), "ghost")
+	if err != nil || exists {
+		t.Errorf("ghost 库应不存在，实际 exists=%v err=%v", exists, err)
+	}
+
+	if err := s.DeleteLibrary(context.Background(), "ghost"); !errors.Is(err, ErrNotFound) {
+		t.Errorf("删除不存在的库应返回 ErrNotFound，实际 %v", err)
+	}
+	if err := s.DeleteLibrary(context.Background(), "alpha"); err != nil {
+		t.Fatalf("DeleteLibrary: %v", err)
+	}
+	if results := mustSearch(t, s, "unique", ""); len(results) != 0 {
+		t.Errorf("下架后索引不应再命中，实际 %+v", results)
+	}
+	if exists, _ := s.LibraryExists(context.Background(), "alpha"); exists {
+		t.Error("下架后库不应存在")
 	}
 }
 

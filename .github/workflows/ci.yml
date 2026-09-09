@@ -7,11 +7,13 @@ on:
     paths:
       - "docs-server/**"
       - "scripts/push-docs.mjs"
+      - "skills/tools/docs-gen/scripts/push-docs.mjs"
       - ".github/workflows/ci.yml"
   pull_request:
     paths:
       - "docs-server/**"
       - "scripts/push-docs.mjs"
+      - "skills/tools/docs-gen/scripts/push-docs.mjs"
       - ".github/workflows/ci.yml"
 
 permissions:
@@ -33,3 +35,6 @@ jobs:
       - name: go test
         working-directory: docs-server
         run: go test ./...
+      # 推送脚本随 docs-gen 技能分发副本，两份必须逐字一致
+      - name: push-docs 副本一致性
+        run: diff scripts/push-docs.mjs skills/tools/docs-gen/scripts/push-docs.mjs

@@ -14,7 +14,7 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 | --- | --- | --- |
 | 文档服务 | `docs-server/` | Go 单进程：REST API + 内置只读 Web UI，SQLite FTS5 全文检索，编译为 CGO 关闭的单文件静态二进制 |
 | 推送脚本 | `scripts/push-docs.mjs` | 零依赖单文件 Node 脚本（Node ≥ 24），复制到库仓库使用，整库全量推送 |
-| 检索技能 | `skills/tools/docs-search/` | 通用检索技能：内嵌查询脚本调 REST（list / search / get） |
+| 检索技能 | `skills/tools/docs-search/` | 通用检索技能：内嵌查询脚本调 REST（libraries / search / get / toc） |
 | 文档生成技能 | `skills/tools/docs-gen/` | 只服务库：文档标准（检索优化）、安装推送脚本、库代码改动后同步文档、执行推送 |
 
 ## 部署
@@ -120,7 +120,8 @@ description: 五分钟上手指南
 三个环境变量写入仓库根目录 `.env`（记得 gitignore）后执行；`--env-file` 为 Node 内置参数，Windows/macOS/Linux 通用：
 
 ```bash
-node --env-file=.env scripts/push-docs.mjs [文档目录，默认 agent-docs/]
+node --env-file=.env scripts/push-docs.mjs [--verify] [文档目录，默认 agent-docs/]
+node --env-file=.env scripts/push-docs.mjs --clear   # 下架整库
 ```
 
 | 环境变量 | 说明 |
@@ -132,7 +133,10 @@ node --env-file=.env scripts/push-docs.mjs [文档目录，默认 agent-docs/]
 行为说明：
 
 - **整库覆盖**：每次推送全量替换该库的全部文档，删掉服务端旧文档。
-- **本地校验**：任一文档缺 frontmatter 或缺 `title` 会直接失败，不发出请求。
+- **本地校验**：推送前按服务端严格 YAML 的已知拒绝项逐篇校验（BOM、分隔线行尾空格、重复键、值内未引号的 `: ` 与 ` #`、引号未闭合、title 缺失或为空），一次列出全部文件的全部问题；有任一问题不发请求。
+- **`--verify`**：推送成功后逐篇按 title 搜索验证可检索，任何一篇搜不到即非零退出。
+- **`--clear`**：调 DELETE 接口下架整库，服务端删除该库全部文档与索引，不可恢复。
+- 忽略规则：扫描时跳过隐藏目录/文件与 `node_modules`。
 - **CI 集成**：在库仓库 CI 里配上述三个环境变量后执行脚本即可，例如 GitHub Actions：
 
 ```yaml
@@ -145,15 +149,16 @@ node --env-file=.env scripts/push-docs.mjs [文档目录，默认 agent-docs/]
 
 ## REST API
 
-服务端所有接口挂 `/api/v1/` 前缀；推送需 Bearer 鉴权，读路径免鉴权。错误统一为 `{"error":{"code","message"}}`。
+服务端所有接口挂 `/api/v1/` 前缀；推送与下架需 Bearer 鉴权，读路径免鉴权。错误统一为 `{"error":{"code","message"}}`。指定了不存在的库时，相关接口返回 404 `library_not_found`（与空结果区分）。
 
 | 方法 | 路径 | 鉴权 | 说明 |
 | --- | --- | --- | --- |
 | PUT | `/api/v1/libraries/{slug}/documents` | Bearer | 整库覆盖推送，body 为 `[{"path","content"}]` 数组 |
-| GET | `/api/v1/libraries` | 免 | 列出全部库 slug：`{"libraries":[...]}` |
+| DELETE | `/api/v1/libraries/{slug}` | Bearer | 下架整库：删除该库全部文档与索引 |
+| GET | `/api/v1/libraries` | 免 | 列出全部库的 slug 与文档数：`{"libraries":[{"slug","documents"}]}` |
 | GET | `/api/v1/libraries/{slug}/documents` | 免 | 列出该库全部文档的 path 与 title，按 path 排序：`{"library","documents":[...]}` |
-| GET | `/api/v1/libraries/{slug}/documents/{path}` | 免 | 取文档；可选 `?section=` 提取 `## ` 章节；返回 `{library,path,title,description,keywords,aliases,sections,content}` |
-| GET | `/api/v1/search?q=关键词&library=slug` | 免 | 全文检索，`library` 可选；返回 `{"results":[{library,path,title,description,snippet}]}`，命中词以 `<mark>` 包裹 |
+| GET | `/api/v1/libraries/{slug}/documents/{path}` | 免 | 取文档；可选 `?section=` 提取 `## ` 章节、`?toc=1` 只返回元数据与章节列表（省略 content）；返回 `{library,path,title,description,keywords,aliases,sections,content}` |
+| GET | `/api/v1/search?q=关键词&library=slug&limit=20` | 免 | 全文检索，`library`、`limit`（1~50，缺省 20）可选；返回 `{"results":[{library,path,title,description,snippet,sections}]}`，命中词以 `<mark>` 包裹，`sections` 为命中文档的章节名列表 |
 
 ```bash
 # 搜索示例
@@ -189,12 +194,13 @@ npx skills update
 
 设置服务地址（结尾斜杠会自动去掉）：写入当前仓库根目录 `.env`（`DOCS_SERVER_URL=<地址>`，记得 gitignore），AI 运行脚本时会经 `--env-file` 加载；或按所用 shell 导出同名环境变量。
 
-需要检索内部库文档时，AI 从技能目录运行内嵌脚本（Node ≥ 24）：
+需要检索内部库文档时，AI 在**仓库根目录**（`.env` 所在处）运行内嵌脚本（Node ≥ 24；`--env-file` 相对当前目录解析，脚本路径用绝对路径或相对当前目录的路径）：
 
 ```bash
-node scripts/query.mjs libraries
-node scripts/query.mjs search --q <关键词> [--library <slug>]
-node scripts/query.mjs get --library <slug> --path <path> [--section <章节>]
+node --env-file=.env <技能目录>/scripts/query.mjs libraries
+node --env-file=.env <技能目录>/scripts/query.mjs search --q "<关键词>" [--library <slug>] [--limit 1~50]
+node --env-file=.env <技能目录>/scripts/query.mjs get --library <slug> --path <path> [--section <章节>]
+node --env-file=.env <技能目录>/scripts/query.mjs toc --library <slug> --path <path>   # 只取章节列表
 ```
 
 ## 开发
@@ -207,7 +213,7 @@ go test ./...  # 单元测试
 
 CI（[ci.yml](../.github/workflows/ci.yml) 与 [release.yml](../.github/workflows/release.yml)）：
 
-- push main / PR（仅 `docs-server/**` 等相关路径变更时）：跑 `go vet` + `go test`
+- push main / PR（`docs-server/**`、推送脚本两份副本等相关路径变更时）：跑 `go vet` + `go test` + 推送脚本副本一致性 diff
 - 打 `v*` tag：构建 linux/darwin × amd64/arm64 静态二进制并发布 GitHub Releases
 
 发版流程：合并代码到 main 后，打 tag 并推送即可自动发版：

@@ -168,7 +168,7 @@ func TestReadEndpointsAfterPush(t *testing.T) {
 		t.Fatalf("推送失败: %d，body=%s", rec.Code, rec.Body.String())
 	}
 
-	// 搜索：命中并返回高亮片段，library 过滤生效。
+	// 搜索：命中并返回高亮片段与章节列表，library 过滤生效。
 	rec := do(t, s, http.MethodGet, "/api/v1/search?q=sqlite", "", "")
 	if rec.Code != http.StatusOK {
 		t.Fatalf("搜索失败: %d", rec.Code)
@@ -187,16 +187,22 @@ func TestReadEndpointsAfterPush(t *testing.T) {
 		t.Errorf("命中项缺 library/title/高亮: %+v", first)
 	}
 
+	// 搜索不存在的库返回 404 library_not_found，与「库存在但无命中」的空结果区分。
 	rec = do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&library=beta", "", "")
-	var filtered struct {
-		Results []search.Result `json:"results"`
+	if code := requireError(t, rec, http.StatusNotFound); code != "library_not_found" {
+		t.Errorf("未知库搜索错误码应为 library_not_found，实际 %q", code)
 	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &filtered); err != nil {
-		t.Fatalf("解析过滤搜索响应: %v", err)
+
+	// limit 限条数；非法值 400。
+	rec = do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&limit=1", "", "")
+	if err := json.Unmarshal(rec.Body.Bytes(), &searchBody); err != nil {
+		t.Fatalf("解析 limit 搜索响应: %v", err)
 	}
-	if len(filtered.Results) != 0 {
-		t.Errorf("library=beta 应无命中，实际 %+v", filtered.Results)
+	if len(searchBody.Results) != 1 {
+		t.Errorf("limit=1 应只返回 1 条，实际 %d", len(searchBody.Results))
 	}
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&limit=0", "", ""), http.StatusBadRequest)
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&limit=abc", "", ""), http.StatusBadRequest)
 
 	// 取文档：全文与元数据。
 	rec = do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/api.md", "", "")
@@ -218,15 +224,18 @@ func TestReadEndpointsAfterPush(t *testing.T) {
 		t.Errorf("取回文档不符: %+v", doc)
 	}
 
-	// 列库。
+	// 列库：返回 slug 与文档数。
 	rec = do(t, s, http.MethodGet, "/api/v1/libraries", "", "")
 	var libs struct {
-		Libraries []string `json:"libraries"`
+		Libraries []struct {
+			Slug      string `json:"slug"`
+			Documents int    `json:"documents"`
+		} `json:"libraries"`
 	}
 	if err := json.Unmarshal(rec.Body.Bytes(), &libs); err != nil {
 		t.Fatalf("解析库列表响应: %v", err)
 	}
-	if len(libs.Libraries) != 1 || libs.Libraries[0] != "alpha" {
+	if len(libs.Libraries) != 1 || libs.Libraries[0].Slug != "alpha" || libs.Libraries[0].Documents != 2 {
 		t.Errorf("库列表不符: %+v", libs)
 	}
 }
@@ -274,7 +283,16 @@ func TestListDocuments(t *testing.T) {
 		}
 	}
 
-	// 空库返回空数组而非 null。
+	// 不存在的库返回 404，与空库区分。
+	rec = do(t, s, http.MethodGet, "/api/v1/libraries/ghost/documents", "", "")
+	if code := requireError(t, rec, http.StatusNotFound); code != "library_not_found" {
+		t.Errorf("未知库错误码应为 library_not_found，实际 %q", code)
+	}
+
+	// 存在但为空的库返回空数组而非 null。
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/empty/documents", testToken, "[]"); rec.Code != http.StatusOK {
+		t.Fatalf("推送空数组失败: %d，body=%s", rec.Code, rec.Body.String())
+	}
 	rec = do(t, s, http.MethodGet, "/api/v1/libraries/empty/documents", "", "")
 	if rec.Code != http.StatusOK {
 		t.Fatalf("空库应返回 200，实际 %d", rec.Code)
@@ -286,6 +304,10 @@ func TestListDocuments(t *testing.T) {
 
 func TestDocumentsMethodDispatch(t *testing.T) {
 	s := newTestServer(t)
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
+		goodDoc("a.md", "文档 A", "内容")); rec.Code != http.StatusOK {
+		t.Fatalf("推送失败: %d", rec.Code)
+	}
 	// GET 走免鉴权列表，PUT 走鉴权推送，其余方法返回统一 405。
 	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents", "", ""); rec.Code != http.StatusOK {
 		t.Errorf("GET 应返回 200，实际 %d", rec.Code)
@@ -370,5 +392,102 @@ func TestGetDocumentWithSection(t *testing.T) {
 	rec = do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/table.md?section=Methods", "", "")
 	if code := requireError(t, rec, http.StatusNotFound); code != "section_not_found" {
 		t.Errorf("不存在章节错误码应为 section_not_found，实际 %q", code)
+	}
+}
+
+func TestSearchResultsCarrySections(t *testing.T) {
+	s := newTestServer(t)
+	content := "# UTable\n\n说明\n\n## Props\n\n内容\n\n## Events\n\n内容\n"
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
+		goodDoc("table.md", "表格", content)); rec.Code != http.StatusOK {
+		t.Fatalf("推送失败: %d", rec.Code)
+	}
+
+	rec := do(t, s, http.MethodGet, "/api/v1/search?q=说明", "", "")
+	var body struct {
+		Results []search.Result `json:"results"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("解析搜索响应: %v", err)
+	}
+	if len(body.Results) != 1 {
+		t.Fatalf("期望 1 条命中，实际 %d", len(body.Results))
+	}
+	got := body.Results[0].Sections
+	if len(got) != 2 || got[0] != "Props" || got[1] != "Events" {
+		t.Errorf("命中项应携带全部章节名，实际 %v", got)
+	}
+}
+
+func TestGetDocumentTocMode(t *testing.T) {
+	s := newTestServer(t)
+	content := "# UTable\n\n说明\n\n## Props\n\n内容\n\n## Events\n\n内容\n"
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
+		goodDoc("table.md", "表格", content)); rec.Code != http.StatusOK {
+		t.Fatalf("推送失败: %d", rec.Code)
+	}
+
+	for _, toc := range []string{"1", "true"} {
+		rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/table.md?toc="+toc, "", "")
+		if rec.Code != http.StatusOK {
+			t.Fatalf("toc 模式应返回 200，实际 %d", rec.Code)
+		}
+		var body map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+			t.Fatalf("解析响应: %v", err)
+		}
+		if _, has := body["content"]; has {
+			t.Errorf("toc=%s 应省略 content，实际 %v", toc, body)
+		}
+		if sections, ok := body["sections"].([]any); !ok || len(sections) != 2 {
+			t.Errorf("toc=%s 应包含 2 个章节名，实际 %v", toc, body["sections"])
+		}
+	}
+
+	// 不带 toc 仍返回全文。
+	rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/table.md", "", "")
+	var doc struct {
+		Content string `json:"content"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &doc); err != nil {
+		t.Fatalf("解析响应: %v", err)
+	}
+	if !strings.Contains(doc.Content, "# UTable") {
+		t.Errorf("不带 toc 应返回全文，实际 %q", doc.Content)
+	}
+}
+
+func TestDeleteLibrary(t *testing.T) {
+	s := newTestServer(t)
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
+		goodDoc("table.md", "表格", "unique 内容")); rec.Code != http.StatusOK {
+		t.Fatalf("推送失败: %d", rec.Code)
+	}
+
+	// 下架需要令牌；方法不允许统一 405。
+	requireError(t, do(t, s, http.MethodDelete, "/api/v1/libraries/alpha", "", ""), http.StatusUnauthorized)
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/libraries/alpha", "", ""), http.StatusMethodNotAllowed)
+
+	rec := do(t, s, http.MethodDelete, "/api/v1/libraries/alpha", testToken, "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("下架失败: %d，body=%s", rec.Code, rec.Body.String())
+	}
+	if code := requireError(t, do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/table.md", "", ""),
+		http.StatusNotFound); code != "not_found" {
+		t.Errorf("下架后取文档应为 not_found，实际 %q", code)
+	}
+	if code := requireError(t, do(t, s, http.MethodGet, "/api/v1/search?q=unique&library=alpha", "", ""),
+		http.StatusNotFound); code != "library_not_found" {
+		t.Errorf("下架后搜索应为 library_not_found，实际 %q", code)
+	}
+	if code := requireError(t, do(t, s, http.MethodDelete, "/api/v1/libraries/alpha", testToken, ""),
+		http.StatusNotFound); code != "library_not_found" {
+		t.Errorf("重复下架应为 library_not_found，实际 %q", code)
+	}
+
+	// 下架后库列表不再包含该库。
+	rec = do(t, s, http.MethodGet, "/api/v1/libraries", "", "")
+	if body := rec.Body.String(); strings.Contains(body, "alpha") {
+		t.Errorf("下架后库列表不应包含 alpha，实际 %s", body)
 	}
 }

@@ -1,4 +1,4 @@
-// Package api 提供 /api/v1/ 前缀的 REST 接口：推送接收（Bearer 鉴权）与免鉴权读路径。
+// Package api 提供 /api/v1/ 前缀的 REST 接口：推送接收与下架（Bearer 鉴权）与免鉴权读路径。
 package api
 
 import (
@@ -7,12 +7,16 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/ingest"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/web"
 )
+
+// maxSearchLimit 是 search 端点 limit 参数的上限；缺省走存储层默认（20）。
+const maxSearchLimit = 50
 
 // Server 是 docs-server 的 HTTP handler：/api/v1/ 前缀的 REST 接口与根路径的内嵌 UI。
 type Server struct {
@@ -21,10 +25,11 @@ type Server struct {
 	mux       *http.ServeMux
 }
 
-// NewServer 装配路由：推送接口要求 Bearer pushToken，读路径免鉴权。
+// NewServer 装配路由：推送与下架接口要求 Bearer pushToken，读路径免鉴权。
 func NewServer(store *search.Store, pushToken string) *Server {
 	s := &Server{store: store, pushToken: pushToken, mux: http.NewServeMux()}
 	s.mux.HandleFunc("/api/v1/libraries", s.handleLibraries)
+	s.mux.HandleFunc("/api/v1/libraries/{slug}", s.handleDeleteLibrary)
 	s.mux.HandleFunc("/api/v1/libraries/{slug}/documents", s.handleDocuments)
 	s.mux.HandleFunc("/api/v1/libraries/{slug}/documents/{path...}", s.handleGetDocument)
 	s.mux.HandleFunc("/api/v1/search", s.handleSearch)
@@ -98,9 +103,19 @@ type documentListResponse struct {
 }
 
 // handleListDocuments 处理 GET /api/v1/libraries/{slug}/documents：列出库内全部文档的
-// path 与 title，按 path 字典序排列；库不存在或为空时返回空数组。
+// path 与 title，按 path 字典序排列；库不存在返回 404，存在但为空返回空数组。
 func (s *Server) handleListDocuments(w http.ResponseWriter, r *http.Request) {
 	slug := r.PathValue("slug")
+	exists, err := s.store.LibraryExists(r.Context(), slug)
+	if err != nil {
+		slog.Error("查询库失败", "library", slug, "err", err)
+		writeError(w, http.StatusInternalServerError, "internal", "查询库失败")
+		return
+	}
+	if !exists {
+		writeError(w, http.StatusNotFound, "library_not_found", "库不存在："+slug)
+		return
+	}
 	docs, err := s.store.ListDocuments(r.Context(), slug)
 	if err != nil {
 		slog.Error("列库内文档失败", "library", slug, "err", err)
@@ -154,7 +169,8 @@ type searchResponse struct {
 	Results []search.Result `json:"results"`
 }
 
-// handleSearch 处理 GET /api/v1/search?q=...[&library=...]。
+// handleSearch 处理 GET /api/v1/search?q=...[&library=...][&limit=...]。
+// library 指定了不存在的库时返回 404，与「库存在但无命中」的空结果区分开。
 func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	if !requireMethod(w, r, http.MethodGet) {
 		return
@@ -164,8 +180,31 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "missing_query", "缺少查询参数 q")
 		return
 	}
+	library := r.URL.Query().Get("library")
+	if library != "" {
+		exists, err := s.store.LibraryExists(r.Context(), library)
+		if err != nil {
+			slog.Error("查询库失败", "library", library, "err", err)
+			writeError(w, http.StatusInternalServerError, "internal", "查询库失败")
+			return
+		}
+		if !exists {
+			writeError(w, http.StatusNotFound, "library_not_found", "库不存在："+library)
+			return
+		}
+	}
+	limit := 0
+	if raw := r.URL.Query().Get("limit"); raw != "" {
+		n, err := strconv.Atoi(raw)
+		if err != nil || n < 1 || n > maxSearchLimit {
+			writeError(w, http.StatusBadRequest, "invalid_limit",
+				"limit 须为 1~"+strconv.Itoa(maxSearchLimit)+" 的整数")
+			return
+		}
+		limit = n
+	}
 
-	results, err := s.store.Search(r.Context(), query, r.URL.Query().Get("library"), 0)
+	results, err := s.store.Search(r.Context(), query, library, limit)
 	if err != nil {
 		slog.Error("检索失败", "q", query, "err", err)
 		writeError(w, http.StatusInternalServerError, "internal", "检索失败")
@@ -178,24 +217,49 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 }
 
 type librariesResponse struct {
-	Libraries []string `json:"libraries"`
+	Libraries []search.LibraryMeta `json:"libraries"`
 }
 
-// handleLibraries 处理 GET /api/v1/libraries。
+// handleLibraries 处理 GET /api/v1/libraries：返回全部库的 slug 与文档数。
 func (s *Server) handleLibraries(w http.ResponseWriter, r *http.Request) {
 	if !requireMethod(w, r, http.MethodGet) {
 		return
 	}
-	slugs, err := s.store.ListLibraries(r.Context())
+	libs, err := s.store.ListLibraries(r.Context())
 	if err != nil {
 		slog.Error("列出库失败", "err", err)
 		writeError(w, http.StatusInternalServerError, "internal", "列出库失败")
 		return
 	}
-	if slugs == nil {
-		slugs = []string{}
+	if libs == nil {
+		libs = []search.LibraryMeta{}
 	}
-	writeJSON(w, http.StatusOK, librariesResponse{Libraries: slugs})
+	writeJSON(w, http.StatusOK, librariesResponse{Libraries: libs})
+}
+
+type deleteResponse struct {
+	Library string `json:"library"`
+}
+
+// handleDeleteLibrary 处理 DELETE /api/v1/libraries/{slug}：下架整库（文档与索引一并删除）。
+func (s *Server) handleDeleteLibrary(w http.ResponseWriter, r *http.Request) {
+	if !requireMethod(w, r, http.MethodDelete) {
+		return
+	}
+	if !s.authorized(w, r) {
+		return
+	}
+	slug := r.PathValue("slug")
+	if err := s.store.DeleteLibrary(r.Context(), slug); err != nil {
+		if errors.Is(err, search.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "library_not_found", "库不存在："+slug)
+			return
+		}
+		slog.Error("下架库失败", "library", slug, "err", err)
+		writeError(w, http.StatusInternalServerError, "internal", "下架库失败")
+		return
+	}
+	writeJSON(w, http.StatusOK, deleteResponse{Library: slug})
 }
 
 type documentResponse struct {
@@ -203,7 +267,8 @@ type documentResponse struct {
 	search.Document
 }
 
-// handleGetDocument 处理 GET /api/v1/libraries/{slug}/documents/{path}[?section=...]。
+// handleGetDocument 处理 GET /api/v1/libraries/{slug}/documents/{path}[?section=...][&toc=1|true]。
+// toc=1/true 只返回元数据与章节列表（content 省略），供调用方先看结构再按章节取。
 func (s *Server) handleGetDocument(w http.ResponseWriter, r *http.Request) {
 	if !requireMethod(w, r, http.MethodGet) {
 		return
@@ -223,6 +288,9 @@ func (s *Server) handleGetDocument(w http.ResponseWriter, r *http.Request) {
 		slog.Error("取文档失败", "library", slug, "path", path, "section", section, "err", err)
 		writeError(w, http.StatusInternalServerError, "internal", "取文档失败")
 		return
+	}
+	if toc := r.URL.Query().Get("toc"); toc == "1" || toc == "true" {
+		doc.Content = ""
 	}
 	writeJSON(w, http.StatusOK, documentResponse{Library: slug, Document: doc})
 }

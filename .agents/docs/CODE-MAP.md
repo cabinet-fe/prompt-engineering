@@ -33,9 +33,9 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题与别名加权、高亮片段、AND/OR 降级检索、章节切片 | `docs-server/internal/search/` |
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
-| docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 list_libraries / search / get_document | `skills/tools/docs-search/SKILL.md` |
-| 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `DOCS_SERVER_URL` 调 REST，stdout 打印 JSON | `skills/tools/docs-search/scripts/query.mjs` |
-| docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/安装脚本/引导 .env/库代码改动后判定并同步受影响文档/执行推送；脚本副本须与 `scripts/push-docs.mjs` 同步 | `skills/tools/docs-gen/SKILL.md` |
+| docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc | `skills/tools/docs-search/SKILL.md` |
+| 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `DOCS_SERVER_URL` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
+| docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/安装脚本/引导 .env/库代码改动后判定并同步受影响文档/执行推送与下架；脚本副本须与 `scripts/push-docs.mjs` 同步（CI 强制 diff） | `skills/tools/docs-gen/SKILL.md` |
 
 ## 依赖
 
@@ -51,5 +51,5 @@ graph TD
 
 ## 关键路径
 
-- 推送：库仓库执行 `push-docs.mjs` → PUT 服务端 `api`（Bearer 鉴权）→ `ingest`（frontmatter 解析 + 整批校验）→ 整库替换写 SQLite 并重建 FTS5 索引。
-- 检索：agent 宿主运行 `docs-search` 查询脚本 → GET 服务端 REST（list_libraries / search / get_document）→ `api` → `search` 查 FTS5 → JSON 经 stdout 返回。
+- 推送：库仓库执行 `push-docs.mjs` → PUT 服务端 `api`（Bearer 鉴权）→ `ingest`（frontmatter 解析 + 整批校验）→ 整库替换写 SQLite 并重建 FTS5 索引；`--clear` 走 DELETE 下架整库。
+- 检索：agent 宿主运行 `docs-search` 查询脚本 → GET 服务端 REST（libraries / search / get / toc）→ `api` → `search` 查 FTS5 → JSON 经 stdout 返回。

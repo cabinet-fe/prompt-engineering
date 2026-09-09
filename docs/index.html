@@ -561,7 +561,7 @@ AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
         <h3 class="start-h">④ 文档库引擎：三步接入</h3>
         <div class="cmd-block">
           <p class="cmd-comment mono-caps"># 维护者：推送库文档（脚本复制到自己仓库后执行）</p>
-          <div class="cmd-line"><code class="mono">DOCS_SERVER_URL=… DOCS_TOKEN=… DOCS_LIBRARY=my-lib node scripts/push-docs.mjs</code></div>
+          <div class="cmd-line"><code class="mono">node --env-file=.env scripts/push-docs.mjs</code></div>
         </div>
         <div class="cmd-block">
           <p class="cmd-comment mono-caps"># 使用者：装检索技能，配服务地址</p>

@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-// Document 是一篇待索引的文档，Path 在库内唯一。
+// Document 是一篇待索引的文档，Path 在库内唯一。Content 标 omitempty：
+// 取文档的 toc 模式把它置空以在响应中省略。
 type Document struct {
 	Path        string   `json:"path"`
 	Title       string   `json:"title"`
@@ -15,7 +16,7 @@ type Document struct {
 	Keywords    []string `json:"keywords,omitempty"`
 	Aliases     []string `json:"aliases,omitempty"`
 	Sections    []string `json:"sections,omitempty"`
-	Content     string   `json:"content"`
+	Content     string   `json:"content,omitempty"`
 }
 
 // ReplaceLibrary 以 docs 整库替换 slug 库：事务内删除该库旧文档及其 FTS 索引、

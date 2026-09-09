@@ -26,12 +26,14 @@ async function loadLibraries() {
     showNotice(libraryList, "还没有任何库，请先推送文档。");
     return;
   }
-  for (const slug of libraries) {
+  for (const lib of libraries) {
     const item = document.createElement("li");
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = slug;
-    button.addEventListener("click", () => selectLibrary(slug));
+    button.textContent = lib.slug;
+    button.dataset.slug = lib.slug;
+    button.title = `${lib.documents} 篇文档`;
+    button.addEventListener("click", () => selectLibrary(lib.slug));
     item.appendChild(button);
     libraryList.appendChild(item);
   }
@@ -41,7 +43,7 @@ async function selectLibrary(slug) {
   state.library = slug;
   state.activePath = null;
   for (const button of libraryList.querySelectorAll("button")) {
-    button.classList.toggle("active", button.textContent === slug);
+    button.classList.toggle("active", button.dataset.slug === slug);
   }
 
   let documents;
