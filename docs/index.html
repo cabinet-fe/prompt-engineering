@@ -478,22 +478,23 @@
     <header class="section-head">
       <h2 class="section-title">文档库引擎 · docs-server</h2>
     </header>
-    <p class="section-deck">企业内部库文档检索系统：库维护者把文档推送到中心服务建全文索引，库使用者在编辑器里让 AI 经 Agent Skill 直接检索。一个技能覆盖所有库，无需逐库写技能、无需配 MCP。</p>
+    <p class="section-deck">企业内部库文档检索系统：库维护者把文档推送到中心服务建全文索引，库使用者在编辑器里让 AI 经 Agent Skill 直接检索；服务端另带只读 Web UI，浏览器打开即可翻阅。一个技能覆盖所有库，无需逐库写技能、无需配 MCP。</p>
 
     <div class="engine-board bordered-boxout">
       <pre class="mono engine-diagram">库维护者                     中心服务                    库使用者
 push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search 查询脚本
-（零依赖 Node 脚本）     SQLite + FTS5 全文索引    （Agent 运行）</pre>
+（零依赖 Node 脚本）     SQLite + FTS5 全文索引    （Agent 运行）
+浏览器 ──直接访问──▶ 内置只读 Web UI</pre>
     </div>
 
     <div class="engine-grid">
       <article class="engine-card">
-        <h4>文档服务 <span class="engine-path mono-caps">server/</span></h4>
-        <p>Go 单进程 REST 服务：整库推送（单令牌 Bearer 鉴权）+ SQLite FTS5 全文检索（读路径免鉴权），编译为 CGO 关闭的单文件静态二进制，拷到服务器直接运行。</p>
+        <h4>文档服务 <span class="engine-path mono-caps">docs-server/</span></h4>
+        <p>Go 单进程 REST 服务：整库推送（单令牌 Bearer 鉴权）+ SQLite FTS5 全文检索（读路径免鉴权），内置只读 Web UI（库列表、目录树、Markdown 渲染、代码高亮、页内 TOC），编译为 CGO 关闭的单文件静态二进制，拷到服务器直接运行。</p>
       </article>
       <article class="engine-card">
         <h4>推送脚本 <span class="engine-path mono-caps">push-docs.mjs</span></h4>
-        <p>零依赖单文件 Node 脚本（Node ≥ 18），复制到库仓库即可用：解析 frontmatter、本地校验、整库全量推送，手动或挂 CI 执行。</p>
+        <p>零依赖单文件 Node 脚本（Node ≥ 24），复制到库仓库即可用：解析 frontmatter、本地校验、整库全量推送，手动或挂 CI 执行。</p>
       </article>
       <article class="engine-card">
         <h4>docs-gen <span class="engine-path mono-caps">库维护者技能</span></h4>
@@ -505,7 +506,7 @@ push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search �
       </article>
     </div>
 
-    <p class="engine-note">部署、配置、REST API 与旧版 MCP 接入迁移，见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/server/README.md" target="_blank" rel="noopener">server/README.md ↗</a>。</p>
+    <p class="engine-note">部署、配置、REST API 与内置 Web UI 说明，见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/docs-server/README.md" target="_blank" rel="noopener">docs-server/README.md ↗</a>。</p>
   </section>
 
   <!-- ================= 上手 ================= -->
@@ -567,7 +568,7 @@ AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
           <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering --skill docs-search</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering --skill docs-search" aria-label="复制">复制</button></div>
           <div class="cmd-line"><code class="mono">export DOCS_SERVER_URL=http://docs-server.internal:8080</code></div>
         </div>
-        <p class="start-note">服务端部署、二进制下载与配置说明见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/server/README.md" target="_blank" rel="noopener">server/README.md</a>。</p>
+        <p class="start-note">服务端部署、二进制下载与配置说明见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/docs-server/README.md" target="_blank" rel="noopener">docs-server/README.md</a>。</p>
       </div>
     </div>
   </section>
