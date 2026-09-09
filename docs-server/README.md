@@ -213,8 +213,8 @@ CI（[ci.yml](../.github/workflows/ci.yml) 与 [release.yml](../.github/workflow
 发版流程：合并代码到 main 后，打 tag 并推送即可自动发版：
 
 ```bash
-git tag v0.1.0-beta.2
-git push origin main v0.1.0-beta.2
+git tag v0.1.0-beta.1
+git push origin main v0.1.0-beta.1
 ```
 
 ## License
