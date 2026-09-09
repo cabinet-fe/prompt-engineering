@@ -1,0 +1,219 @@
+/* docs-server 文档 UI：阅读向基础布局与排版。 */
+
+:root {
+  --border: #e3e5e8;
+  --muted: #667085;
+  --accent: #1a56db;
+  --bg-soft: #f6f8fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1f2328;
+  background: #fff;
+}
+
+/* 顶栏 */
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-title {
+  font-weight: 600;
+}
+
+/* 侧栏 + 查看区两栏布局 */
+.layout {
+  display: flex;
+  min-height: calc(100vh - 48px);
+}
+
+.sidebar {
+  flex: 0 0 300px;
+  padding: 8px 0 24px;
+  border-right: 1px solid var(--border);
+  background: var(--bg-soft);
+  overflow-y: auto;
+}
+
+.pane {
+  padding: 12px 16px;
+}
+
+.pane h2 {
+  margin: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 库列表 */
+.library-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.library-list button {
+  width: 100%;
+  margin: 2px 0;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.library-list button:hover {
+  background: #eceff3;
+}
+
+.library-list button.active {
+  background: #dce6f8;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 目录树：目录 details/summary 折叠，文档按钮平铺 */
+.doc-tree ul {
+  margin: 0;
+  padding: 0;
+  padding-left: 16px;
+  list-style: none;
+}
+
+.doc-tree summary {
+  margin: 2px 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.doc-tree summary:hover {
+  background: #eceff3;
+}
+
+.doc-tree button {
+  display: block;
+  width: 100%;
+  margin: 2px 0;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.doc-tree button:hover {
+  background: #eceff3;
+}
+
+.doc-tree button.active {
+  background: #dce6f8;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 查看区：阅读向排版，含后续 Markdown 渲染的正文元素基础样式 */
+.viewer {
+  flex: 1;
+  min-width: 0;
+  max-width: 60rem;
+  padding: 32px 40px 80px;
+}
+
+.viewer h1,
+.viewer h2,
+.viewer h3,
+.viewer h4,
+.viewer h5,
+.viewer h6 {
+  margin: 1.6em 0 0.6em;
+  line-height: 1.3;
+}
+
+.viewer h1:first-child,
+.viewer h2:first-child,
+.viewer p:first-child {
+  margin-top: 0;
+}
+
+.viewer p {
+  margin: 0.8em 0;
+}
+
+.viewer code {
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  background: var(--bg-soft);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.viewer pre {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-soft);
+  overflow-x: auto;
+}
+
+.viewer pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.9em;
+}
+
+.viewer blockquote {
+  margin: 0.8em 0;
+  padding: 0 1em;
+  border-left: 3px solid var(--border);
+  color: var(--muted);
+}
+
+.viewer table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+}
+
+.viewer th,
+.viewer td {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+}
+
+.viewer img {
+  max-width: 100%;
+}
+
+/* 占位与提示 */
+.placeholder,
+.notice {
+  margin: 1em 0;
+  padding: 12px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--bg-soft);
+}

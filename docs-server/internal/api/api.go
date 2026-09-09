@@ -11,9 +11,10 @@ import (
 
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/ingest"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
+	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/web"
 )
 
-// Server 是 REST API 的 HTTP handler，全部路由挂在 /api/v1/ 前缀下。
+// Server 是 docs-server 的 HTTP handler：/api/v1/ 前缀的 REST 接口与根路径的内嵌 UI。
 type Server struct {
 	store     *search.Store
 	pushToken string
@@ -27,7 +28,8 @@ func NewServer(store *search.Store, pushToken string) *Server {
 	s.mux.HandleFunc("/api/v1/libraries/{slug}/documents", s.handleDocuments)
 	s.mux.HandleFunc("/api/v1/libraries/{slug}/documents/{path...}", s.handleGetDocument)
 	s.mux.HandleFunc("/api/v1/search", s.handleSearch)
-	s.mux.HandleFunc("/", s.handleNotFound)
+	// 根路径提供内嵌 UI（与读路径一致免鉴权）；未命中静态资源的路径回退统一 404。
+	s.mux.Handle("/", web.Handler(http.HandlerFunc(s.handleNotFound)))
 	return s
 }
 
