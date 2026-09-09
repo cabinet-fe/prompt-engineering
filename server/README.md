@@ -13,7 +13,7 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 | 部分 | 路径 | 说明 |
 | --- | --- | --- |
 | 文档服务 | `server/` | Go 单进程：REST API，SQLite FTS5 全文检索，编译为 CGO 关闭的单文件静态二进制 |
-| 推送脚本 | `scripts/push-docs.mjs` | 零依赖单文件 Node 脚本（Node ≥ 18），复制到库仓库使用，整库全量推送 |
+| 推送脚本 | `scripts/push-docs.mjs` | 零依赖单文件 Node 脚本（Node ≥ 24），复制到库仓库使用，整库全量推送 |
 | 检索技能 | `skills/tools/docs-search/` | 通用检索技能：内嵌查询脚本调 REST（list / search / get） |
 | 文档生成技能 | `skills/tools/docs-gen/` | 只服务库：文档标准（检索优化）、安装推送脚本、库代码改动后同步文档、执行推送 |
 
@@ -113,15 +113,14 @@ description: 五分钟上手指南
 
 ### 2. 安装脚本
 
-把 [`scripts/push-docs.mjs`](../scripts/push-docs.mjs) 复制到自己仓库（如 `scripts/push-docs.mjs`）。脚本零依赖、免构建，Node ≥ 18 直接运行。
+把 [`scripts/push-docs.mjs`](../scripts/push-docs.mjs) 复制到自己仓库（如 `scripts/push-docs.mjs`）。脚本零依赖、免构建，Node ≥ 24 直接运行。
 
 ### 3. 执行推送
 
+三个环境变量写入仓库根目录 `.env`（记得 gitignore）后执行；`--env-file` 为 Node 内置参数，Windows/macOS/Linux 通用：
+
 ```bash
-DOCS_SERVER_URL=http://docs-server.internal:8080 \
-DOCS_TOKEN=<推送令牌> \
-DOCS_LIBRARY=my-lib \
-node scripts/push-docs.mjs [文档目录，默认 agent-docs/]
+node --env-file=.env scripts/push-docs.mjs [文档目录，默认 agent-docs/]
 ```
 
 | 环境变量 | 说明 |
@@ -172,13 +171,9 @@ npx skills add cabinet-fe/prompt-engineering --skill docs-search
 npx skills update
 ```
 
-设置服务地址（结尾斜杠会自动去掉）：
+设置服务地址（结尾斜杠会自动去掉）：写入当前仓库根目录 `.env`（`DOCS_SERVER_URL=<地址>`，记得 gitignore），AI 运行脚本时会经 `--env-file` 加载；或按所用 shell 导出同名环境变量。
 
-```bash
-export DOCS_SERVER_URL=http://docs-server.internal:8080
-```
-
-需要检索内部库文档时，AI 从技能目录运行内嵌脚本（Node ≥ 26）：
+需要检索内部库文档时，AI 从技能目录运行内嵌脚本（Node ≥ 24）：
 
 ```bash
 node scripts/query.mjs libraries
