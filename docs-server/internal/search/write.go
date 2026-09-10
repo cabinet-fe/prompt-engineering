@@ -20,7 +20,8 @@ type Document struct {
 }
 
 // ReplaceLibrary 以 docs 整库替换 slug 库：事务内删除该库旧文档及其 FTS 索引、
-// 写入新文档并把经 indexText 预分词的文本写入索引；任一步失败整体回滚，库内容不变。
+// 写入新文档并把经 indexText 预分词的文本写入索引（含文档路径，使 path 的
+// 文件名与目录片段可被检索）；任一步失败整体回滚，库内容不变。
 func (s *Store) ReplaceLibrary(ctx context.Context, slug string, docs []Document) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -54,8 +55,8 @@ func (s *Store) ReplaceLibrary(ctx context.Context, slug string, docs []Document
 	}
 	defer docStmt.Close()
 	ftsStmt, err := tx.PrepareContext(ctx, `
-		INSERT INTO documents_fts (rowid, title, keywords, description, content)
-		VALUES (?, ?, ?, ?, ?)`)
+		INSERT INTO documents_fts (rowid, title, keywords, description, content, path)
+		VALUES (?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		return fmt.Errorf("准备索引语句: %w", err)
 	}
@@ -81,7 +82,7 @@ func (s *Store) ReplaceLibrary(ctx context.Context, slug string, docs []Document
 			}
 		}
 		kwText := strings.Join(kwList, " ")
-		if _, err := ftsStmt.ExecContext(ctx, docID, indexText(d.Title), indexText(kwText), indexText(d.Description), indexText(d.Content)); err != nil {
+		if _, err := ftsStmt.ExecContext(ctx, docID, indexText(d.Title), indexText(kwText), indexText(d.Description), indexText(d.Content), indexText(d.Path)); err != nil {
 			return fmt.Errorf("写入文档 %q 索引: %w", d.Path, err)
 		}
 	}

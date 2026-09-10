@@ -30,7 +30,7 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 服务端入口 | `docs-server/cmd/docs-server/` | 装配配置、存储、REST handler，起服务 | `docs-server/cmd/docs-server/main.go` |
 | REST API 层 | `docs-server/internal/api/` | 路由、推送 Bearer 鉴权、请求/响应、错误格式 | `docs-server/internal/api/` |
 | 推送接收 | `docs-server/internal/ingest/` | frontmatter 解析、整批校验、整库替换写入 | `docs-server/internal/ingest/` |
-| 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题与别名加权、高亮片段、AND/OR 降级检索、章节切片 | `docs-server/internal/search/` |
+| 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题/别名/路径加权、高亮片段、AND/OR 降级检索、章节切片 | `docs-server/internal/search/` |
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
 | docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc | `skills/tools/docs-search/SKILL.md` |

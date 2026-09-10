@@ -29,7 +29,7 @@ type Result struct {
 
 // Search 在 FTS5 索引中检索 query；library 非空时限定单库，缺省跨库。
 // 优先执行 AND 检索（高精确度）；若 AND 检索结果为 0，自动降级为 OR 检索。
-// 结果按 bm25 排序（title 与 keywords 加权 10.0，description 3.0，content 1.0），最多返回 limit 条。
+// 结果按 bm25 排序（title 与 keywords 加权 10.0，path 5.0，description 3.0，content 1.0），最多返回 limit 条。
 func (s *Store) Search(ctx context.Context, query string, library string, limit int) ([]Result, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, nil
@@ -43,7 +43,7 @@ func (s *Store) Search(ctx context.Context, query string, library string, limit 
 		return nil, nil
 	}
 
-	results, err := s.searchWithMatch(ctx, matchAND, library, limit)
+	results, err := s.searchWithMatch(ctx, matchAND, query, library, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +57,18 @@ func (s *Store) Search(ctx context.Context, query string, library string, limit 
 		return nil, nil
 	}
 
-	return s.searchWithMatch(ctx, matchOR, library, limit)
+	return s.searchWithMatch(ctx, matchOR, query, library, limit)
 }
 
-func (s *Store) searchWithMatch(ctx context.Context, match, library string, limit int) ([]Result, error) {
+func (s *Store) searchWithMatch(ctx context.Context, match, query, library string, limit int) ([]Result, error) {
+	// snippet 的第二参数 -1 表示取「命中最多的一列」的片段。FTS 列序为
+	// title/keywords/description/content/path，path 是第 5 列（下标 4）：另取一份 path 列
+	// 片段，用于判断片段是否只来自路径命中——那样的片段是路径的预分词文本，
+	// 需要还原成原始路径，见 renderPathSnippet。
 	q := `
 		SELECT l.slug, d.path, d.title, d.description, d.content,
-			snippet(documents_fts, -1, '<mark>', '</mark>', '…', 64)
+			snippet(documents_fts, -1, '<mark>', '</mark>', '…', 64),
+			snippet(documents_fts, 4, '<mark>', '</mark>', '…', 64)
 		FROM documents_fts
 		JOIN documents d ON d.id = documents_fts.rowid
 		JOIN libraries l ON l.id = d.library_id
@@ -73,8 +78,10 @@ func (s *Store) searchWithMatch(ctx context.Context, match, library string, limi
 		q += ` AND l.slug = ?`
 		args = append(args, library)
 	}
-	// bm25 权重对应 FTS 列序：title (10.0), keywords (10.0), description (3.0), content (1.0)。
-	q += ` ORDER BY bm25(documents_fts, 10.0, 10.0, 3.0, 1.0) LIMIT ?`
+	// bm25 权重对应 FTS 列序：title (10.0), keywords (10.0), description (3.0), content (1.0),
+	// path (5.0)。path 是文档标识（get 的唯一键），命中文件名/目录片段应高于正文偶发提及，
+	// 但低于标题与别名。
+	q += ` ORDER BY bm25(documents_fts, 10.0, 10.0, 3.0, 1.0, 5.0) LIMIT ?`
 	args = append(args, limit)
 
 	rows, err := s.db.QueryContext(ctx, q, args...)
@@ -86,11 +93,21 @@ func (s *Store) searchWithMatch(ctx context.Context, match, library string, limi
 	var results []Result
 	for rows.Next() {
 		var r Result
-		var content string
-		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &content, &r.Snippet); err != nil {
+		var content, pathColSnippet string
+		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &content, &r.Snippet, &pathColSnippet); err != nil {
 			return nil, fmt.Errorf("读取检索结果: %w", err)
 		}
-		r.Snippet = normalizeSnippet(r.Snippet)
+		rawSnippet := r.Snippet
+		// 片段只来自 path 列（有命中，且与自动选中的列取到同一段文本）时，FTS5 给的是
+		// 路径的预分词文本，改写成带高亮的原始路径；其余情况走常规归一化。
+		snippet := ""
+		if pathColSnippet != "" && pathColSnippet == rawSnippet {
+			snippet = renderPathSnippet(r.Path, query)
+		}
+		if snippet == "" {
+			snippet = normalizeSnippet(rawSnippet)
+		}
+		r.Snippet = snippet
 		r.Sections = ExtractSections(content)
 		results = append(results, r)
 	}

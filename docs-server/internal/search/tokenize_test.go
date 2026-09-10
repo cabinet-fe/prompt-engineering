@@ -129,6 +129,37 @@ func TestNormalizeSnippet(t *testing.T) {
 	}
 }
 
+func TestRenderPathSnippet(t *testing.T) {
+	cases := []struct {
+		name  string
+		path  string
+		query string
+		want  string
+	}{
+		{"英文文件名命中", "guide/installation.md", "installation", "guide/<mark>installation</mark>.md"},
+		{"连字符文件名按词元分别标记", "compositions/use-dnd.md", "use-dnd", "compositions/<mark>use</mark>-<mark>dnd</mark>.md"},
+		{"目录与文件名同时命中", "desktop/tag.md", "desktop tag", "<mark>desktop</mark>/<mark>tag</mark>.md"},
+		{"相邻查询词合并为一个标记", "utils/usednd.md", "use dnd", "utils/<mark>usednd</mark>.md"},
+		{"中文路径按查询词整体标记", "指南/快速开始.md", "快速开始", "指南/<mark>快速开始</mark>.md"},
+		{"大小写不敏感且保留路径原样", "Guide/Installation.md", "installation", "Guide/<mark>Installation</mark>.md"},
+		{"查询词都不在路径里时回退", "desktop/tag.md", "总览", ""},
+		{"空路径", "", "tag", ""},
+	}
+	for _, c := range cases {
+		got := renderPathSnippet(c.path, c.query)
+		if got != c.want {
+			t.Errorf("%s: renderPathSnippet(%q, %q) = %q，期望 %q", c.name, c.path, c.query, got, c.want)
+			continue
+		}
+		if got == "" {
+			continue
+		}
+		if stripped := stripSnippet(got); !strings.Contains(c.path, stripped) {
+			t.Errorf("%s: 去掉标记后 %q 不是路径 %q 的连续子串", c.name, stripped, c.path)
+		}
+	}
+}
+
 func TestSplitQueryTerms(t *testing.T) {
 	cases := []struct {
 		name  string

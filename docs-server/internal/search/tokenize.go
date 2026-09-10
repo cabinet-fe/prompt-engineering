@@ -393,10 +393,65 @@ func quote(s string) string {
 	return `"` + strings.ReplaceAll(s, `"`, `""`) + `"`
 }
 
+// renderPathSnippet 把「只命中 path 列」的片段还原成原始路径并保留高亮：
+// FTS5 片段取自 path 列的预分词文本（如 `guide <mark>installation</mark> md`），
+// 直接展示会让使用者把路径词元误读成正文。这里按查询词在原始路径上重新打标
+// （`guide/<mark>installation</mark>.md`），去掉标记后即为路径原文的子串。
+// 查询词一个都没在路径里原样出现时返回 ""，调用方回退到常规片段。
+func renderPathSnippet(path, query string) string {
+	if path == "" {
+		return ""
+	}
+	pathRunes := []rune(path)
+	var ranges []markRange
+	from := 0
+	for _, term := range splitQueryTerms(query) {
+		termRunes := []rune(term)
+		for i := from; i+len(termRunes) <= len(pathRunes); i++ {
+			if !strings.EqualFold(string(pathRunes[i:i+len(termRunes)]), term) {
+				continue
+			}
+			ranges = append(ranges, markRange{start: i, end: i + len(termRunes)})
+			from = i + len(termRunes)
+			break
+		}
+	}
+	if len(ranges) == 0 {
+		return ""
+	}
+
+	// 在路径里紧邻的两个查询词（如 use dnd 命中 usednd.md）合成一个标记，
+	// 避免出现两个背靠背的 <mark>。
+	merged := ranges[:1]
+	for _, r := range ranges[1:] {
+		last := &merged[len(merged)-1]
+		if r.start <= last.end {
+			if r.end > last.end {
+				last.end = r.end
+			}
+			continue
+		}
+		merged = append(merged, r)
+	}
+
+	var b strings.Builder
+	prev := 0
+	for _, r := range merged {
+		b.WriteString(string(pathRunes[prev:r.start]))
+		b.WriteString(markOpen + string(pathRunes[r.start:r.end]) + markClose)
+		prev = r.end
+	}
+	b.WriteString(string(pathRunes[prev:]))
+	return b.String()
+}
+
+// markRange 是路径上需要 <mark> 包裹的区间（rune 下标，左闭右开）。
+type markRange struct{ start, end int }
+
 // normalizeSnippet 后处理 FTS5 高亮片段：去掉分词引入的空格（丢弃冗余单字
 // token、相邻二元组按重叠字符合并、CJK token 之间直接相连，词边界保留空格），
 // 并把相邻 <mark> 合并成对查询词的连续完整包裹。去掉标记与省略号后，
-// 结果为原文的连续子串。
+// 结果为原文的连续子串（只命中 path 列的片段已由 renderPathSnippet 单独处理）。
 func normalizeSnippet(snippet string) string {
 	// 省略号统一成独立 token，便于作为分段边界处理。
 	snippet = strings.ReplaceAll(snippet, ellipsis, " "+ellipsis+" ")

@@ -330,6 +330,12 @@ func TestUpgradeFrom0001(t *testing.T) {
 		 VALUES (1, 'guide.md', '入门指南', '新手教程', ?)`, content); err != nil {
 		t.Fatalf("写入旧版文档: %v", err)
 	}
+	// 第二篇用中文路径，且标题、正文都不含路径词，专门验证迁移后按路径可检索。
+	if _, err := db.Exec(
+		`INSERT INTO documents (library_id, path, title, description, content)
+		 VALUES (1, '指南/快速开始.md', '第二篇', '', '旧版第二篇正文')`); err != nil {
+		t.Fatalf("写入旧版文档（中文路径）: %v", err)
+	}
 	if err := db.Close(); err != nil {
 		t.Fatalf("关闭旧版库: %v", err)
 	}
@@ -347,13 +353,34 @@ func TestUpgradeFrom0001(t *testing.T) {
 		t.Errorf("升级后片段未完整包裹查询词: %q", results[0].Snippet)
 	}
 
-	// 迁移重建的索引文本与 Go 写入路径的预分词结果一致（空白归一后相同）。
-	var indexed string
-	if err := s.db.QueryRow(`SELECT content FROM documents_fts`).Scan(&indexed); err != nil {
-		t.Fatalf("读取重建索引: %v", err)
+	// 迁移重建的索引文本与 Go 写入路径的预分词结果一致（空白归一后相同），
+	// path 列同理由 0004 迁移从 documents.path 重建，标题/正文都不含路径词。
+	for _, tc := range []struct{ docPath, column, want string }{
+		{"guide.md", "content", indexText(content)},
+		{"guide.md", "path", indexText("guide.md")},
+		{"指南/快速开始.md", "path", indexText("指南/快速开始.md")},
+	} {
+		var indexed string
+		if err := s.db.QueryRow(`
+			SELECT f.`+tc.column+`
+			FROM documents_fts f JOIN documents d ON d.id = f.rowid
+			WHERE d.path = ?`, tc.docPath).Scan(&indexed); err != nil {
+			t.Fatalf("读取重建索引 %s.%s: %v", tc.docPath, tc.column, err)
+		}
+		if got := strings.Join(strings.Fields(indexed), " "); got != tc.want {
+			t.Errorf("重建索引 %s.%s = %q，期望 %q", tc.docPath, tc.column, got, tc.want)
+		}
 	}
-	if got, want := strings.Join(strings.Fields(indexed), " "), indexText(content); got != want {
-		t.Errorf("重建索引文本 = %q，期望 %q", got, want)
+
+	// 升级既有库后无需重新推送即可按路径命中（英文文件名与中文目录都覆盖）。
+	for _, tc := range []struct{ query, want string }{
+		{"guide", "guide.md"},
+		{"快速开始", "指南/快速开始.md"},
+	} {
+		results := mustSearch(t, s, tc.query, "alpha")
+		if len(results) != 1 || results[0].Path != tc.want {
+			t.Errorf("升级后 q=%s 应仅按路径命中 %s，实际 %+v", tc.query, tc.want, results)
+		}
 	}
 
 	// get_document 取回的全文与元数据不变。
@@ -368,19 +395,26 @@ func TestUpgradeFrom0001(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 
-	// 重复 Open 幂等：迁移记录不重复，检索与取文档结果不变。
+	// 重复 Open 幂等：迁移记录不重复（含重建索引的 0002 与新增 path 列的 0004），
+	// 检索与取文档结果不变。
 	reopened, err := Open(context.Background(), path)
 	if err != nil {
 		t.Fatalf("重复 Open: %v", err)
 	}
 	defer reopened.Close()
-	var migrations int
-	if err := reopened.db.QueryRow(
-		`SELECT COUNT(*) FROM schema_migrations WHERE version = '0002_fts5_zh_tokenizer.sql'`).Scan(&migrations); err != nil {
-		t.Fatalf("查询迁移记录: %v", err)
+	entries, err := migrationsFS.ReadDir("migrations")
+	if err != nil {
+		t.Fatalf("读取迁移目录: %v", err)
 	}
-	if migrations != 1 {
-		t.Errorf("0002 迁移记录期望 1 条，实际 %d", migrations)
+	for _, entry := range entries {
+		var applied int
+		if err := reopened.db.QueryRow(
+			`SELECT COUNT(*) FROM schema_migrations WHERE version = ?`, entry.Name()).Scan(&applied); err != nil {
+			t.Fatalf("查询迁移记录 %s: %v", entry.Name(), err)
+		}
+		if applied != 1 {
+			t.Errorf("迁移 %s 记录期望 1 条，实际 %d", entry.Name(), applied)
+		}
 	}
 	if results := mustSearch(t, reopened, "高亮", ""); len(results) != 1 {
 		t.Errorf("重开后 q=高亮 期望 1 条，实际 %+v", results)
@@ -424,6 +458,93 @@ func TestSearchANDToORDowngrade(t *testing.T) {
 	if len(results) != 1 || results[0].Path != "table.md" {
 		t.Fatalf("AND->OR 降级应命中 table.md，实际 %+v", results)
 	}
+}
+
+func TestSearchMatchesPathTokens(t *testing.T) {
+	s, _ := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "compositions/use-dnd.md", Title: "拖拽组合式函数", Content: "把任意元素变成可拖拽目标"},
+		{Path: "guide/installation.md", Title: "安装与初始化", Content: "按包管理器分步安装"},
+		{Path: "desktop/tag.md", Title: "标签组件", Content: "正文里偶发提到 use-dnd 与 installation 两个词"},
+	})
+
+	t.Run("仅文件名命中（正文没有该词）", func(t *testing.T) {
+		results := mustSearch(t, s, "use-dnd", "alpha")
+		if len(results) != 2 {
+			t.Fatalf("期望 2 条结果（路径命中 + 正文提及），实际 %d: %+v", len(results), results)
+		}
+		// 路径命中权重 5.0 高于正文命中 1.0，文件名对应的文档排第一
+		if results[0].Path != "compositions/use-dnd.md" {
+			t.Errorf("路径命中应排第一，实际首位为 %q", results[0].Path)
+		}
+	})
+
+	t.Run("目录与文件名组合命中", func(t *testing.T) {
+		results := mustSearch(t, s, "guide installation", "alpha")
+		if len(results) != 1 || results[0].Path != "guide/installation.md" {
+			t.Fatalf("期望只命中 guide/installation.md，实际 %+v", results)
+		}
+	})
+
+	t.Run("路径命中产出高亮片段", func(t *testing.T) {
+		results := mustSearch(t, s, "use-dnd", "alpha")
+		for _, r := range results {
+			if r.Path != "compositions/use-dnd.md" {
+				continue
+			}
+			if want := "compositions/<mark>use</mark>-<mark>dnd</mark>.md"; r.Snippet != want {
+				t.Errorf("路径命中片段 = %q，期望 %q", r.Snippet, want)
+			}
+			return
+		}
+		t.Fatal("结果里缺少 compositions/use-dnd.md")
+	})
+}
+
+func TestSearchMixedQueryKeepsPathMatch(t *testing.T) {
+	s, _ := openTestStore(t)
+	// 复刻下游报告：总览文档的路径是 index.md，正文与标题都不含英文 token index；
+	// tag.md 的正文既有 index（关闭回调参数）又有 总览。
+	mustReplace(t, s, "veltra-ui", []Document{
+		{
+			Path:     "index.md",
+			Title:    "Ultra UI 总览",
+			Keywords: []string{"组件库总览", "文档索引"},
+			Content:  "# Ultra UI 总览\n\n全部组件的路由表。",
+		},
+		{
+			Path:    "desktop/tag.md",
+			Title:   "UTag 标签",
+			Content: "# UTag 标签\n\n关闭回调 remove(index)，下方是全部参数总览。",
+		},
+	})
+
+	t.Run("英文 token 参与 AND 约束后不丢路径命中的文档", func(t *testing.T) {
+		results := mustSearch(t, s, "index 总览", "veltra-ui")
+		if len(results) != 2 {
+			t.Fatalf("期望 2 条结果，实际 %d: %+v", len(results), results)
+		}
+		// index 由路径命中、总览由标题/别名命中，权重高于 tag.md 的正文命中
+		if results[0].Path != "index.md" {
+			t.Errorf("index.md 应排第一，实际首位为 %q", results[0].Path)
+		}
+		if results[1].Path != "desktop/tag.md" {
+			t.Errorf("desktop/tag.md 应排第二，实际 %q", results[1].Path)
+		}
+	})
+
+	t.Run("单词查询与混排查询的结果集一致", func(t *testing.T) {
+		single := mustSearch(t, s, "总览", "veltra-ui")
+		mixed := mustSearch(t, s, "index 总览", "veltra-ui")
+		if len(single) != len(mixed) {
+			t.Fatalf("q=总览 命中 %d 条，q=index 总览 命中 %d 条，期望一致", len(single), len(mixed))
+		}
+		for i := range single {
+			if single[i].Path != mixed[i].Path {
+				t.Errorf("第 %d 条不一致: q=总览 %q，q=index 总览 %q", i+1, single[i].Path, mixed[i].Path)
+			}
+		}
+	})
 }
 
 func TestSearchAliasesHighWeight(t *testing.T) {

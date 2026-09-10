@@ -158,7 +158,7 @@ node --env-file=.env scripts/push-docs.mjs --clear   # 下架整库
 | GET | `/api/v1/libraries` | 免 | 列出全部库的 slug 与文档数：`{"libraries":[{"slug","documents"}]}` |
 | GET | `/api/v1/libraries/{slug}/documents` | 免 | 列出该库全部文档的 path 与 title，按 path 排序：`{"library","documents":[...]}` |
 | GET | `/api/v1/libraries/{slug}/documents/{path}` | 免 | 取文档；可选 `?section=` 提取 `## ` 章节、`?toc=1` 只返回元数据与章节列表（省略 content）；返回 `{library,path,title,description,keywords,aliases,sections,content}` |
-| GET | `/api/v1/search?q=关键词&library=slug&limit=20` | 免 | 全文检索，`library`、`limit`（1~50，缺省 20）可选；返回 `{"results":[{library,path,title,description,snippet,sections}]}`，命中词以 `<mark>` 包裹，`sections` 为命中文档的章节名列表 |
+| GET | `/api/v1/search?q=关键词&library=slug&limit=20` | 免 | 全文检索，`library`、`limit`（1~50，缺省 20）可选；返回 `{"results":[{library,path,title,description,snippet,sections}]}`，命中词以 `<mark>` 包裹，`sections` 为命中文档的章节名列表；索引覆盖 title / keywords（含 aliases）/ 文档路径 / description / content，文件名与目录词元可直接检索 |
 
 ```bash
 # 搜索示例
