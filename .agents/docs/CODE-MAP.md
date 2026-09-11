@@ -33,7 +33,7 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题/别名/路径加权、高亮片段、AND/OR 降级检索、章节切片 | `docs-server/internal/search/` |
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
-| docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc | `skills/tools/docs-search/SKILL.md` |
+| docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc；提供宿主项目入口指令（内部库指引）模板，引导写代码前主动检索 | `skills/tools/docs-search/SKILL.md` |
 | 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `.pe.jsonc` 中的 `docs_server_url` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
 | docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/引导 .pe.jsonc 与 .env/库代码改动后判定并同步受影响文档/直接执行内置脚本推送与下架；脚本与 `scripts/push-docs.mjs` 同步（CI 强制 diff） | `skills/tools/docs-gen/SKILL.md` |
 

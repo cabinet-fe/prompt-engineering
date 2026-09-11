@@ -213,6 +213,8 @@ node <技能目录>/scripts/query.mjs get --library <slug> --path <path> [--sect
 node <技能目录>/scripts/query.mjs toc --library <slug> --path <path>   # 只取章节列表
 ```
 
+让 AI 主动检索而不只在被点名时才查：在仓库入口指令（AGENTS.md / CLAUDE.md 等）中写明本项目用到的内部库与「写代码前先查」的指引，简短模板见 docs-search 技能。
+
 ## 开发
 
 ```bash

@@ -464,7 +464,7 @@
         <span class="skill-cat mono-caps">工具</span>
         <div class="skill-detail" hidden>
           <p><b>适用场景：</b>需要查询公司内部库的用法文档时——让 AI 调用 docs-server 的检索接口，而不是凭训练数据猜 API。</p>
-          <p><b>核心功能：</b>运行内嵌零依赖查询脚本，列库、全文检索、按章节取文档；服务地址只读 <code>DOCS_SERVER_URL</code>，读路径免鉴权。</p>
+          <p><b>核心功能：</b>运行内嵌零依赖查询脚本，列库、全文检索、按章节取文档；附带宿主项目入口指令（AGENTS.md）的内部库指引模板，让 AI 写代码前主动检索。服务地址只读 <code>.pe.jsonc</code> 中的 <code>docs_server_url</code>，读路径免鉴权。</p>
           <p><b>常用命令：</b><code>docs-search</code></p>
         </div>
       </button>
