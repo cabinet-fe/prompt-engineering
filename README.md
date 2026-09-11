@@ -43,7 +43,7 @@ npx skills add cabinet-fe/prompt-engineering -g              # 装到所有项�
 ```text
 skills/     技能源码：engineering / langs / frameworks / roles / tools
 docs-server/ docs-server 文档服务（Go）
-scripts/    push-docs.mjs 推送脚本（复制到库仓库使用）
+scripts/    push-docs.mjs 推送脚本（单文件零依赖推送脚本，与 docs-gen 内置脚本一致）
 docs/       报刊风门户站点（GitHub Pages）
 ```
 

@@ -10,9 +10,9 @@ docs-server 面向企业内部：库维护者把库文档推送到中心文档�
 
 主要流程：
 
-1. 库维护者把 `scripts/push-docs.mjs` 复制到自己仓库（或经 `skills/tools/docs-gen` 安装），配环境变量（`DOCS_SERVER_URL`、`DOCS_TOKEN`、`DOCS_LIBRARY`），手动或在 CI 执行，把 Markdown 文档（含 frontmatter）经 HTTP 全量推送到文档服务。
+1. 库维护者通过 `skills/tools/docs-gen` 直接执行技能内置推送脚本，配置分离至 `.pe.jsonc`（`docs_server_url`、`docs_push_lib_name`）与 `.env`（`DOCS_TOKEN`），手动或在 CI 执行，把 Markdown 文档（含 frontmatter）经 HTTP 全量推送到文档服务。
 2. 文档服务接收推送，整库替换写入 SQLite 并重建 FTS5 全文索引。
-3. 使用者经 `npx skills add cabinet-fe/prompt-engineering` / `npx skills update` 安装 `skills/tools/docs-search`，配置 `DOCS_SERVER_URL`；AI 运行技能内嵌查询脚本，经 REST（`libraries` / `search` / `get` / `toc`）检索文档。无需 MCP 配置。
+3. 使用者经 `npx skills add cabinet-fe/prompt-engineering` / `npx skills update` 安装 `skills/tools/docs-search`，在 `.pe.jsonc` 中配置 `docs_server_url`；AI 运行技能内嵌查询脚本，经 REST（`libraries` / `search` / `get` / `toc`）检索文档。无需 MCP 配置。
 
 ## 技术架构
 
@@ -24,10 +24,10 @@ docs-server 面向企业内部：库维护者把库文档推送到中心文档�
   - SQLite FTS5 全文索引：bm25 排序、标题列加权、高亮片段、按库过滤；纯 Go 驱动（modernc.org/sqlite），编译为静态二进制。
   - 部署：CGO 关闭的单文件静态二进制，拷到服务器直接运行；GitHub Actions CI 在 `v*` tag 构建 linux/darwin × amd64/arm64 发 Releases。
   - 环境变量前缀 `DOCS_`（`DOCS_ADDR` / `DOCS_DB_PATH` / `DOCS_PUSH_TOKEN` / `DOCS_CONFIG`）。
-- **推送脚本（Node.js，`scripts/push-docs.mjs`）**：零依赖单文件脚本，随本仓库源码分发，用户复制到库仓库使用；环境变量配置（`DOCS_SERVER_URL` / `DOCS_TOKEN` / `DOCS_LIBRARY`）；解析 frontmatter，全量推送。
+- **推送脚本（Node.js，`scripts/push-docs.mjs`）**：零依赖单文件脚本，与 `docs-gen` 技能内置脚本一致；配置分离（`.pe.jsonc` + `.env`）；解析 frontmatter，全量推送。
 - **客户端技能（`skills/`）**：
-  - `docs-search`：通用检索技能，内嵌 Node 零依赖查询脚本（Node ≥ 24），调用服务端 REST；服务地址只读 `DOCS_SERVER_URL`。
-  - `docs-gen`：库文档生成技能（只服务库：文档标准、安装推送脚本、执行推送）；不承担检索。
+  - `docs-search`：通用检索技能，内嵌 Node 零依赖查询脚本（Node ≥ 24），调用服务端 REST；服务地址读 `.pe.jsonc`。
+  - `docs-gen`：库文档生成技能（只服务库：文档标准、直接执行内置推送脚本、引导配置分离）；不承担检索。
 
 进程边界：推送脚本 →（HTTP）→ 文档服务 ←（HTTP REST）← Agent Skill 查询脚本（使用者本机 agent 宿主）；浏览器 →（HTTP）→ 文档服务内置 Web UI（同一进程静态资源）。
 

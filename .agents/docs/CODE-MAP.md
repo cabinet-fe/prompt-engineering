@@ -16,10 +16,10 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 │       ├── search/           # SQLite FTS5 索引与全文检索
 │       └── web/              # go:embed 内嵌静态 UI 与根路径 handler
 ├── scripts/
-│   └── push-docs.mjs         # 零依赖 Node 推送脚本，用户复制到库仓库使用
+│   └── push-docs.mjs         # 零依赖 Node 推送脚本，与 docs-gen 技能内置脚本一致
 ├── skills/tools/
 │   ├── docs-search/          # 检索技能：AI 运行内嵌查询脚本调 REST
-│   └── docs-gen/             # 库文档生成技能：文档标准/变更同步/推送；内含脚本副本
+│   └── docs-gen/             # 库文档生成技能：文档标准/变更同步/直接执行内置脚本推送
 └── .github/workflows/        # GitHub Actions：ci.yml（paths 过滤测试）+ release.yml（v* tag 发版）
 ```
 
@@ -34,8 +34,8 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
 | docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc | `skills/tools/docs-search/SKILL.md` |
-| 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `DOCS_SERVER_URL` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
-| docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/安装脚本/引导 .env/库代码改动后判定并同步受影响文档/执行推送与下架；脚本副本须与 `scripts/push-docs.mjs` 同步（CI 强制 diff） | `skills/tools/docs-gen/SKILL.md` |
+| 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `.pe.jsonc` 中的 `docs_server_url` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
+| docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/引导 .pe.jsonc 与 .env/库代码改动后判定并同步受影响文档/直接执行内置脚本推送与下架；脚本与 `scripts/push-docs.mjs` 同步（CI 强制 diff） | `skills/tools/docs-gen/SKILL.md` |
 
 ## 依赖
 

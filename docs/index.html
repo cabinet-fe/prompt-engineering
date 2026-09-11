@@ -494,15 +494,15 @@ push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search �
       </article>
       <article class="engine-card">
         <h4>推送脚本 <span class="engine-path mono-caps">push-docs.mjs</span></h4>
-        <p>零依赖单文件 Node 脚本（Node ≥ 24），复制到库仓库即可用：解析 frontmatter、本地校验、整库全量推送，手动或挂 CI 执行。</p>
+        <p>零依赖单文件 Node 脚本（Node ≥ 24）：解析 frontmatter、本地严格校验、整库全量推送，由 docs-gen 技能直接调用或挂 CI 执行。</p>
       </article>
       <article class="engine-card">
         <h4>docs-gen <span class="engine-path mono-caps">库维护者技能</span></h4>
-        <p>按「文档读者是 AI」的标准生成与修订库文档；库代码改动后判定并同步受影响文档，再执行推送，让索引里的文档永远不说假话。</p>
+        <p>按「文档读者是 AI」的标准生成与修订库文档；库代码改动后判定并同步受影响文档，直接调用内置脚本推送，让索引里的文档永远不说假话。</p>
       </article>
       <article class="engine-card">
         <h4>docs-search <span class="engine-path mono-caps">库使用者技能</span></h4>
-        <p>AI 运行内嵌零依赖查询脚本：列库、全文检索、按章节取文档。服务地址只读 <code>DOCS_SERVER_URL</code>，换库只换参数。</p>
+        <p>AI 运行内嵌零依赖查询脚本：列库、全文检索、按章节取文档。服务地址读 <code>.pe.jsonc</code>，换库只换参数。</p>
       </article>
     </div>
 
@@ -560,13 +560,12 @@ AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
       <div class="start-col">
         <h3 class="start-h">④ 文档库引擎：三步接入</h3>
         <div class="cmd-block">
-          <p class="cmd-comment mono-caps"># 维护者：推送库文档（脚本复制到自己仓库后执行）</p>
-          <div class="cmd-line"><code class="mono">node --env-file=.env scripts/push-docs.mjs</code></div>
+          <p class="cmd-comment mono-caps"># 维护者：推送库文档（非敏感配置写 .pe.jsonc，令牌写 .env）</p>
+          <div class="cmd-line"><code class="mono">node --env-file=.env &lt;技能路径&gt;/scripts/push-docs.mjs</code></div>
         </div>
         <div class="cmd-block">
-          <p class="cmd-comment mono-caps"># 使用者：装检索技能，配服务地址</p>
+          <p class="cmd-comment mono-caps"># 使用者：装检索技能，.pe.jsonc 配服务地址</p>
           <div class="cmd-line"><code class="mono">npx skills add cabinet-fe/prompt-engineering --skill docs-search</code><button class="copy-btn mono-caps" data-copy="npx skills add cabinet-fe/prompt-engineering --skill docs-search" aria-label="复制">复制</button></div>
-          <div class="cmd-line"><code class="mono">export DOCS_SERVER_URL=http://docs-server.internal:8080</code></div>
         </div>
         <p class="start-note">服务端部署、二进制下载与配置说明见 <a href="https://github.com/cabinet-fe/prompt-engineering/blob/main/docs-server/README.md" target="_blank" rel="noopener">docs-server/README.md</a>。</p>
       </div>

@@ -13,9 +13,9 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 | 部分 | 路径 | 说明 |
 | --- | --- | --- |
 | 文档服务 | `docs-server/` | Go 单进程：REST API + 内置只读 Web UI，SQLite FTS5 全文检索，编译为 CGO 关闭的单文件静态二进制 |
-| 推送脚本 | `scripts/push-docs.mjs` | 零依赖单文件 Node 脚本（Node ≥ 24），复制到库仓库使用，整库全量推送 |
+| 推送脚本 | `scripts/push-docs.mjs` | 零依赖单文件 Node 脚本（Node ≥ 24），整库全量推送 |
 | 检索技能 | `skills/tools/docs-search/` | 通用检索技能：内嵌查询脚本调 REST（libraries / search / get / toc） |
-| 文档生成技能 | `skills/tools/docs-gen/` | 只服务库：文档标准（检索优化）、安装推送脚本、库代码改动后同步文档、执行推送 |
+| 文档生成技能 | `skills/tools/docs-gen/` | 只服务库：文档标准（检索优化）、引导 .pe.jsonc 与 .env 配置、库代码改动后同步文档、直接执行内置脚本推送 |
 
 ## 部署
 
@@ -111,24 +111,36 @@ description: 五分钟上手指南
 正文……
 ```
 
-### 2. 安装脚本
+### 2. 准备配置
 
-把 [`scripts/push-docs.mjs`](../scripts/push-docs.mjs) 复制到自己仓库（如 `scripts/push-docs.mjs`）。脚本零依赖、免构建，Node ≥ 24 直接运行。
+分离敏感与非敏感配置：
+
+- **非敏感配置**：在仓库根目录创建 `.pe.jsonc`（提交入 git）：
+  ```jsonc
+  {
+    "docs_server_url": "http://docs.internal:8080",
+    "docs_push_lib_name": "my-lib"
+  }
+  ```
+- **敏感配置**：在仓库根目录 `.env` 中配置令牌（严禁提交入 git，须加入 `.gitignore`）：
+  ```env
+  DOCS_TOKEN=your-push-token
+  ```
 
 ### 3. 执行推送
 
-三个环境变量写入仓库根目录 `.env`（记得 gitignore）后执行；`--env-file` 为 Node 内置参数，Windows/macOS/Linux 通用：
+使用 `docs-gen` 技能时始终直接调用技能内置的 `scripts/push-docs.mjs`，在仓库根目录执行；Node ≥ 24 直接运行，`--env-file` 为 Node 内置参数：
 
 ```bash
-node --env-file=.env scripts/push-docs.mjs [--verify] [文档目录，默认 agent-docs/]
-node --env-file=.env scripts/push-docs.mjs --clear   # 下架整库
+node --env-file=.env <脚本绝对路径> [--verify] [文档目录，默认 agent-docs/]
+node --env-file=.env <脚本绝对路径> --clear   # 下架整库
 ```
 
-| 环境变量 | 说明 |
-| --- | --- |
-| `DOCS_SERVER_URL` | 服务端地址（结尾斜杠会自动去掉） |
-| `DOCS_TOKEN` | 与服务端 `DOCS_PUSH_TOKEN` 一致的推送令牌 |
-| `DOCS_LIBRARY` | 库标识（slug）：仅小写字母、数字与连字符 |
+| 配置项 | 来源 | 说明 |
+| --- | --- | --- |
+| `docs_server_url` | `.pe.jsonc` | 服务端地址（结尾斜杠会自动去掉） |
+| `docs_push_lib_name` | `.pe.jsonc` | 库标识（slug）：仅小写字母、数字与连字符 |
+| `DOCS_TOKEN` | 环境变量 / `.env` | 与服务端 `DOCS_PUSH_TOKEN` 一致的推送令牌 |
 
 行为说明：
 
@@ -137,14 +149,12 @@ node --env-file=.env scripts/push-docs.mjs --clear   # 下架整库
 - **`--verify`**：推送成功后逐篇按 title 搜索验证可检索，任何一篇搜不到即非零退出。
 - **`--clear`**：调 DELETE 接口下架整库，服务端删除该库全部文档与索引，不可恢复。
 - 忽略规则：扫描时跳过隐藏目录/文件与 `node_modules`。
-- **CI 集成**：在库仓库 CI 里配上述三个环境变量后执行脚本即可，例如 GitHub Actions：
+- **CI 集成**：在库仓库 CI 里配置 `DOCS_TOKEN` 环境变量，结合已提交的 `.pe.jsonc` 执行脚本即可，例如 GitHub Actions：
 
 ```yaml
-- run: node scripts/push-docs.mjs
+- run: node <脚本绝对路径>
   env:
-    DOCS_SERVER_URL: ${{ vars.DOCS_SERVER_URL }}
     DOCS_TOKEN: ${{ secrets.DOCS_TOKEN }}
-    DOCS_LIBRARY: my-lib
 ```
 
 ## REST API
@@ -182,7 +192,7 @@ curl 'http://localhost:8080/api/v1/search?q=如何分页'
 
 ## 检索接入（库使用者）
 
-消费侧是 Agent Skill + REST：安装本仓库技能、设置 `DOCS_SERVER_URL`，由 AI 运行 `docs-search` 查询脚本。读路径免鉴权。
+消费侧是 Agent Skill + REST：安装本仓库技能、在 `.pe.jsonc` 中配置 `docs_server_url`，由 AI 运行 `docs-search` 查询脚本。读路径免鉴权。
 
 ```bash
 # 安装检索技能（也可不加 --skill，同时装上库维护者用的 docs-gen）
@@ -192,15 +202,15 @@ npx skills add cabinet-fe/prompt-engineering --skill docs-search
 npx skills update
 ```
 
-设置服务地址（结尾斜杠会自动去掉）：写入当前仓库根目录 `.env`（`DOCS_SERVER_URL=<地址>`，记得 gitignore），AI 运行脚本时会经 `--env-file` 加载；或按所用 shell 导出同名环境变量。
+设置服务地址（结尾斜杠会自动去掉）：写入当前仓库根目录 `.pe.jsonc`（`"docs_server_url": "<地址>"`，该文件需提交入 git）。
 
-需要检索内部库文档时，AI 在**仓库根目录**（`.env` 所在处）运行内嵌脚本（Node ≥ 24；`--env-file` 相对当前目录解析，脚本路径用绝对路径或相对当前目录的路径）：
+需要检索内部库文档时，AI 在**仓库根目录**（`.pe.jsonc` 所在处）运行内嵌脚本（Node ≥ 24，脚本路径使用绝对路径）：
 
 ```bash
-node --env-file=.env <技能目录>/scripts/query.mjs libraries
-node --env-file=.env <技能目录>/scripts/query.mjs search --q "<关键词>" [--library <slug>] [--limit 1~50]
-node --env-file=.env <技能目录>/scripts/query.mjs get --library <slug> --path <path> [--section <章节>]
-node --env-file=.env <技能目录>/scripts/query.mjs toc --library <slug> --path <path>   # 只取章节列表
+node <技能目录>/scripts/query.mjs libraries
+node <技能目录>/scripts/query.mjs search --q "<关键词>" [--library <slug>] [--limit 1~50]
+node <技能目录>/scripts/query.mjs get --library <slug> --path <path> [--section <章节>]
+node <技能目录>/scripts/query.mjs toc --library <slug> --path <path>   # 只取章节列表
 ```
 
 ## 开发
