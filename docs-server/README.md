@@ -21,6 +21,27 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 
 ### 1. 获取二进制
 
+**方式 A：一键安装（推荐）**
+
+在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
+```
+
+或使用 `wget`：
+
+```bash
+wget -qO- https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
+```
+
+> **可选参数（通过环境变量传入）：**
+> - `INSTALL_DIR`：自定义安装目录（默认 `/usr/local/bin`，如 `INSTALL_DIR=~/.local/bin`）
+> - `VERSION`：指定版本（默认 `latest`，如 `VERSION=v0.1.0-beta.3`）
+> - `GH_PROXY`：GitHub 下载代理前缀（如 `GH_PROXY=https://ghfast.top/`）
+
+**方式 B：手动下载**
+
 从 [GitHub Releases](https://github.com/cabinet-fe/prompt-engineering/releases) 下载对应平台的静态二进制（linux/darwin × amd64/arm64），放到服务器任意目录（更早的 v0.1.0-beta.* 版本仍在 [HodgeWen/docs-server](https://github.com/HodgeWen/docs-server/releases)）：
 
 ```bash
@@ -73,8 +94,10 @@ DOCS_ADDR=:8080 \
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/docs-server-linux-x64
+ExecStart=/usr/local/bin/docs-server
 Environment=DOCS_DB_PATH=/var/lib/docs-server/docs.db
+# 仅本机监听，配合 Nginx 反代
+Environment=DOCS_ADDR=127.0.0.1:8080
 EnvironmentFile=/etc/docs-server.env   # 其中放 DOCS_PUSH_TOKEN=...
 Restart=on-failure
 StateDirectory=docs-server
@@ -85,6 +108,28 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl enable --now docs-server
+```
+
+### 5. Nginx 反向代理（可选）
+
+如果希望 docs-server 仅在本机运行、只通过 Nginx 暴露访问，将 `DOCS_ADDR` 设为 `127.0.0.1:8080`，并在 Nginx 中添加如下配置：
+
+```nginx
+server {
+    listen 80;
+    server_name docs.yourdomain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # 必须：放宽客户端请求体限制，避免整库推送大文档时报 413 Request Entity Too Large
+        client_max_body_size 50m;
+    }
+}
 ```
 
 ### 从源码构建
