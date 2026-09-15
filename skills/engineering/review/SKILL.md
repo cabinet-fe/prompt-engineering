@@ -25,15 +25,15 @@ description: >
 6. 不通过或无改动：结束（由 rush 编排时，rush 自动进入返工闭环）。
 7. 通过：
    - 带 `defer-commit`：不提交。
-   - 否则 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`）。不要 add `.agents/cooking/`。禁止 push。没有该技能则停止，不要另写提交流程。
+   - 否则 `git-commit` auto（源：`skills/tools/git-commit/SKILL.md`）：只交应入库文件（代码、`CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`）。没有该技能则停止，不要另写提交流程。
 
 ## 2. 前置检查
 
-本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。
+按 [common.md](../setup/references/common.md) 的「前置检查」节执行。
 
 ## 3. 选路径
 
-标识 = `.agents/cooking/<feature>/` 的子目录名。命中 = 参数第一段（按空白拆）等于已有子目录名；只认这一段。未命中不要新建 cooking 目录。
+标识与命中规则见 [common.md](../setup/references/common.md)。
 
 - **阶段评审**：命中标识；或去掉标识后是单独的 `P<n>`。
 - **git 评审**：其余（含参数为空）。即使 cooking 有可评阶段也不自动去评。`git rev-parse` 能解析的参数当作比较基点。
@@ -45,32 +45,32 @@ description: >
 两条路径都做。只读，不改文档、不代跑 `sync-docs`。对照本次 diff（细则见 [persistent-docs.md](../setup/references/persistent-docs.md)）：
 
 - 已有的技能 / 包内 AGENTS.md / ACCEPTANCE.md 被 diff 说错且未改 → 阻塞。不存在对应文档则不阻塞。
-- 代码类：diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项 1～6 但 `CODE-MAP.md` 对应行没改 → 阻塞。非代码不要求 CODE-MAP。
-- 阶段路径额外：对 cooking `spec.md` 运行 `node .agents/scripts/spec-files.mjs parse`；失败，或「新增 / 删除 / 修改」未覆盖本阶段实际改动 → 阻塞。
+- 代码类：diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的「要改」节条目但 `CODE-MAP.md` 对应行没改 → 阻塞。非代码不要求 CODE-MAP。
+- 阶段路径额外：对 cooking `spec.md` 运行 `node .agents/scripts/spec-files.mjs parse`；失败，或本阶段实际改动（新增 / 删除 / 修改）的某个文件没有被任何一条同类别条目匹配（glob：`*` 不跨目录、`**` 跨目录）→ 阻塞。
 
 ## 5. 评审轴
 
-对照 diff。有任何阻塞项则结论「不通过」；建议不阻塞。只评不改。
-存在 `.agents/docs/ACCEPTANCE.md` 则两条路径都按它评，其中标明跳过的项不作为阻塞项；不存在则只按下表评。
+对照 diff。有任何阻塞项则结论「不通过」；建议不阻塞。
+存在 `.agents/docs/ACCEPTANCE.md` 则两条路径都按它评：核对其必跑项是否已跑且退出码 0，未跑或失败的本轮复跑一次，退出码非 0 → 阻塞；标明跳过的项不评。不存在则只按下表评。
 
 | 轴        | 阶段                                                                        | git                                                         |
 | --------- | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | Spec      | `spec.md` + 该 `Pn.md` 完成标准；有无超范围；「影响文件」覆盖本阶段实际改动 | 无                                                          |
 | Standards | 见下                                                                        | 见下                                                        |
-| 正确性    | 无                                                                          | 改动是否自洽、有无明显 bug、是否与提交说明 / 本对话意图一致 |
+| 正确性    | 改动是否自洽、有无明显 bug、是否满足该 `Pn.md` 完成标准的行为语义；核对 implement 汇报的测试命令与结果 | 改动是否自洽、有无明显 bug、是否与提交说明 / 本对话意图一致 |
 
 ### Standards
 
 - 规范：代码类对照 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS。
 - 已有文档：第 4 节的结果。
-- 项目技能（仅代码）：diff 触及的语言 / 框架 / 角色在仓库里有对应技能时，按其 `SKILL.md` 渐进式读取后评是否遵守；没有对应技能不阻塞。不把 setup / explore / to-spec / to-tasks / implement / review / sync-docs / archive / rush / git-commit 这些流程技能当评审依据。
+- 项目技能（仅代码）：抽查 diff 触及的语言 / 框架 / 角色对应技能的关键条目是否遵守。评审依据只限 `langs/` / `frameworks/` / `roles/` 类技能（流程类技能不算）；只读其 `SKILL.md` 正文，`references/` 仅在 diff 直接触碰其管辖范围时再读；没有对应技能不阻塞。
 - 坏味道基线（仅代码）：对照 `.agents/docs/SMELLS.md`；`DEV-STANDARDS.md` 有规定的以它为准；启发式，不阻塞；工具已查的跳过。
 
 ## 6. 阶段评审
 
 `node .agents/scripts/cooking.mjs status <feature>` 输出 `goal.md：未确认`：停止，正在 explore。不读 `goal.md` 判断。
 
-1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件；做第 4、5 节。
+1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件、任务书里的测试结果；做第 4、5 节。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
 3. 回写「评审」：`node .agents/scripts/cooking.mjs set <feature> <Pn> 评审 通过|不通过`，不手改 `Pn.md`。脚本报错（如实现未完成）：停止，原文汇报。
 4. 不通过：列阻塞项，写明需针对阻塞项返工（独立调用时提示用户 `implement <feature> <Pn>`；rush 编排时由 rush 自动触发）。不改代码。依赖本阶段的后续阶段不能开始。

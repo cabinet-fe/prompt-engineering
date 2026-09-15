@@ -21,6 +21,7 @@
 只评不改代码。不要提交、不要跑 sync-docs。
 <defer-commit 行>
 改动文件：<implement 给出的路径，没有则自己按 SKILL 用 git 收集>
+测试结果：<implement 汇报的 lint / typecheck / 测试命令与结果；没有则写 无>
 完成后只汇报：结论（通过/不通过）、阻塞项原文。不要把评审全文写回父代理。
 ```
 

@@ -6,15 +6,15 @@ description: >
 
 # archive
 
-cooking 只是进行中的工作区，完成后删掉。禁止啰嗦和故作高深。
+cooking 只是进行中的工作区，完成后删掉。
 
 ## 前置检查
 
-本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。
+按 [common.md](../setup/references/common.md) 的「前置检查」节执行。
 
 ## 参数
 
-标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识。未命中不要按参数去 cooking 下新建目录。已有标识用 `node .agents/scripts/cooking.mjs status`（不带标识）列出，不 ls、不读目录正文。
+标识与命中规则见 [common.md](../setup/references/common.md)。
 
 - **命中标识**：归档该单位。
 - **参数为空**：cooking 0 个则停止；1 个则用它；多个则问。
@@ -34,7 +34,7 @@ cooking 只是进行中的工作区，完成后删掉。禁止啰嗦和故作高
 ## 工作流
 
 1. 定 `<feature>`。
-2. 对照本单位落地的代码，检查已有持久文档是否被说错（见 [persistent-docs.md](../setup/references/persistent-docs.md)；代码类含 `CODE-MAP.md`，契约见 [code-map-update.md](../setup/references/code-map-update.md)）。说错则停止，列出哪几份：`CODE-MAP.md` / 技能等让用户用 implement 修；其余 `.agents/docs` 让用户 `sync-docs`。新目录等于新分层则让用户先 `sync-docs`。不在这里改文档。
+2. 检查已有持久文档是否被说错（见 [persistent-docs.md](../setup/references/persistent-docs.md)；代码类含 `CODE-MAP.md`，契约见 [code-map-update.md](../setup/references/code-map-update.md)）。范围只限：工作区里本单位未提交的改动（收尾 `defer-commit` 留下的）＋ `reviews/` 里报过且未修复的文档问题；各阶段已评审提交的部分信任 review，不重查。说错则停止，列出哪几份：`CODE-MAP.md` / 技能等让用户用 implement 修；其余 `.agents/docs` 让用户 `sync-docs`。新目录等于新分层则让用户先 `sync-docs`。不在这里改文档。
 3. 删除整个 `.agents/cooking/<feature>/`（含 goal、spec、tasks、reviews）。
 
 ## 结束

@@ -2,7 +2,7 @@
 
 落地路径一律 `.agents/docs/acceptance/`。已有同类测试则不要用本文另起。HTTP 见 [http-scaffold.md](http-scaffold.md)。
 
-未安装对应 runner：文件仍可生成，`ACCEPTANCE.md` 标跳过，不把安装失败写成验收失败。Playwright 若需安装，只允许开发依赖，不要写入生产依赖。bun 同此，且不要写入 `package.json` 依赖。
+未安装对应 runner：文件仍可生成，`ACCEPTANCE.md` 标跳过，不把安装失败写成验收失败。Playwright 若需安装，只允许开发依赖，不要写入生产依赖。
 
 ## Playwright（前端 e2e / 全栈一体 API+UI）
 

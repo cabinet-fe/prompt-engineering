@@ -4,6 +4,10 @@ implement / review / sync-docs / archive / setup 都引用本文，禁止各写�
 
 只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接。
 
+## 架构级变更（统一定义）
+
+换栈、改分层（含新增分层）、加/删应用边界、新包（多包仓库里落在 `PROJECT.md` 所列包路径之外的新增路径）、拆合包。判定口径只有本文这一份，各技能（to-spec / implement / rush / sync-docs）引用本文，不再各自枚举。
+
 ## 要改
 
 1. 模块表增行或删行
@@ -24,8 +28,8 @@ implement / review / sync-docs / archive / setup 都引用本文，禁止各写�
 | 场景 | 谁 |
 | --- | --- |
 | 首次生成 | setup |
-| 换栈/改分层/加应用边界/拆合包 | sync-docs（一并改 ARCHITECTURE + CODE-MAP） |
-| 本轮实现触及上面 1～6 | implement（阶段或直写） |
+| 架构级变更（见「架构级变更」节） | sync-docs（一并改 ARCHITECTURE + CODE-MAP） |
+| 本轮实现触及「要改」节条目 | implement（阶段或直写） |
 | 用户点名 sync-docs 且路径或职责已被代码推翻 | sync-docs |
 | 归档时地图明显过期 | 停止，列出要改的行，让 implement 修；若新目录等于新分层，让用户先 `sync-docs` |
 
@@ -33,8 +37,8 @@ implement / review / sync-docs / archive / setup 都引用本文，禁止各写�
 
 ## review 阻塞
 
-代码类且本 diff 触及上面 1～6，但 `CODE-MAP.md` 对应行没改。
+代码类且本 diff 触及「要改」节条目，但 `CODE-MAP.md` 对应行没改。
 
 ## implement 停止
 
-若改动等于换栈、新应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`，再由 sync-docs 同步本文件。
+若改动等于架构级变更（见「架构级变更」节）：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`，再由 sync-docs 同步本文件。

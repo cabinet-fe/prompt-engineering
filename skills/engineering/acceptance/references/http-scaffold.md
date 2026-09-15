@@ -8,7 +8,7 @@
 2. **微服务**：只打入口（网关 / BFF / 用户指出的那个服务）。compose 只写进仓库里能看到、且用户确认在用的文件。不要给每个服务各写一套。
 3. **已有 HTTP 入口测**：不新落脚手架。把现有命令写入 `ACCEPTANCE.md`。单测、不经 HTTP 的 handler 测不算「已有」。
 4. **无现成 HTTP 测才生成**脚本到 `.agents/docs/acceptance/`：
-   - 仅 Node（有 `package.json`、无 Python 包描述）：生成 `http.ts`。本机有 bun 用 bun 跑；没有 bun 用 node 跑该 ts。禁止把 bun 写入目标仓生产依赖。
+   - 仅 Node（有 `package.json`、无 Python 包描述）：生成 `http.ts`。本机有 bun 用 bun 跑；没有 bun 用 node 跑该 ts。
    - 仅 Python（有 `pyproject.toml` / `requirements*.txt` 等、无 Node）：生成 `http.py`，用本机 `python3`。
    - 两者都有：跟现有测试栈（测试文件主要是 ts/js 则 ts，主要是 py 则 py）。不要各生成一份。
 5. 运行所需的 base URL、鉴权环境变量名写进 `ACCEPTANCE.md`。本机起不了服务或缺 runner：该项标跳过。

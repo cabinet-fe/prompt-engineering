@@ -6,15 +6,11 @@ description: >
 
 # acceptance
 
-按目标仓 `.agents/docs/PROJECT.md` 类别提问，检索已有测试 / e2e / HTTP / 构建命令后再推荐，生成全局验收提示词和必要脚本，并记录本机能否跑。setup 不代跑本技能。禁止把本技能的问答写入 setup 的 `interview.md`。禁止无检索就指定工具。验收文件不是 precheck 必有项。禁止啰嗦和故作高深。
+按目标仓 `.agents/docs/PROJECT.md` 类别提问，检索已有测试 / e2e / HTTP / 构建命令后再推荐，生成全局验收提示词和必要脚本，并记录本机能否跑。setup 不代跑本技能。禁止把本技能的问答写入 setup 的 `interview.md`。禁止无检索就指定工具。验收文件不是 precheck 必有项。
 
 ## 前置检查
 
-本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。
-
-## 统一工具定义
-
-- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
+按 [common.md](../setup/references/common.md) 的「前置检查」节执行。
 
 ## 工作流
 
@@ -37,4 +33,4 @@ description: >
 | `.agents/docs/ACCEPTANCE.md` | 全局提示词：命令、本机能否跑、跳过标记 |
 | `.agents/docs/acceptance/` | 可选脚本（HTTP / Playwright / Maestro 等） |
 
-bun 可当本机 runner，禁止把 bun 写入目标仓生产依赖。
+bun 可当本机 runner，禁止把 bun 写入目标仓 `package.json` 依赖（dependencies / optionalDependencies / devDependencies 都算）。

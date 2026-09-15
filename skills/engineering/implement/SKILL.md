@@ -6,19 +6,15 @@ description: >
 
 # implement
 
-两条路径，不要混用。不要因用户提到「实现 / 开发」就自动进入本技能。不改 spec、不拆新阶段。不改 `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `PROJECT.md` / `SMELLS.md`，让用户跑 `sync-docs`。禁止啰嗦和故作高深。
+两条路径，不要混用。不要因用户提到「实现 / 开发」就自动进入本技能。不改 spec、不拆新阶段。不改 `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `PROJECT.md` / `SMELLS.md`，让用户跑 `sync-docs`。
 
 ## 前置检查
 
-本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](../setup/references/persistent-docs.md)。
-
-## 统一工具定义
-
-- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
+按 [common.md](../setup/references/common.md) 的「前置检查」节执行。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](../setup/references/persistent-docs.md)。
 
 ## 选路径
 
-标识 = `.agents/cooking/<feature>/` 的目录名。**命中** = 参数第一段（按空白拆）等于某个已有子目录名；只把这一段当标识，其余留给本技能（如 `P2`）。参数里的 `P<n>` 指阶段 id。未命中不要按参数去 cooking 下新建目录。已有标识用 `node .agents/scripts/cooking.mjs status`（不带标识）列出：每个单位一行，带「下一步」与各阶段状态；不 ls、不读目录正文。
+标识与命中规则见 [common.md](../setup/references/common.md)。参数里的 `P<n>` 指阶段 id。
 
 - **阶段路径**：命中标识；或参数（去掉标识后）是单独的 `P<n>`。
 - **直写路径**：参数非空，且不是标识、也不是单独的 `P<n>`。整段是实现内容。
@@ -28,11 +24,11 @@ description: >
 
 ## 编码规则（两条路径通用）
 
-1. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；需要定位模块时按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS。
+1. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；需要定位模块时按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。改动涉及的语言 / 框架 / 角色在可用技能里有对应的 `langs/` / `frameworks/` / `roles/` 类技能时，按需读其 `SKILL.md` 并遵守。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS。
 2. 小 diff，只做要求的内容。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不扩到与本次无关的重构。
-3. 改动等于换栈、加一条新的应用边界、改分层：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`。
+3. 改动等于架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节）：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`。
 4. 代码类触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份；没说错则不动。不要改 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`PROJECT.md`、`SMELLS.md`。
-5. 仓库已有的 lint / typecheck / 测试命令（`DEV-STANDARDS.md`「代码风格」「测试」节、package.json scripts、Makefile 等写明的）覆盖改动文件时：收尾前跑一遍，不过不算完成。没有就不补，不为此新装工具或新建配置。
+5. 仓库已有的 lint / typecheck / 测试命令（`DEV-STANDARDS.md`「代码风格」「测试」节、package.json scripts、Makefile 等写明的）覆盖改动文件时：收尾前跑一遍，不过不算完成。`.agents/docs/ACCEPTANCE.md` 的必跑项（标「跳过」的除外）同样收尾前跑：阶段路径只跑追加进该 `Pn.md`「完成标准」的条目，直写路径全跑。不为此新装工具或新建配置。
 
 ## 阶段路径
 
@@ -64,4 +60,4 @@ description: >
 汇报固定包含：改了哪些路径；跑了哪些 lint / typecheck / 测试命令及结果（没有则写「无可跑命令」）；CODE-MAP 及其它已有文档是否更新；是否需要 `sync-docs`。
 
 - **阶段路径**：由 rush 派发时只汇报，review 由 rush 派。用户直接调用时：读 `review/SKILL.md`，本对话当派发方，按阶段评审模板派 review 子代理（带改动路径、前置检查类别），返回后按派发方步骤处理结论；本对话不评、不读 `reviews/` 正文、不改 `reviews/Pn.md`，不动「评审」状态。派 review 前不提交。未 review 通过前，不得开始依赖本阶段的后续阶段。
-- **直写路径**：汇报后读 `review/SKILL.md`，本对话当派发方，按 git 评审模板派 review 子代理（不走阶段评审、不写 `reviews/`），返回后按派发方步骤处理结论。派 review 前不提交，本对话不评。
+- **直写路径**：汇报后，若改动 ≤ 3 个文件且没新增依赖，用 `交互式提问` 问用户走 git 评审还是本次跳过；跳过则不提交（由用户自行决定提交），就此结束。其余情况或用户选评审：读 `review/SKILL.md`，本对话当派发方，按 git 评审模板派 review 子代理（不走阶段评审、不写 `reviews/`），返回后按派发方步骤处理结论。派 review 前不提交，本对话不评。

@@ -1,22 +1,18 @@
 ---
 name: sync-docs
 description: >
-  把已有持久文档与仓库现状对齐；可新增 `.agents/docs/` 自定义文档并写入根 AGENTS 索引。仅用户显式调用，或未走 implement 的直接改文件可能让已有文档撒谎时使用。
+  把已有持久文档与仓库现状对齐；可新增 `.agents/docs/` 自定义文档并写入根 AGENTS 索引。仅用户显式调用、由 rush 编排触发，或未走 implement 的直接改文件可能让已有文档撒谎时使用。
 ---
 
 # sync-docs
 
-`.agents/docs/` 下所有已有文件都在范围内。用户点名新增时可以新建 `.agents/docs/` 文件，并在根 `AGENTS.md` 文档表追加一行。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。禁止啰嗦和故作高深。
+`.agents/docs/` 下所有已有文件都在范围内。用户点名新增时可以新建 `.agents/docs/` 文件，并在根 `AGENTS.md` 文档表追加一行。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。
 
-不由 review 自动触发。走 `implement` / `rush` 时文档对齐在实现当轮完成，review 只检查有没有漏。
+不由 review 自动触发。走 `implement` / `rush` 时文档对齐在实现当轮完成（架构级变更由 rush 派本技能处理），review 只检查有没有漏。
 
 ## 前置检查
 
-本对话之前已运行过且 PASS，或任务书写明「前置检查已通过，项目类别：X」：跳过本节，沿用该类别。否则运行 `node .agents/scripts/precheck.mjs`：FAIL 则停止，提示用户执行 `setup`（只缺脚本时走 `setup` 更新模式），不要代跑；PASS 输出带项目类别。之后按根 AGENTS.md 按需读 docs。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
-
-## 统一工具定义
-
-- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
+按 [common.md](../setup/references/common.md) 的「前置检查」节执行；只缺脚本时走 `setup` 更新模式。CODE-MAP 何时改见 [code-map-update.md](../setup/references/code-map-update.md)。
 
 ## 选路径
 
@@ -36,6 +32,7 @@ description: >
 
 对齐路径用。已走新增路径且用户没给对照路径、工作区和暂存区也没有变更：跳过本节和对齐，不要问对照哪次提交。
 
+- 由 rush 派发（任务书点名变更）：以点名条目为准，走对齐路径，不要问用户。
 - 用户点名改 `.agents/docs/` 某份文档，或给出类别 / 架构 / 规范 / 地图等变更：以用户原意为准。
 - 用户给了路径：只根据这些路径判断哪些已有文档被说错。
 - 否则用 git 取工作区和暂存区变更（`git status --porcelain`、`git diff --name-only`、`git diff --cached --name-only` 并集，去重）。
@@ -47,7 +44,7 @@ description: >
 只改被推翻或被点名的句子/节，不重写全文。非代码不要打开代码类 docs（盘上有残留也一样），除非用户点名那一份。
 
 1. `PROJECT.md`：类别、组织结构、全栈形态被推翻或被点名才改。改成代码 ↔ 非代码：停止，让用户 `setup`（要换 AGENTS 模板 / 补代码类 docs）。
-2. `ARCHITECTURE.md`：换栈、改分层、加/删应用边界、业务/技术架构说错或被点名才改。改了架构则按 [code-map-update.md](../setup/references/code-map-update.md) 同步 `CODE-MAP.md`。
+2. `ARCHITECTURE.md`：架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节），或业务/技术架构说错、被点名才改。改了架构则按 [code-map-update.md](../setup/references/code-map-update.md) 同步 `CODE-MAP.md`。
 3. `DEV-STANDARDS.md`：仅用户点名改规范/偏好。禁止从代码推断新规范。
 4. `SMELLS.md`：与 [smells.md](../setup/references/smells.md) 不一致则原样覆写。禁止按项目改写、追加或删条。
 5. `CODE-MAP.md`：触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项时只改相关行。
@@ -58,7 +55,7 @@ description: >
 
 技能、包/模块 `AGENTS.md`、模块已有约定文档：说错才改。
 
-拿不准某份已有文档是否被推翻：使用 `交互式提问` 工具来问用户，不要猜。没有被说错、也没有被点名的文档：不要写。
+拿不准某份已有文档是否被推翻：使用 `交互式提问` 工具来问用户，不要猜（子代理环境没有该工具：跳过并在结束汇报中列出）。没有被说错、也没有被点名的文档：不要写。
 
 ## 禁止
 

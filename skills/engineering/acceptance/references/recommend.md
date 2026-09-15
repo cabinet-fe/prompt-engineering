@@ -41,4 +41,4 @@
 - 「已有」只认能跑到对应入口的命令，不认空目录或未接线的配置。
 - 全栈分离缺 HTTP 入口测、但已有前端 e2e：只补 HTTP 脚本。反过来只补前端侧。
 - 需要新落 Playwright / Maestro 时，文件放 `.agents/docs/acceptance/`，见 [script-templates.md](script-templates.md)。未安装 runner 则命令照写、标记跳过。
-- 禁止为跑脚本把 bun 写入目标仓 `dependencies` / `optionalDependencies`。
+- 禁止为跑脚本把 bun 写入目标仓 `package.json` 依赖（同 `SKILL.md`）。

@@ -6,13 +6,13 @@ description: >
 
 # setup
 
-每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。禁止啰嗦和故作高深。
+每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。
 
 项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。
 
 ## 统一工具定义
 
-- `交互式提问`：Agent 内置的向用户提问并给出选项的工具，各 Agent 命名不同（如 `AskUserQuestion`、`AskQuestion`）。本技能所有向用户的提问都用它。
+`交互式提问` 等工程技能共用约定见 [common.md](references/common.md)。
 
 ## 完成判定
 
