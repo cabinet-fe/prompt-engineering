@@ -16,8 +16,9 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 │       ├── search/           # SQLite FTS5 索引与全文检索
 │       └── web/              # go:embed 内嵌静态 UI 与根路径 handler
 ├── scripts/
-│   ├── push-docs.mjs         # 零依赖 Node 推送脚本，与 docs-gen 技能内置脚本一致
-│   └── install-docs-server.sh # 服务端一键安装脚本（Linux/macOS × x64/arm64）
+│   ├── push-docs.mjs            # 零依赖 Node 推送脚本，与 docs-gen 技能内置脚本一致
+│   ├── install-docs-server.sh   # 服务端一键安装脚本（Linux/macOS × x64/arm64）
+│   └── install-docs-server-cn.sh # 大陆加速安装引导：多加速源择优下载并调起安装脚本
 ├── skills/tools/
 │   ├── docs-search/          # 检索技能：AI 运行内嵌查询脚本调 REST
 │   └── docs-gen/             # 库文档生成技能：文档标准/变更同步/直接执行内置脚本推送
@@ -35,6 +36,7 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
 | 安装脚本 | `scripts/install-docs-server.sh` | 服务端一键安装脚本：自动探测系统与架构并拉取对应 Release 二进制 | `scripts/install-docs-server.sh` |
+| 大陆加速安装引导 | `scripts/install-docs-server-cn.sh` | 大陆网络一键安装引导：按序尝试 GitHub 加速代理（`GH_PROXY` 可覆盖，直连兜底）下载安装脚本与 Release 二进制 | `scripts/install-docs-server-cn.sh` |
 | docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc；提供宿主项目入口指令（内部库指引）模板，引导写代码前主动检索 | `skills/tools/docs-search/SKILL.md` |
 | 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `.pe.jsonc` 中的 `docs_server_url` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
 | docs-gen 技能 | `skills/tools/docs-gen/` | 库文档生成技能（只服务库）：文档标准/引导 .pe.jsonc 与 .env/库代码改动后判定并同步受影响文档/直接执行内置脚本推送与下架；脚本与 `scripts/push-docs.mjs` 同步（CI 强制 diff） | `skills/tools/docs-gen/SKILL.md` |

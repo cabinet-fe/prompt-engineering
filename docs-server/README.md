@@ -21,9 +21,9 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 
 ### 1. 获取二进制
 
-**方式 A：一键安装（推荐）**
+**方式 A：一键安装（可直连 GitHub，推荐）**
 
-在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`：
+在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`，安装完成会生成并打印推送令牌：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
@@ -35,12 +35,25 @@ curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/
 wget -qO- https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
 ```
 
-> **可选参数（通过环境变量传入）：**
-> - `INSTALL_DIR`：自定义安装目录（默认 `/usr/local/bin`，如 `INSTALL_DIR=~/.local/bin`）
-> - `VERSION`：指定版本（默认 `latest`，如 `VERSION=v0.1.0-beta.3`）
-> - `GH_PROXY`：GitHub 下载代理前缀（如 `GH_PROXY=https://ghfast.top/`）
+**方式 B：一键安装（中国大陆加速）**
 
-**方式 B：手动下载**
+大陆服务器直连 GitHub 通常不可达（连脚本本身所在的 `raw.githubusercontent.com` 也访问不了），改用加速引导脚本 `install-docs-server-cn.sh`：自动按序尝试多个公共 GitHub 加速代理下载安装脚本与 Release 二进制，某个加速源失效时自动切换下一个，最后兜底直连，全程无需额外配置：
+
+```bash
+curl -fsSL https://ghfast.top/https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server-cn.sh | bash
+```
+
+> 公共加速源时有失效：若默认入口不可用，把 URL 开头的 `https://ghfast.top/` 前缀换成其它加速源前缀（如 `https://gh-proxy.com/`）即可；脚本内部的候选列表也可通过 `GH_PROXY` 覆盖。
+
+**一键安装参数（方式 A / B 通用，通过环境变量传入）：**
+
+| 环境变量 | 默认 | 说明 |
+| --- | --- | --- |
+| `INSTALL_DIR` | `/usr/local/bin` | 安装目录，如 `INSTALL_DIR=~/.local/bin` |
+| `VERSION` | `latest` | 指定版本，如 `VERSION=v0.1.0-beta.3` |
+| `GH_PROXY` | 直连（方式 B 内置加速源列表） | GitHub 下载代理前缀；方式 B 中可填空格分隔的多个前缀按序尝试 |
+
+**方式 C：手动下载**
 
 从 [GitHub Releases](https://github.com/cabinet-fe/prompt-engineering/releases) 下载对应平台的静态二进制（linux/darwin × amd64/arm64），放到服务器任意目录（更早的 v0.1.0-beta.* 版本仍在 [HodgeWen/docs-server](https://github.com/HodgeWen/docs-server/releases)）：
 
@@ -48,6 +61,9 @@ wget -qO- https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/s
 # 例：Linux x64
 curl -LO https://github.com/cabinet-fe/prompt-engineering/releases/latest/download/docs-server-linux-x64
 chmod +x docs-server-linux-x64
+
+# 大陆网络在 URL 前加加速源前缀即可：
+curl -LO https://ghfast.top/https://github.com/cabinet-fe/prompt-engineering/releases/latest/download/docs-server-linux-x64
 ```
 
 ### 2. 配置
