@@ -4,6 +4,8 @@
 #   curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
 # 或者指定安装目录 / 版本 / 代理:
 #   INSTALL_DIR=/usr/local/bin VERSION=latest curl -fsSL ... | bash
+# 安装完成后自动生成配置文件 /etc/docs-server.yaml（CONFIG_PATH 可覆盖，已存在则不覆盖），
+# 并给出后台常驻（systemd / nohup）运行指引；前台直接运行用于临时验证。
 
 set -e
 
@@ -89,6 +91,7 @@ has_sudo() {
 TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'docs-server-install')"
 cleanup() {
   rm -rf "$TMP_DIR"
+  rm -f "${TMP_CONF:-}"
 }
 trap cleanup EXIT INT TERM
 
@@ -147,18 +150,70 @@ if [ -z "$GEN_PUSH_TOKEN" ]; then
   fi
 fi
 
+# 8. 准备数据目录（Linux 惯例 /var/lib，macOS 落在用户目录）
+if [ "$OS_TYPE" = "darwin" ]; then
+  DATA_DIR="${DOCS_DATA_DIR:-$HOME/.local/share/docs-server}"
+else
+  DATA_DIR="${DOCS_DATA_DIR:-/var/lib/docs-server}"
+fi
+if ! mkdir -p "$DATA_DIR" 2>/dev/null; then
+  if has_sudo && sudo mkdir -p "$DATA_DIR" 2>/dev/null; then
+    :
+  else
+    DATA_DIR="$HOME/.docs-server"
+    mkdir -p "$DATA_DIR" 2>/dev/null || true
+  fi
+fi
+
+# 9. 生成配置文件（推荐：之后一律以该文件配置；已存在则不覆盖）
+CONFIG_PATH="${CONFIG_PATH:-/etc/docs-server.yaml}"
+TMP_CONF="$(mktemp "${TMPDIR:-/tmp}/docs-server-config.XXXXXX")"
+cat > "$TMP_CONF" <<EOF
+# docs-server 配置（由一键安装脚本生成）
+# 优先级：环境变量 > 本文件 > 默认值；仅经 Nginx 反代对外时建议把 addr 改为 "127.0.0.1:8080"
+addr: ":8080"
+db_path: ${DATA_DIR}/docs.db
+push_token: ${GEN_PUSH_TOKEN}
+EOF
+CONFIG_NOTE="已生成（推送令牌已写入，权限 600）"
+if [ -e "$CONFIG_PATH" ]; then
+  CONFIG_NOTE="已存在，未覆盖，沿用原配置"
+elif [ -w "$(dirname "$CONFIG_PATH")" ] || [ "$(id -u)" -eq 0 ]; then
+  { mv "$TMP_CONF" "$CONFIG_PATH" && chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
+elif has_sudo; then
+  { sudo mv "$TMP_CONF" "$CONFIG_PATH" && sudo chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
+elif [ -w "$HOME" ]; then
+  CONFIG_PATH="$HOME/docs-server.yaml"
+  { mv "$TMP_CONF" "$CONFIG_PATH" && chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
+  CONFIG_NOTE="默认位置无权限写入，已改生成到 HOME（可用 CONFIG_PATH 覆盖）"
+else
+  CONFIG_FAIL=1
+fi
+rm -f "$TMP_CONF"
+if [ -n "${CONFIG_FAIL:-}" ]; then
+  CONFIG_PATH=""
+  CONFIG_NOTE="写入失败，可改用环境变量方式启动（见 README）"
+fi
+
+# 10. 输出安装结果与运行指引
 echo ""
 echo "========================================="
 echo " 🎉 docs-server 安装成功！"
 echo " 二进制路径: $TARGET_BIN"
+if [ -n "$CONFIG_PATH" ]; then
+  echo " 配置文件:   $CONFIG_PATH"
+  echo "             ($CONFIG_NOTE)"
+else
+  echo " 配置文件:   未生成 ($CONFIG_NOTE)"
+fi
 echo "========================================="
 echo ""
-echo "🔑 生成的推送令牌 (DOCS_PUSH_TOKEN):"
+echo "🔑 推送令牌 (push_token):"
 echo "   $GEN_PUSH_TOKEN"
 echo ""
-echo "💡 提示: 该令牌用于推送文档时的鉴权（Bearer Token），请妥善保存。"
+echo "💡 库仓库推送文档时，在仓库 .env 中配置 DOCS_TOKEN 为上述令牌（严禁提交入 git）。"
 
-# 8. PATH 检查
+# 11. PATH 检查
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *)
@@ -168,34 +223,52 @@ case ":$PATH:" in
     ;;
 esac
 
+# 后续运行指引统一走配置文件
+if [ -n "$CONFIG_PATH" ]; then
+  RUN_CMD="$TARGET_BIN -config $CONFIG_PATH"
+else
+  RUN_CMD="DOCS_DB_PATH=$DATA_DIR/docs.db DOCS_PUSH_TOKEN=$GEN_PUSH_TOKEN $TARGET_BIN"
+fi
+
 echo ""
 echo "-----------------------------------------"
-echo "运行方式 A：仅在本机监听（通过 Nginx 反向代理暴露）"
+echo "▶ 默认运行方式：后台常驻（推荐）"
 echo "-----------------------------------------"
-echo "  DOCS_ADDR=127.0.0.1:8080 \\"
-echo "  DOCS_DB_PATH=/var/lib/docs-server/docs.db \\"
-echo "  DOCS_PUSH_TOKEN=$GEN_PUSH_TOKEN \\"
-echo "  docs-server"
-echo ""
-echo "  配套 Nginx 配置参考："
-echo "    location / {"
-echo "        proxy_pass http://127.0.0.1:8080;"
-echo "        proxy_set_header Host \$host;"
-echo "        proxy_set_header X-Real-IP \$remote_addr;"
-echo "        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;"
-echo "        proxy_set_header X-Forwarded-Proto \$scheme;"
-echo "        client_max_body_size 50m; # 支持大文档库推送"
-echo "    }"
+if [ "$OS_TYPE" = "linux" ] && [ -n "$CONFIG_PATH" ]; then
+  echo "使用 systemd（开机自启、异常自动重启）："
+  echo ""
+  echo "  sudo tee /etc/systemd/system/docs-server.service >/dev/null <<'EOF'"
+  echo "  [Unit]"
+  echo "  After=network.target"
+  echo ""
+  echo "  [Service]"
+  echo "  ExecStart=$RUN_CMD"
+  echo "  Restart=on-failure"
+  echo "  StateDirectory=docs-server"
+  echo ""
+  echo "  [Install]"
+  echo "  WantedBy=multi-user.target"
+  echo "  EOF"
+  echo ""
+  echo "  sudo systemctl daemon-reload"
+  echo "  sudo systemctl enable --now docs-server"
+  echo "  journalctl -u docs-server -f    # 查看日志"
+  echo ""
+  echo "无 systemd 的环境可用 nohup："
+  echo "  nohup $RUN_CMD > /var/log/docs-server.log 2>&1 &"
+elif [ -n "$CONFIG_PATH" ]; then
+  echo "  nohup $RUN_CMD > \"\$HOME/docs-server.log\" 2>&1 &"
+  echo "  tail -f \"\$HOME/docs-server.log\"    # 查看日志；停止: pkill docs-server"
+  echo ""
+  echo "如需开机自启，macOS 可配置 launchd。"
+else
+  echo "未生成配置文件，请按 README 以环境变量或自备配置文件启动。"
+fi
 echo ""
 echo "-----------------------------------------"
-echo "运行方式 B：直接监听所有网卡 (:8080)"
+echo "▶ 或直接前台运行（临时验证用，Ctrl+C 停止）"
 echo "-----------------------------------------"
-echo "  DOCS_ADDR=:8080 \\"
-echo "  DOCS_DB_PATH=/var/lib/docs-server/docs.db \\"
-echo "  DOCS_PUSH_TOKEN=$GEN_PUSH_TOKEN \\"
-echo "  docs-server"
+echo "  $RUN_CMD"
 echo ""
-echo "-----------------------------------------"
-echo "或使用配置文件启动："
-echo "  docs-server -config /etc/docs-server.yaml"
-echo ""
+echo "仅通过 Nginx 反向代理对外时：把配置文件中的 addr 改为 \"127.0.0.1:8080\"，"
+echo "并在 Nginx location 中放宽请求体限制（client_max_body_size 50m），完整参考见 README。"

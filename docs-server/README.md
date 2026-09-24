@@ -23,7 +23,7 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 
 **方式 A：一键安装（可直连 GitHub，推荐）**
 
-在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`，安装完成会生成并打印推送令牌：
+在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`，随后自动生成配置文件 `/etc/docs-server.yaml`（自动生成的推送令牌已写入，已存在则不覆盖）并给出后台常驻运行指引：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
@@ -52,6 +52,8 @@ curl -fsSL https://ghfast.top/https://raw.githubusercontent.com/cabinet-fe/promp
 | `INSTALL_DIR` | `/usr/local/bin` | 安装目录，如 `INSTALL_DIR=~/.local/bin` |
 | `VERSION` | `latest` | 指定版本，如 `VERSION=v0.1.0-beta.3` |
 | `GH_PROXY` | 直连（方式 B 内置加速源列表） | GitHub 下载代理前缀；方式 B 中可填空格分隔的多个前缀按序尝试 |
+| `CONFIG_PATH` | `/etc/docs-server.yaml` | 生成的配置文件路径（已存在则不覆盖） |
+| `DOCS_DATA_DIR` | Linux `/var/lib/docs-server`、macOS `~/.local/share/docs-server` | 数据目录，写入配置文件的 `db_path` |
 
 **方式 C：手动下载**
 
@@ -68,17 +70,9 @@ curl -LO https://ghfast.top/https://github.com/cabinet-fe/prompt-engineering/rel
 
 ### 2. 配置
 
-配置来源两选一（或混用，优先级：环境变量 > 配置文件 > 默认值）。
+**推荐用 YAML 配置文件**：一键安装脚本已自动生成 `/etc/docs-server.yaml`（推送令牌已写入，权限 600，已存在则不覆盖）。配置来源可混用，优先级：环境变量 > 配置文件 > 默认值。
 
-**方式 A：环境变量**
-
-| 变量 | 必填 | 默认 | 说明 |
-| --- | --- | --- | --- |
-| `DOCS_DB_PATH` | 是 | — | SQLite 数据库文件路径（自动建库建索引） |
-| `DOCS_PUSH_TOKEN` | 是 | — | 推送令牌，推送接口 Bearer 鉴权用；读路径免鉴权 |
-| `DOCS_ADDR` | 否 | `:8080` | HTTP 监听地址 |
-
-**方式 B：YAML 配置文件**
+**方式 A：YAML 配置文件（推荐）**
 
 ```yaml
 # /etc/docs-server.yaml
@@ -87,22 +81,23 @@ db_path: /var/lib/docs-server/docs.db
 push_token: <openssl rand -hex 32 生成的令牌>
 ```
 
-用 `-config` 参数或 `DOCS_CONFIG` 环境变量指定文件路径：
+启动时用 `-config` 参数或 `DOCS_CONFIG` 环境变量指定文件路径：
 
 ```bash
 ./docs-server-linux-x64 -config /etc/docs-server.yaml
 ```
 
+**方式 B：环境变量**（临时验证或无配置文件场景）
+
+| 变量 | 必填 | 默认 | 说明 |
+| --- | --- | --- | --- |
+| `DOCS_DB_PATH` | 是 | — | SQLite 数据库文件路径（自动建库建索引） |
+| `DOCS_PUSH_TOKEN` | 是 | — | 推送令牌，推送接口 Bearer 鉴权用；读路径免鉴权 |
+| `DOCS_ADDR` | 否 | `:8080` | HTTP 监听地址 |
+
 ### 3. 运行
 
-```bash
-DOCS_DB_PATH=/var/lib/docs-server/docs.db \
-DOCS_PUSH_TOKEN=$(openssl rand -hex 32) \
-DOCS_ADDR=:8080 \
-./docs-server-linux-x64
-```
-
-### 4. systemd 常驻（可选）
+**默认：后台常驻（systemd，开机自启、异常自动重启）**
 
 ```ini
 # /etc/systemd/system/docs-server.service
@@ -110,11 +105,7 @@ DOCS_ADDR=:8080 \
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/docs-server
-Environment=DOCS_DB_PATH=/var/lib/docs-server/docs.db
-# 仅本机监听，配合 Nginx 反代
-Environment=DOCS_ADDR=127.0.0.1:8080
-EnvironmentFile=/etc/docs-server.env   # 其中放 DOCS_PUSH_TOKEN=...
+ExecStart=/usr/local/bin/docs-server -config /etc/docs-server.yaml
 Restart=on-failure
 StateDirectory=docs-server
 
@@ -123,12 +114,29 @@ WantedBy=multi-user.target
 ```
 
 ```bash
+sudo systemctl daemon-reload
 sudo systemctl enable --now docs-server
+journalctl -u docs-server -f   # 查看日志
 ```
 
-### 5. Nginx 反向代理（可选）
+`StateDirectory=docs-server` 会自动创建并归属 `/var/lib/docs-server`（即默认 `db_path` 所在目录）。
 
-如果希望 docs-server 仅在本机运行、只通过 Nginx 暴露访问，将 `DOCS_ADDR` 设为 `127.0.0.1:8080`，并在 Nginx 中添加如下配置：
+**无 systemd / macOS：nohup 后台**
+
+```bash
+nohup docs-server -config /etc/docs-server.yaml > "$HOME/docs-server.log" 2>&1 &
+tail -f "$HOME/docs-server.log"
+```
+
+**前台直接运行**（临时验证用，Ctrl+C 停止）
+
+```bash
+docs-server -config /etc/docs-server.yaml
+```
+
+### 4. Nginx 反向代理（可选）
+
+如果希望 docs-server 仅在本机运行、只通过 Nginx 暴露访问，把配置文件中的 `addr` 改为 `"127.0.0.1:8080"`，并在 Nginx 中添加如下配置：
 
 ```nginx
 server {

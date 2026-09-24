@@ -35,7 +35,7 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 | 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题/别名/路径加权、高亮片段、AND/OR 降级检索、章节切片 | `docs-server/internal/search/` |
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI 静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
-| 安装脚本 | `scripts/install-docs-server.sh` | 服务端一键安装脚本：自动探测系统与架构并拉取对应 Release 二进制 | `scripts/install-docs-server.sh` |
+| 安装脚本 | `scripts/install-docs-server.sh` | 服务端一键安装脚本：自动探测系统与架构并拉取对应 Release 二进制，生成配置文件（含推送令牌，已存在不覆盖），输出后台常驻（systemd / nohup）与前台运行指引 | `scripts/install-docs-server.sh` |
 | 大陆加速安装引导 | `scripts/install-docs-server-cn.sh` | 大陆网络一键安装引导：按序尝试 GitHub 加速代理（`GH_PROXY` 可覆盖，直连兜底）下载安装脚本与 Release 二进制 | `scripts/install-docs-server-cn.sh` |
 | docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc；提供宿主项目入口指令（内部库指引）模板，引导写代码前主动检索 | `skills/tools/docs-search/SKILL.md` |
 | 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `.pe.jsonc` 中的 `docs_server_url` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |
