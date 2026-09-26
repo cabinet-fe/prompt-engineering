@@ -46,7 +46,7 @@ description: >
 
 ### 实现
 
-1. 读该 `Pn.md`、`spec.md` 里相关验收标准。返工（「评审」为「不通过」）：同时读 `reviews/Pn.md` 的「阻塞项」，只针对阻塞项修复。
+1. 读该 `Pn.md`、`spec.md` 里相关验收标准。返工（「评审」为「不通过」）：同时读 `reviews/Pn.md` 的「阻塞项」，只针对阻塞项修复；汇报的改动路径只含本次返工改动，供 review 增量评审。
 2. `node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 进行中`。
 3. 按编码规则做清单项，勾选已完成项。
 4. `node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 完成`（脚本同时把「评审」置回 `未开始`）。

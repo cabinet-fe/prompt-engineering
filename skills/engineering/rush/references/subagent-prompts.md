@@ -5,21 +5,22 @@
 `<engineering>` = 本技能包目录（`SKILL.md` 所在的 `engineering/`）。
 `<类别>` = 主对话前置检查输出的项目类别（代码 / 非代码）。每份任务书都带 `前置检查已通过` 行，子代理不再跑 precheck。
 
-## to-spec
+## to-spec+to-tasks（同一子代理连做）
 
 ```text
 你在仓库 <repo> 中工作。cooking 标识：<feature>。只处理该单位。
 前置检查已通过，项目类别：<类别>。
-先读 <engineering>/to-spec/SKILL.md 并完整执行。
+先读 <engineering>/to-spec/SKILL.md 并完整执行，产出 spec.md。
+spec 的「架构影响」为「无」：接着读 <engineering>/to-tasks/SKILL.md 并完整执行，产出 tasks/Pn.md。
+spec 的「架构影响」非「无」：做完 spec 就停，不要做 tasks，汇报后由派发方处理架构闸门。
 输入：用户已明确的需求；若存在则加上 .agents/cooking/<feature>/goal.md
-输出：.agents/cooking/<feature>/spec.md
-不要改代码、不要写 tasks。没有可判定的验收标准时不要编，汇报应改走 explore。
-完成后只汇报：spec 路径、是否用了 goal、「架构影响」（无，或条目原文）。
+不要改代码。没有可判定的验收标准时不要编，汇报应改走 explore。
+完成后只汇报：spec 路径、是否用了 goal、「架构影响」（无，或条目原文）；继续做了 tasks 时再附：阶段列表、依赖、现在可做的 Pn（以 cooking.mjs status 输出为准）。
 ```
 
-「架构影响」非「无」：主对话走 SKILL.md「sync-docs 派发」，过了闸门再派 to-tasks；技能包内没有 sync-docs 才停下给用户。
+「架构影响」非「无」：主对话走 SKILL.md「sync-docs 派发」，过了闸门再按下节单独派 to-tasks；技能包内没有 sync-docs 才停下给用户。
 
-## to-tasks
+## to-tasks（仅架构闸门后单独派发）
 
 ```text
 你在仓库 <repo> 中工作。cooking 标识：<feature>。只处理该单位。
@@ -32,7 +33,7 @@
 
 ## implement（每个可做阶段单独一个子代理）
 
-首次实现：`<返工行>` 留空。返工：写成 `本次为返工：只针对 reviews/<Pn>.md 的「阻塞项」修复。`
+首次实现：`<返工行>` 留空。返工：写成 `本次为返工：只针对 reviews/<Pn>.md 的「阻塞项」修复，汇报的改动路径只含本次返工改动。`
 
 ```text
 你在仓库 <repo> 中工作。cooking 标识：<feature>。只实现该单位的阶段 <Pn>（阶段路径，不走直写）。
@@ -46,7 +47,7 @@
 
 ## review（每个刚完成实现的阶段单独一个子代理）
 
-任务书以 `<engineering>/review/references/subagent-prompt.md` 的阶段评审模板为准，第一行必须是 `执行评审:`。中间阶段 `<defer-commit 行>` 留空；收尾阶段写成 `调用方：defer-commit。通过后不要提交。`
+任务书以 `<engineering>/review/references/subagent-prompt.md` 的阶段评审模板为准，第一行必须是 `执行评审:`。中间阶段 `<defer-commit 行>` 留空；收尾阶段写成 `调用方：defer-commit。通过后不要提交。`首次评审 `<返工行>` 留空；返工评审按模板的返工行填写，「改动文件」只填 implement 返工汇报的路径。
 
 本对话当派发方：通过且非收尾则 `git-commit` auto；不通过则进返工闭环。
 
