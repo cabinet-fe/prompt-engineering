@@ -16,7 +16,7 @@ description: >
 
 标识与命中规则见 [common.md](../setup/references/common.md)。一次 rush 只推进一个 cooking 单位。
 
-- **命中标识**：只推进该单位。标识后若还有文本，当作对该单位的需求补充，按「主对话做什么」第 8 条处理。
+- **命中标识**：只推进该单位。标识后若还有文本，当作对该单位的需求补充，按「主对话做什么」第 9 条处理。
 - **参数为空**：cooking 单位 0 个则按用户需求新开；1 个则用它；多个则问用户。
 - **未命中且参数非空**：整段当作需求描述新开单位，不要误配到别的单位。
 
@@ -29,8 +29,9 @@ description: >
 5. 提交节奏：本对话当 review 派发方。中间阶段 review 通过后 `git-commit` auto；收尾阶段 review 带 `defer-commit`，不提交，由 archive 子代理删完目录后一次 `git-commit` auto（最后阶段代码 + 本轮改过的已有文档），不拆成两笔。
 6. 主对话只读：`goal.md` 的「需求目标」、`node .agents/scripts/cooking.mjs status` 的输出（总览与单位详情）、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`，不把 spec 全文、任务清单、`reviews/` 正文加载进主对话。脚本报错（前置成环、状态非法）：停下，原文给用户。
 7. review 不通过：派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`，任务书写返工行、「改动文件」只填返工汇报的路径。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
-8. 进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后同第 2 条：停止，建议新开会话 `rush <feature>`。
-9. 没有子代理工具：主对话按同一顺序亲自执行 to-spec / to-tasks / implement / archive，需要 sync-docs 时同样亲自执行（「sync-docs 派发」的条目直接作输入）；并行阶段改为串行；到 review 必须停止，不得在主对话代评。
+8. 已通过阶段被发现回归（后续阶段的 implement / review 汇报，或长耗时验证、冒烟发现）：按 [subagent-prompts.md](references/subagent-prompts.md) 的「to-tasks 增量补阶段」任务书派子代理（带回归描述与根因），返回后按「并行」节正常推进新阶段；不回退已通过状态、不开新单位。属需求变化才按第 9 条走 explore。
+9. 进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后同第 2 条：停止，建议新开会话 `rush <feature>`。
+10. 没有子代理工具：主对话按同一顺序亲自执行 to-spec / to-tasks / implement / archive，需要 sync-docs 时同样亲自执行（「sync-docs 派发」的条目直接作输入）；并行阶段改为串行；到 review 必须停止，不得在主对话代评。
 
 ## sync-docs 派发
 

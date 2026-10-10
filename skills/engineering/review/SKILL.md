@@ -46,7 +46,7 @@ description: >
 
 - 已有的技能 / 包内 AGENTS.md / ACCEPTANCE.md 被 diff 说错且未改 → 阻塞。不存在对应文档则不阻塞。
 - 代码类：diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的「要改」节条目但 `CODE-MAP.md` 对应行没改 → 阻塞。非代码不要求 CODE-MAP。
-- 阶段路径额外：对 cooking `spec.md` 运行 `node .agents/scripts/spec-files.mjs parse`；失败，或本阶段实际改动（新增 / 删除 / 修改）的某个文件没有被任何一条同类别条目匹配（glob：`*` 不跨目录、`**` 跨目录）→ 阻塞。
+- 阶段路径额外：对 cooking `spec.md` 运行 `node .agents/scripts/spec-files.mjs parse`；失败，或本阶段实际改动（新增 / 删除 / 修改）的某个文件没有被任何一条同类别条目匹配（glob：`*` 不跨目录、`**` 跨目录）→ 阻塞。以 parse 后的当前 spec 为准：implement 按 implement「实现」第 4 条追加过的条目视为覆盖，不算缺口。
 
 ## 5. 评审轴
 
