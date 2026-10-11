@@ -22,10 +22,6 @@ description: >
 
 - `交互式提问`：大部分 Agent 都内置的一种工具, 由 Agent 向用户提出问题并提供选项和自定义输入的一种工具, 它在不同的 Agent 中的名称不同, 可能叫 `AskUserQuestion` 或 `AskQuestion` 等。auto 模式不要用它问是否 push。
 
-## Hook 环境
-
-仓库存在 `node_modules/.bin` 时，`git add` / `git commit` 一律以 `PATH="$(pwd)/node_modules/.bin:$PATH" git …` 方式执行：pre-commit hook（husky、lint-staged、vp 等）依赖的本地可执行文件常不在默认 PATH。hook 失败则修到通过，仍不使用 `--no-verify`。
-
 ## 交互模式
 
 1. 检查 `git status` / `git diff` / `git log`，理解变更意图。
