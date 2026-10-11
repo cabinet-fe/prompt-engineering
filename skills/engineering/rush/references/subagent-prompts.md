@@ -60,7 +60,7 @@ spec 的「架构影响」非「无」：做完 spec 就停，不要做 tasks，
 
 任务书以 `<engineering>/review/references/subagent-prompt.md` 的阶段评审模板为准，第一行必须是 `执行评审:`。中间阶段 `<defer-commit 行>` 留空；收尾阶段写成 `调用方：defer-commit。通过后不要提交。`首次评审 `<返工行>` 留空；返工评审按模板的返工行填写，「改动文件」只填 implement 返工汇报的路径。
 
-本对话当派发方：通过且非收尾则 `git-commit` auto；不通过则进返工闭环。
+本对话当派发方：通过且非收尾则 `git-commit` auto（只暂存该阶段 implement 汇报的改动路径与其更新的文档）；不通过则先记录，在途子代理全部返回后按 SKILL「并行」统一返工。
 
 ## archive
 
