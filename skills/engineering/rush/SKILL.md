@@ -23,14 +23,14 @@ description: >
 ## 主对话做什么
 
 1. **从「下一步」接着跑**：已有单位运行 `node .agents/scripts/cooking.mjs status <feature>`，按输出的「下一步」行进入对应环节：explore / to-spec / to-tasks / implement 与 review（实现循环）/ archive。不自己查 `goal.md`、`spec.md`、`tasks/` 是否存在，不读 `goal.md` 判确认状态。脚本判不了需求是否含糊：「下一步」为 to-spec 且 `goal.md：无` 时，存在「不问就可能做错」的歧义才 explore（判据同 explore 决策树首句），否则直接 to-spec。新开单位（目录尚不存在，不跑脚本）：同样判定。
-2. **explore 必须留在主对话执行**：读 `explore/SKILL.md` 并执行，直到该 feature 的 `goal.md` 为 `已确认`。查事实派子代理。确认后停止，建议用户新开会话执行 `rush <feature>` 继续：问答已占用本对话上下文，不在这里往下派。
+2. **explore 必须留在主对话执行**：读 `explore/SKILL.md` 并执行，直到该 feature 的 `goal.md` 为 `已确认`。查事实派子代理。确认后按第 3 条继续，不换会话：下游输入只有 goal.md，问答内容不写进子代理任务书。
 3. 其余环节按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec+to-tasks`（同一子代理连做；spec「架构影响」非「无」时它只做 spec 即停）→ 实现循环（见「并行」）→ 全部阶段评审通过后 `archive`。`sync-docs` 只按第 4 条与「sync-docs 派发」节触发。
 4. **架构闸门在 spec 之后，不在实现中途**：to-spec+to-tasks 子代理汇报「架构影响」非「无」（此时它已按任务书停在做完 spec）→ 不继续，先按「sync-docs 派发」处理，过了闸门再单独派 `to-tasks` 子代理。不在主对话改架构文档。实现中子代理仍汇报需要更新 `ARCHITECTURE.md` 的，同样走「sync-docs 派发」，之后重新派该阶段 `implement`（返工行写明中断续做）。
 5. 提交节奏：本对话当 review 派发方。中间阶段 review 通过后 `git-commit` auto；收尾阶段 review 带 `defer-commit`，不提交，由 archive 子代理删完目录后一次 `git-commit` auto（最后阶段代码 + 本轮改过的已有文档），不拆成两笔。
 6. 主对话只读：`goal.md` 的「需求目标」、`node .agents/scripts/cooking.mjs status` 的输出（总览与单位详情）、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`，不把 spec 全文、任务清单、`reviews/` 正文加载进主对话。脚本报错（前置成环、状态非法）：停下，原文给用户。
 7. review 不通过：派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`，任务书写返工行、「改动文件」只填返工汇报的路径。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
 8. 已通过阶段被发现回归（后续阶段的 implement / review 汇报，或长耗时验证、冒烟发现）：按 [subagent-prompts.md](references/subagent-prompts.md) 的「to-tasks 增量补阶段」任务书派子代理（带回归描述与根因），返回后按「并行」节正常推进新阶段；不回退已通过状态、不开新单位。属需求变化才按第 9 条走 explore。
-9. 进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后同第 2 条：停止，建议新开会话 `rush <feature>`。
+9. 进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后回到第 3 条继续。
 10. 没有子代理工具：主对话按同一顺序亲自执行 to-spec / to-tasks / implement / archive，需要 sync-docs 时同样亲自执行（「sync-docs 派发」的条目直接作输入）；并行阶段改为串行；到 review 必须停止，不得在主对话代评。
 
 ## sync-docs 派发

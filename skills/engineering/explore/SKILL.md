@@ -39,4 +39,4 @@ description: >
 
 「未决问题」清零才停：没有默许的假设。把「需求目标 + 范围」交给用户确认后，才写 `确认：已确认`。未确认前每轮按 [goal-template.md](references/goal-template.md) 回写，不得增删标题。
 
-写下 `已确认` 后结束语只说一件事：建议用户新开会话再 `to-spec <feature>` 或 `rush <feature>`。多轮问答已占用本对话上下文，不在这里接着写 spec 或派下游。
+写下 `已确认` 后本技能即结束：由 rush 编排的，接续由 rush 决定；用户显式调用的，结束语只说一件事——下一步可 `to-spec <feature>` 或 `rush <feature>`。
