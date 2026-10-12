@@ -28,7 +28,7 @@ description: >
 4. **架构闸门在 spec 之后，不在实现中途**：to-spec+to-tasks 子代理汇报「架构影响」非「无」（此时它已按任务书停在做完 spec）→ 不继续，先按「sync-docs 派发」处理，过了闸门再单独派 `to-tasks` 子代理。不在主对话改架构文档。实现中子代理仍汇报需要更新 `ARCHITECTURE.md` 的，同样走「sync-docs 派发」，之后重新派该阶段 `implement`（返工行写明中断续做）。
 5. 提交节奏：本对话当 review 派发方。中间阶段 review 通过后 `git-commit` auto；收尾阶段 review 带 `defer-commit`，不提交，由 archive 子代理删完目录后一次 `git-commit` auto（最后阶段代码 + 本轮改过的已有文档），不拆成两笔。
 6. 主对话只读：`goal.md` 的「需求目标」、`node .agents/scripts/cooking.mjs status` 的输出（总览与单位详情）、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`，不把 spec 全文、任务清单、`reviews/` 正文加载进主对话。脚本报错（前置成环、状态非法）：停下，原文给用户。
-7. review 不通过：先记录，不在流水线中途立刻返工（时机见「并行」）；在途子代理全部返回后派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`，任务书写返工行、「改动文件」只填返工汇报的路径。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
+7. review 不通过：派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`，任务书写返工行、「改动文件」只填返工汇报的路径。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
 8. 已通过阶段被发现回归（后续阶段的 implement / review 汇报，或长耗时验证、冒烟发现）：按 [subagent-prompts.md](references/subagent-prompts.md) 的「to-tasks 增量补阶段」任务书派子代理（带回归描述与根因），返回后按「并行」节正常推进新阶段；不回退已通过状态、不开新单位。属需求变化才按第 9 条走 explore。
 9. 进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后回到第 3 条继续。
 10. 没有子代理工具：主对话按同一顺序亲自执行 to-spec / to-tasks / implement / archive，需要 sync-docs 时同样亲自执行（「sync-docs 派发」的条目直接作输入）；并行阶段改为串行；到 review 必须停止，不得在主对话代评。
@@ -45,13 +45,9 @@ description: >
 
 每轮运行 `node .agents/scripts/cooking.mjs status <feature>`，不自己算依赖：
 
-- 「可做」里的每个阶段**一个 implement 子代理**，全部后台启动（run_in_background），记下阶段 ↔ 任务 id。依赖未通过评审的阶段脚本不会列出，也不得手动派。
-- **流水线收结果，返回一个处理一个**：用任务等待工具（如 `TaskOutput` 阻塞等待）逐个收，已完成的任务会立即返回；前台整批并行派发会让结果一起返回、退化成等齐，禁止。
-  - implement 返回：立刻派**该阶段** review 子代理（后台）。派前再跑一次 `status`：该阶段出现在「收尾」行则任务书写明 `defer-commit`。
-  - review 返回通过：`git-commit` auto 只暂存该阶段 implement 汇报的改动路径与其更新的文档，不卷入在途阶段的文件；提交后重跑 `status`，新出现的「可做」阶段立即补派 implement。
-  - review 返回不通过：只记录，不在中途立刻返工；在途子代理全部返回后按第 7 条统一派返工，多个不通过阶段并行返工，返工轮同样走本节流水线。
-- 在途任务清零且无不通过阶段：重跑 `status`，「可做」有则继续派；「可归档：是」→ 派 archive。
-- 宿主没有后台启动能力：退化为整批同时派发、全部返回后再逐个处理。
+- 「可做」里的每个阶段**一个 implement 子代理**，同时开。依赖未通过评审的阶段脚本不会列出，也不得手动派。
+- 某个阶段的 implement 子代理返回后立刻派**该阶段**的 review 子代理，不等其它并行阶段实现完。派前再跑一次 `status`：该阶段出现在「收尾」行则任务书写明 `defer-commit`。
+- 「可归档：是」→ 派 archive。
 
 ## 结束
 
