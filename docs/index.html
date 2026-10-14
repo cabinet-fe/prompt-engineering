@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>提示词工程 · 面向 AI Agent 的技能与文档库引擎</title>
-<meta name="description" content="面向 AI Agent 的提示词工程：25 个即装即用的工程技能（流程、语言框架、角色、工具），加一套 docs-server 文档库引擎——让内部库文档跟得上代码、能被 AI 直接检索。">
+<meta name="description" content="面向 AI Agent 的提示词工程：26 个即装即用的工程技能（流程、语言框架、角色、工具），加一套 docs-server 文档库引擎——让内部库文档跟得上代码、能被 AI 直接检索。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Serif+SC:wght@400..900&family=Source+Serif+4:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
     </h1>
     <div class="edition-line hairline-bottom double-under">
       <span class="mono-caps">工作流</span>
-      <span class="mono-caps">25 个即装即用技能</span>
+      <span class="mono-caps">26 个即装即用技能</span>
       <span class="mono-caps">文档库引擎 docs-server</span>
     </div>
   </div>
@@ -56,7 +56,7 @@
 
     <div class="front-cols">
       <div class="lead-article">
-        <p class="drop-cap">这个仓库分三块。<b>工作流</b>：从需求梳理到交付归档的标准管线，治临时记录乱堆、过程不可控。<b>技能库</b>：25 个即装即用的 Agent 技能，让 AI 对齐项目实际版本、按角色把关，不靠训练数据猜 API。<b>文档库引擎</b>：库维护者把内部库文档推上 docs-server 建全文索引，使用者的 AI 用一个技能检索所有库——内部库的真实用法，不再靠模型猜。</p>
+        <p class="drop-cap">这个仓库分三块。<b>工作流</b>：从需求梳理到交付归档的标准管线，治临时记录乱堆、过程不可控。<b>技能库</b>：26 个即装即用的 Agent 技能，让 AI 对齐项目实际版本、按角色把关，不靠训练数据猜 API。<b>文档库引擎</b>：库维护者把内部库文档推上 docs-server 建全文索引，使用者的 AI 用一个技能检索所有库——内部库的真实用法，不再靠模型猜。</p>
         <p>工程流程类技能需要<b>显式输入命令调用</b>；语言与框架规范在你编辑对应代码文件时<b>自动生效</b>。安装只要一条命令：</p>
         <div class="install-box bordered-boxout">
           <span class="install-prompt mono">$</span>
@@ -90,7 +90,7 @@
   <!-- ================= 跑马灯分隔带 ================= -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-inner mono-caps">
-      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳ docs-server ✳&nbsp;</span>
+      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳ release ✳ docs-server ✳&nbsp;</span>
     </div>
   </div>
 
@@ -169,7 +169,7 @@
   <section id="skills" class="section">
     <div class="section-part mono-caps">PART Ⅱ</div>
     <header class="section-head">
-      <h2 class="section-title">技能库 · 25 个内置技能</h2>
+      <h2 class="section-title">技能库 · 26 个内置技能</h2>
     </header>
     <p class="section-deck">工程流程、语言、框架、角色、工具五类。点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
 
@@ -466,6 +466,17 @@
           <p><b>适用场景：</b>需要查询公司内部库的用法文档时——让 AI 调用 docs-server 的检索接口，而不是凭训练数据猜 API。</p>
           <p><b>核心功能：</b>运行内嵌零依赖查询脚本，列库、全文检索、按章节取文档；附带宿主项目入口指令（AGENTS.md）的内部库指引模板，让 AI 写代码前主动检索。服务地址只读 <code>.pe.jsonc</code> 中的 <code>docs_server_url</code>，读路径免鉴权。</p>
           <p><b>常用命令：</b><code>docs-search</code></p>
+        </div>
+      </button>
+
+      <button class="skill-card cat-tools" data-cat="tools">
+        <span class="skill-name mono">release</span>
+        <span class="skill-one">npm 包发版的统一标准：公开发版走 CI，本地发版直发私有源</span>
+        <span class="skill-cat mono-caps">工具</span>
+        <div class="skill-detail" hidden>
+          <p><b>适用场景：</b>要给 npm 包发版、写 changeset / CHANGELOG / release notes，或为项目接入、修复发版流程时。</p>
+          <p><b>核心功能：</b>定义公开发版（本地升版本并推送，CI 经 trusted publishing 发布到 npm 并建 GitHub Release）与本地发版（本机直接发布到私有 registry）两套标准，规范发版脚本的检查、顺序与失败重跑，统一版本幅度与发版内容写法；单包、monorepo、有无 changesets 均适用，项目差异只记在项目自己的 <code>.pe.jsonc</code> 与脚本里。</p>
+          <p><b>常用命令：</b><code>release</code></p>
         </div>
       </button>
 

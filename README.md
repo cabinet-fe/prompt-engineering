@@ -2,7 +2,7 @@
 
 面向 AI Agent 的提示词工程仓库，两大件：
 
-- **技能（`skills/`）**：工程流程、语言/框架规范、角色把关、实用工具，共 25 个，入口 `SKILL.md`。让 AI 按标准流程干活、对齐项目实际版本，不靠训练数据猜 API。
+- **技能（`skills/`）**：工程流程、语言/框架规范、角色把关、实用工具，共 26 个，入口 `SKILL.md`。让 AI 按标准流程干活、对齐项目实际版本，不靠训练数据猜 API。
 - **文档库引擎（docs-server）**：企业内部库文档检索系统。中心 Go 服务（`docs-server/`）用 SQLite FTS5 建全文索引，零依赖推送脚本（`scripts/push-docs.mjs`）把库文档整库推上去；配套 `docs-gen`（库维护者：生成、同步、推送文档）与 `docs-search`（库使用者：一个技能检索所有库）两个技能。
 
 门户站点（报刊风）：<https://cabinet-fe.github.io/prompt-engineering/>，源码在 `docs/`。
