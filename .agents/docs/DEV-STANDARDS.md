@@ -21,7 +21,9 @@
 ## 测试
 
 - 核心逻辑必须有单测：索引、检索、推送解析。
-- 用 `go test ./...`；测试与被测代码同包。
+- 测试与被测代码同包。
+- 局部验证：在 `docs-server/` 下 `go test ./internal/<pkg>/...`。
+- 全量：在 `docs-server/` 下 `go test ./...`；默认留给 CI（`.github/workflows/ci.yml`）。
 
 ## 接口
 
