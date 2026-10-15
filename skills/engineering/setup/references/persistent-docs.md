@@ -30,6 +30,7 @@
 | 本轮实现把 `CODE-MAP.md` / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` / 模块约定说错 | implement（阶段或直写），同一轮改掉 |
 | 未走 implement 的直接改文件（技能、包内文档等） | 当前对话当场改，或用户点名 `sync-docs` |
 | `.agents/docs/` 已有文件说错或用户点名改 | `sync-docs`。`SMELLS.md` 只从技能包模板原样覆写；`DEV-STANDARDS.md` 不从代码推断新规范 |
+| 用户点名改 `INSTRUCTIONS.md` | `sync-docs`，只改点名条目。主路径是用户直接编辑，agent 不自动增改 |
 | 用户点名新增自定义文档 | `sync-docs` 写入 `.agents/docs/<NAME>.md`，并在根 `AGENTS.md` 文档表追加一行。不可删改模板必有行 |
 | 代码/非代码切换、缺脚本/缺必有 docs、根 `AGENTS.md` 缺模板必有行或掺了短注 | 仅 setup |
 

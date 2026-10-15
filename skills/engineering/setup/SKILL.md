@@ -8,7 +8,7 @@ description: >
 
 每个仓库完整执行一次。其它工程技能运行 `.agents/scripts/precheck.mjs` 判定是否已 setup，缺了就停，不代跑本技能。
 
-项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。
+项目类别与仓库结构写在 `.agents/docs/PROJECT.md`，不要写进根 `AGENTS.md`。业务/技术架构、技术栈由本技能写入 `.agents/docs/ARCHITECTURE.md`（仅代码类）。坏味道基线从技能包模板原样复制为 `.agents/docs/SMELLS.md`（仅代码类）。`.agents/docs/INSTRUCTIONS.md`（两类都有）是仓库级用户自定义指令文件，始终读取，内容由用户直接编辑。
 
 ## 统一工具定义
 
@@ -51,10 +51,12 @@ description: >
 按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打必有行。禁止短注、流程章、把项目特例写成正文。
 
 - **没有**：直接复制
-- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；能对应上的原文尽量搬迁。然后按下一则处理
-- **已有且已是索引**：复制模板后，把原表里自定义 `.agents/docs/` 行追加回表末（不是 `PROJECT.md` / `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `SMELLS.md` / `CODE-MAP.md` 的才算自定义）。丢掉短注、流程章。禁止改模板必有行的文案
+- **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；个人偏好与自定义指令 → `INSTRUCTIONS.md`（两类都收）。能对应上的原文尽量搬迁。然后按下一则处理
+- **已有且已是索引**：复制模板后，把原表里自定义 `.agents/docs/` 行追加回表末（不是 `PROJECT.md` / `INSTRUCTIONS.md` / `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `SMELLS.md` / `CODE-MAP.md` 的才算自定义）。个人偏好类短注与正文迁入 `INSTRUCTIONS.md`，纯流程章丢掉。禁止改模板必有行的文案
 
-用户全局规则（例如个人 `AGENTS.md`）不要复制进本仓库 docs。
+覆写后写 `.agents/docs/INSTRUCTIONS.md`（模板见 [templates.md](references/templates.md)）：已有 `AGENTS.md` 按上面的路由迁移；无可迁则写占位。两类都写。之后用户直接编辑，agent 不自动写入（迁移与点名除外）。
+
+跨仓库的用户全局规则（例如个人 `AGENTS.md`）不要复制进本仓库 docs；仓库级个人指令进 `INSTRUCTIONS.md`。
 
 ### 5. 写其余 docs
 
@@ -89,6 +91,7 @@ docs 已存在、用户要刷新底座，或 precheck 缺项时：
 | `.agents/scripts/` 缺失任一脚本 / 模板或与技能包不一致                        | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
 | `AGENTS.md` 掺了短注、流程章，或缺模板必有行                                  | 按第 4 步重建必有行，保留用户追加的 `.agents/docs/` 索引行                                   |
 | 代码类必有 docs 缺失                                                          | 按第 5 步补写                                                                                |
+| `.agents/docs/INSTRUCTIONS.md` 缺失                                          | 按第 4 步补写；已有 `AGENTS.md` 里的个人指令一并迁入                                         |
 | `.agents/docs/` 已有文档内容过时                                              | 让用户跑 `sync-docs`，不要在这里改                                                           |
 
 禁止：删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。

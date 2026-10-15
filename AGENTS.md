@@ -1,12 +1,13 @@
 # AGENTS
 
-Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止一次加载全部**。可在文档表追加其它 `.agents/docs/` 文件。禁止短注、流程章、规范正文。
+Agent 入口索引。详细内容在 `.agents/docs/`，**按需读取，禁止一次加载全部**（标「始终读取」的除外）。可在文档表追加其它 `.agents/docs/` 文件。禁止短注、流程章、规范正文。
 
 ## 文档
 
 | 文件 | 何时读 | 何时更新 |
 | --- | --- | --- |
 | `.agents/docs/PROJECT.md` | 需要知道项目类别与仓库结构 | sync-docs：类别、组织结构变了。代码/非代码切换先 setup |
+| `.agents/docs/INSTRUCTIONS.md` | 始终读取 | 用户直接编辑；sync-docs 点名。agent 不自动写入 |
 | `.agents/docs/ARCHITECTURE.md` | 需要了解或改动 docs-server 子项目（`docs-server/` 等） | sync-docs：架构级变更。implement 禁止改 |
 | `.agents/docs/DEV-STANDARDS.md` | 写或改子项目代码、做 review | sync-docs：规范或偏好变了。implement 禁止自行发明规范 |
 | `.agents/docs/SMELLS.md` | 写子项目代码时按坏味道边写边收；review 对照 | sync-docs：与技能包模板不一致时原样覆写 |

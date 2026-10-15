@@ -27,6 +27,18 @@
 - 架构形态：<前后端分离（独立前端 + REST/gRPC 等 API）| 一体化（Next/Nuxt SSR 等）| 其它：<用户原句>>
 ```
 
+## `.agents/docs/INSTRUCTIONS.md`
+
+两类都写。仓库级用户自定义指令，**始终读取**：每次会话都加载，只放指令不放教程，保持精简。由 setup 首次生成；之后**用户直接编辑**，agent 不自动写入（例外：setup 迁移旧 `AGENTS.md`、`sync-docs` 用户点名）。范围：跨任务生效的仓库级个人指令（回应方式、流程偏好等）。写代码的工程规范进 `DEV-STANDARDS.md`，跨仓库的个人偏好留在用户全局 `AGENTS.md`，都不放这里。
+
+```markdown
+# 自定义指令
+
+<逐条列出。没有可写的只保留下行，用户自行替换。>
+
+- 无（用户在此追加指令）
+```
+
 ## `.agents/docs/ARCHITECTURE.md`
 
 仅代码类。由 setup 首次生成，之后由 `sync-docs` 更新。implement 禁止改本文件。模块表行变更若未换栈/改分层/加应用边界，不要改本文件（改 `CODE-MAP.md`，见 [code-map-update.md](code-map-update.md)）。

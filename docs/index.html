@@ -558,14 +558,14 @@ push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search �
         <h3 class="start-h">③ 初始化后的项目目录结构</h3>
         <div class="cmd-block tree-block">
 <pre class="mono">.agents/
-├── docs/       项目概况 PROJECT；
+├── docs/       项目概况 PROJECT、自定义指令 INSTRUCTIONS；
 │               代码类含架构/规范/地图/坏味道自查
 ├── scripts/    预检 precheck、任务管理 cooking
 │               与规范模板
 └── cooking/    临时开发记录（gitignore，不提交）
 AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
         </div>
-        <p class="start-note">若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
+        <p class="start-note"><code>INSTRUCTIONS.md</code> 存放用户自定义指令，始终读取，由用户直接维护。若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
       </div>
 
       <div class="start-col">

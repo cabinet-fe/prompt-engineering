@@ -23,7 +23,7 @@ description: >
 只在 `.agents/docs/` 下新建用户自定义文档。能从用户原话确定的不要再问；缺文件名、何时读、或正文要写什么时，用 `交互式提问` 问。
 
 1. 路径：`.agents/docs/<NAME>.md`。`<NAME>` 用大写短横线（如 `TEAM-RULES.md`）。已存在则改为更新正文，仍确保索引行在。
-2. 不要新建 setup 必有项（`PROJECT.md`；代码类还有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SMELLS.md`）和 `ACCEPTANCE.md`。缺这些让用户跑 `setup` 或 `acceptance`。
+2. 不要新建 setup 必有项（`PROJECT.md`、`INSTRUCTIONS.md`；代码类还有 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SMELLS.md`）和 `ACCEPTANCE.md`。缺这些让用户跑 `setup` 或 `acceptance`。
 3. 写入正文：只写该仓库要执行的内容，不写教程。
 4. 在根 `AGENTS.md` 文档表追加一行：`| `.agents/docs/<NAME>.md` | <何时读> | <何时更新> |`。何时更新默认 `sync-docs`。不可删改模板规定的必有行，不可在 `AGENTS.md` 写正文。
 5. 非代码也可以新增自定义文档；不要因此去写代码类必有 docs。
@@ -44,12 +44,13 @@ description: >
 只改被推翻或被点名的句子/节，不重写全文。非代码不要打开代码类 docs（盘上有残留也一样），除非用户点名那一份。
 
 1. `PROJECT.md`：类别、组织结构、全栈形态被推翻或被点名才改。改成代码 ↔ 非代码：停止，让用户 `setup`（要换 AGENTS 模板 / 补代码类 docs）。
-2. `ARCHITECTURE.md`：架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节），或业务/技术架构说错、被点名才改。改了架构则按 [code-map-update.md](../setup/references/code-map-update.md) 同步 `CODE-MAP.md`。
-3. `DEV-STANDARDS.md`：仅用户点名改规范/偏好。禁止从代码推断新规范。
-4. `SMELLS.md`：与 [smells.md](../setup/references/smells.md) 不一致则原样覆写。禁止按项目改写、追加或删条。
-5. `CODE-MAP.md`：触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项时只改相关行。
-6. `ACCEPTANCE.md`：有且被说错或被点名才改。
-7. 根 `AGENTS.md` 文档表里其它 `.agents/docs/` 文件：说错或被点名才改。
+2. `INSTRUCTIONS.md`：仅用户点名才改，只改点名到的条目；主路径是用户直接编辑。agent 不自动增改。
+3. `ARCHITECTURE.md`：架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节），或业务/技术架构说错、被点名才改。改了架构则按 [code-map-update.md](../setup/references/code-map-update.md) 同步 `CODE-MAP.md`。
+4. `DEV-STANDARDS.md`：仅用户点名改规范/偏好。禁止从代码推断新规范。
+5. `SMELLS.md`：与 [smells.md](../setup/references/smells.md) 不一致则原样覆写。禁止按项目改写、追加或删条。
+6. `CODE-MAP.md`：触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项时只改相关行。
+7. `ACCEPTANCE.md`：有且被说错或被点名才改。
+8. 根 `AGENTS.md` 文档表里其它 `.agents/docs/` 文件：说错或被点名才改。
 
 ## 其它已有文档
 
