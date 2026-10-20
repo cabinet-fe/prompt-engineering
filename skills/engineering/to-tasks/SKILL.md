@@ -23,7 +23,7 @@ description: >
 运行 `node .agents/scripts/cooking.mjs status <feature>`，不读 `goal.md` 判断：
 `spec.md：无` → 停止，告诉用户先执行 `to-spec`。
 `goal.md：未确认` → 停止，正在 explore，不要按可能过期的 spec 拆任务。
-`spec.md`「架构影响」非 `无`：检索 `ARCHITECTURE.md` / `CODE-MAP.md` 是否已收录这些路径（标「规划」的也算）；未收录则停止，让用户先跑 `sync-docs` 再回来拆。不在这里改架构文档。
+`spec.md`「架构影响」非 `无`：检索 `ARCHITECTURE.md` / `CODE-MAP.md`（含相关子包 `<pkg>/CODE-MAP.md`）是否已收录这些路径（标「规划」的也算）；未收录则停止，让用户先跑 `sync-docs` 再回来拆。不在这里改架构文档。
 
 ## 阶段怎么切
 
@@ -37,7 +37,7 @@ description: >
 
 ## 工作流
 
-1. 定 `<feature>`。读 `spec.md`（验收标准是切分依据）。代码类需要时检索 `CODE-MAP.md`、读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP。
+1. 定 `<feature>`。读 `spec.md`（验收标准是切分依据）。代码类需要时检索 `CODE-MAP.md`（根树陈列了子包 `CODE-MAP.md` 时按需下钻检索）、读 `DEV-STANDARDS.md`；非代码对照 `PROJECT.md`，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP。
 2. 画依赖：先能做的、可并行的、必须收口的。
 3. 按 [task-template.md](references/task-template.md) 写每个 `tasks/Pn.md`。不得增删标题。不要写 `README.md` 或其它索引文件。
    存在 `.agents/docs/ACCEPTANCE.md` 时，把它的完成标准逐条追加进 `Pn.md`「完成标准」：只验收单一阶段的条目追加给实现它的阶段；跨阶段的全局命令只追加给收口阶段（没有任何其它阶段以它为前置的阶段；多个收口则只追加给编号最大的一个）。标「跳过」的条目照抄跳过标记。不存在则不追加。

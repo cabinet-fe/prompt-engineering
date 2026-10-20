@@ -121,9 +121,21 @@
 
 仅代码类。从 [smells.md](smells.md) **原样复制**到 `.agents/docs/SMELLS.md`。之后不一致时由 `sync-docs` 原样覆写。禁止按项目改写、追加或删条。写代码时按清单边写边收；review 对照。即使仓库没写任何其它规范也适用。
 
-## `.agents/docs/CODE-MAP.md`
+## `.agents/docs/CODE-MAP.md`（与嵌套子包 `<pkg>/CODE-MAP.md`）
 
 仅代码类。这是地图，不是文件清单。只到模块级，可能很大：按模块/路径检索，不要全文加载。何时改、改哪、何时停见 [code-map-update.md](code-map-update.md)。已有文档对齐见 [persistent-docs.md](persistent-docs.md)。
+
+- **根 `.agents/docs/CODE-MAP.md`**：覆盖全仓（顶层目录树、子包/顶层模块表、跨包或顶层模块依赖图、跨模块关键路径）。
+- **嵌套子包 `<pkg>/CODE-MAP.md`（按需）**：多包单体 / workspace 仓库（不限语言：Node/TS workspace、Cargo workspace、Go `go.work`/多模块、Python workspace、Maven/Gradle 多子工程、.NET 多工程、全栈多端目录等）中，内部模块较多的子包可在其根下建 `<pkg>/CODE-MAP.md`，使用与根地图相同的四节结构，范围限于该子包内部（以 `<pkg>/` 为根的 3～5 层内部目录树、包内子模块表、包内模块依赖图、包内关键路径）。
+- **根树陈列**：某子包设有 `<pkg>/CODE-MAP.md` 时，根 `.agents/docs/CODE-MAP.md` 的 `## 树` 在该子包目录节点下陈列子地图，不再在根树展开其内部目录细节；根 `## 模块` 仍只保留该子包一行：
+
+```text
+├── <pkg>/           # <子包职责>
+│   ├── ...
+│   └── CODE-MAP.md  # <子包名> 代码地图
+```
+
+- **两级检索**：先检索根 `.agents/docs/CODE-MAP.md`；目标路径所属子包在根树下陈列了 `CODE-MAP.md` 时，再按模块/路径检索该 `<pkg>/CODE-MAP.md`，同样禁止全文加载。
 
 依赖图用 mermaid `graph TD`，模块作节点、依赖作边。
 

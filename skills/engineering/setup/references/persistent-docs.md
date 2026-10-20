@@ -7,6 +7,7 @@
 仓库里**已经存在**、Agent 会去读的文档：
 
 - `.agents/docs/` 下已有文件（含根 `AGENTS.md` 文档表追加的自定义文档；有才算）
+- 子包内已有的 `CODE-MAP.md`（`<pkg>/CODE-MAP.md`，在根 `.agents/docs/CODE-MAP.md` 树下陈列）
 - 技能正文（`SKILL.md` 与其 `references/`）
 - 包 / 模块内已有的 `AGENTS.md`
 - 模块自己已经在维护的约定文档（包 README、已有 API 文档等）
@@ -19,7 +20,7 @@
 - 代码里已经能读出来的实现细节
 - setup 必有项和 `ACCEPTANCE.md`（缺了分别跑 `setup` / `acceptance`，不由 `sync-docs` 新建）
 
-用户点名新增的 `.agents/docs/` 自定义文档除外，见下表。
+用户点名新增的 `.agents/docs/` 自定义文档，以及由 `sync-docs` 新增的子包 `<pkg>/CODE-MAP.md` 除外，见下表。
 
 代码读不出来的业务约定，写在**模块已经在用的那份文档**里。
 
@@ -27,11 +28,12 @@
 
 | 场景 | 谁 |
 | --- | --- |
-| 本轮实现把 `CODE-MAP.md` / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` / 模块约定说错 | implement（阶段或直写），同一轮改掉 |
+| 本轮实现把 `CODE-MAP.md`（根或子包） / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` / 模块约定说错 | implement（阶段或直写），同一轮改掉 |
 | 未走 implement 的直接改文件（技能、包内文档等） | 当前对话当场改，或用户点名 `sync-docs` |
 | `.agents/docs/` 已有文件说错或用户点名改 | `sync-docs`。`SMELLS.md` 只从技能包模板原样覆写；`DEV-STANDARDS.md` 不从代码推断新规范 |
 | 用户点名改 `INSTRUCTIONS.md` | `sync-docs`，只改点名条目。主路径是用户直接编辑，agent 不自动增改 |
 | 用户点名新增自定义文档 | `sync-docs` 写入 `.agents/docs/<NAME>.md`，并在根 `AGENTS.md` 文档表追加一行。不可删改模板必有行 |
+| 为子包新增 `<pkg>/CODE-MAP.md`（用户点名，或根 `CODE-MAP.md` 树下已陈列但文件未建） | `sync-docs` 写入 `<pkg>/CODE-MAP.md`，并在根 `.agents/docs/CODE-MAP.md` 树下对应子包节点陈列 |
 | 代码/非代码切换、缺脚本/缺必有 docs、根 `AGENTS.md` 缺模板必有行或掺了短注 | 仅 setup |
 
 review 发现说错且未改 → 阻塞。archive 发现仍说错 → 停止，不要另写一份来补。

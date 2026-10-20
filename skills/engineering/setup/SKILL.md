@@ -68,7 +68,7 @@ description: >
 | ------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | `ARCHITECTURE.md`  | 从代码归纳草稿，访谈补空白和矛盾                                             | 按用户回答写                                                 |
 | `DEV-STANDARDS.md` | 从 eslint/prettier/测试目录/现有代码归纳；无依据的章节删掉；必须人定的仍要问 | 按用户回答写                                                 |
-| `CODE-MAP.md`      | 扫真实目录；模块怎么切拿不准才问                                             | 按组织结构写规划目录，确认模块切分；尚未建目录就标明「规划」 |
+| `CODE-MAP.md`      | 扫真实目录（多包仓库按需连带复杂子包的 `<pkg>/CODE-MAP.md`）；模块怎么切拿不准才问 | 按组织结构写规划目录，确认模块切分（及是否建子包 `CODE-MAP.md`）；尚未建目录就标明「规划」 |
 | `SMELLS.md`        | 从 [smells.md](references/smells.md) **原样复制**；已有则覆写为当前模板      | 同左。禁止按项目改写、追加或删条                             |
 
 CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。`.agents/docs` 已有文件之后由 `sync-docs` 更新。

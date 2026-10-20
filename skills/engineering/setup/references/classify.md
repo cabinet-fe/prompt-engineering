@@ -10,7 +10,7 @@
 
 **类别（单选）**：前端项目 / 后端项目 / 前端库 / 后端库 / 全栈项目 / App / 嵌入式 / 游戏 / 非代码项目
 
-**组织结构**（各类都要有）：单包仓库 / 多包单体仓库（记下每个包路径，如 `packages/web`、`apps/api`）
+**组织结构**（各类都要有）：单包仓库 / 多包单体仓库（记下每个子包/子工程路径，如 `packages/web`、`crates/core`、`services/auth`）
 
 **架构形态（仅全栈）**：前后端分离（独立前端 + REST/gRPC 等 API）/ 一体化（Next/Nuxt SSR 等）/ 其它（用户补一句）
 
@@ -30,7 +30,7 @@
 - 有 iOS/Android 原生工程（`.xcodeproj` / `AndroidManifest.xml`），或 Flutter / React Native 带原生端目录 → App
 - 有 MCU/固件工具链（PlatformIO、STM32 `.ioc`、Zephyr `west.yml`、Arduino sketch）→ 嵌入式
 - 有引擎工程入口（Unity `Assets/`+`ProjectSettings/`、Unreal `.uproject`、Godot `project.godot`）→ 游戏
-- 根上一份 lockfile、一个可交付物 → 单包；`packages/` / `apps/` 多个可交付包 → 多包单体，记下路径
+- 根上一份构建或依赖清单、单个可交付物 → 单包；workspace / 多模块 / 多工程仓库（Node/TS workspaces `packages/*`、`apps/*`，Rust Cargo workspace `crates/*`，Go `go.work` 或多模块/多服务目录，Python uv/poetry workspace，Maven `<modules>` / Gradle 多子工程，.NET `.sln` 多工程，C/C++ CMake 多子目录，或全栈前后端独立目录等）→ 多包单体，记下各子包路径
 - Next/Nuxt 等 SSR 一体 → 全栈 + 一体化；独立前端 + 独立 API 服务 → 全栈 + 前后端分离
 
 类别或结构没有把握：使用 `交互式提问` 工具，只问未决项。不要把推断写成既成事实。

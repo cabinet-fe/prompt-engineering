@@ -34,7 +34,7 @@ cooking 只是进行中的工作区，完成后删掉。
 ## 工作流
 
 1. 定 `<feature>`。
-2. 检查已有持久文档是否被说错（见 [persistent-docs.md](../setup/references/persistent-docs.md)；代码类含 `CODE-MAP.md`，契约见 [code-map-update.md](../setup/references/code-map-update.md)）。范围只限：工作区里本单位未提交的改动（收尾 `defer-commit` 留下的）＋ `reviews/` 里报过且未修复的文档问题；各阶段已评审提交的部分信任 review，不重查。说错则停止，列出哪几份：`CODE-MAP.md` / 技能等让用户用 implement 修；其余 `.agents/docs` 让用户 `sync-docs`。新目录等于新分层则让用户先 `sync-docs`。不在这里改文档。
+2. 检查已有持久文档是否被说错（见 [persistent-docs.md](../setup/references/persistent-docs.md)；代码类含根与子包 `CODE-MAP.md`，契约见 [code-map-update.md](../setup/references/code-map-update.md)）。范围只限：工作区里本单位未提交的改动（收尾 `defer-commit` 留下的）＋ `reviews/` 里报过且未修复的文档问题；各阶段已评审提交的部分信任 review，不重查。说错则停止，列出哪几份：`CODE-MAP.md`（根或子包） / 技能等让用户用 implement 修；其余 `.agents/docs` 让用户 `sync-docs`。新目录等于新分层则让用户先 `sync-docs`。不在这里改文档。
 3. 删除整个 `.agents/cooking/<feature>/`（含 goal、spec、tasks、reviews）。
 
 ## 结束

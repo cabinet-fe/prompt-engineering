@@ -24,10 +24,10 @@ description: >
 
 ## 编码规则（两条路径通用）
 
-1. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；需要定位模块时按模块名/路径检索 `CODE-MAP.md` 相关行，不要全文加载。改动涉及的语言 / 框架 / 角色在可用技能里有对应的 `langs/` / `frameworks/` / `roles/` 类技能时，按需读其 `SKILL.md` 并遵守。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS。
+1. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；需要定位模块时按模块名/路径检索 `.agents/docs/CODE-MAP.md` 相关行（目标子包在根树下陈列了 `CODE-MAP.md` 时再按需检索该 `<pkg>/CODE-MAP.md`），不要全文加载。改动涉及的语言 / 框架 / 角色在可用技能里有对应的 `langs/` / `frameworks/` / `roles/` 类技能时，按需读其 `SKILL.md` 并遵守。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS。
 2. 小 diff，只做要求的内容。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不扩到与本次无关的重构。
 3. 改动等于架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节）：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`。
-4. 代码类触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：只改相关行。非代码不改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份；没说错则不动。不要改 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`PROJECT.md`、`SMELLS.md`。
+4. 代码类触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：按「分层归属」只改根 `.agents/docs/CODE-MAP.md` 和/或对应子包 `<pkg>/CODE-MAP.md` 的相关行。非代码不改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份；没说错则不动。不要改 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`PROJECT.md`、`SMELLS.md`。
 5. 仓库已有的 lint / typecheck / 测试命令（`DEV-STANDARDS.md`「代码风格」「测试」节、package.json scripts、Makefile 等写明的）覆盖改动文件时：收尾前跑一遍，不过不算完成。测试只跑覆盖改动范围的最小命令：优先用 `DEV-STANDARDS.md`「测试」节的「局部验证」命令；没写则按仓库测试框架收窄到单文件 / 单包。全量只在 `DEV-STANDARDS.md` 明确写了「收尾必须全量」时跑；规范里只是列出全量命令不算要求，全量留给 CI 与收口阶段。`.agents/docs/ACCEPTANCE.md` 的必跑项（标「跳过」的除外）同样收尾前跑：阶段路径只跑追加进该 `Pn.md`「完成标准」的条目；直写路径只跑与改动相关的条目——能按路径 / 包收窄的测试命令收窄后跑，e2e / HTTP 等无法收窄的只在改动触及其验证的入口（页面、接口）时跑，其余不跑并在汇报中注明。不为此新装工具或新建配置。
 6. 禁止 `git stash`、`git checkout --`、`git clean` 等清除或回滚工作区的操作。工作区已有的非本轮脏文件绕开，不纳入汇报与提交路径，必要时在汇报中列出。
 
