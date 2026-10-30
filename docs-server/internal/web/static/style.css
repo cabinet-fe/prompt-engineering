@@ -39,6 +39,30 @@ body {
   font-weight: 600;
 }
 
+/* 顶栏操作按钮（靠右）：进入「调用记录」视图 */
+.topbar-button {
+  margin-left: auto;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.topbar-button:hover {
+  background: var(--bg-soft);
+}
+
+.topbar-button.active {
+  border-color: #b9cbf3;
+  background: #dce6f8;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 /* 侧栏 + 查看区两栏布局：占满顶栏以下视口，两栏各自独立滚动 */
 .layout {
   display: flex;
@@ -224,6 +248,38 @@ body {
   border-radius: 8px;
   color: var(--muted);
   background: var(--bg-soft);
+}
+
+/* 调用记录视图：时间 / 库 / 动作 / 查询词 / IP 列表，表格边框沿用 .viewer th/td */
+.calls h1 {
+  margin: 0 0 4px;
+}
+
+.calls-meta {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.calls-table {
+  width: 100%;
+  font-size: 14px;
+}
+
+.calls-table th {
+  background: var(--bg-soft);
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.calls-table td {
+  vertical-align: top;
+}
+
+.calls-table td.wrap {
+  min-width: 160px;
+  word-break: break-all;
 }
 
 /* 页内 TOC：标题锚点点击滚动定位 */

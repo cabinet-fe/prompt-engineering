@@ -19,8 +19,8 @@ docs-server 面向企业内部：库维护者把库文档推送到中心文档�
 子项目三部分：
 
 - **文档服务（Go，`docs-server/`）**：唯一带状态、唯一部署的部分，单进程提供：
-  - REST API（`/api/v1/`）：推送与下架（单令牌 Bearer 鉴权；推送整库全量覆盖，DELETE 下架整库）、搜索、取文档、列库、列库内文档；读路径免鉴权。标准库 `net/http`，零框架依赖。
-  - 内置只读 Web UI（`internal/web`）：go:embed 原生 JS/CSS 单页（零构建，marked / highlight.js vendored），浏览器按库以目录树导航并阅读客户端渲染的 Markdown；随读路径免鉴权。
+  - REST API（`/api/v1/`）：推送与下架（单令牌 Bearer 鉴权；推送整库全量覆盖，DELETE 下架整库）、搜索、取文档、列库、列库内文档、最近调用记录（读路径 search / get / toc 每次调用记库 / 查询词 / IP / 时间，保留 7 天每小时清理）；读路径免鉴权。标准库 `net/http`，零框架依赖。
+  - 内置只读 Web UI（`internal/web`）：go:embed 原生 JS/CSS 单页（零构建，marked / highlight.js vendored），浏览器按库以目录树导航并阅读客户端渲染的 Markdown，顶栏提供「调用记录」视图；随读路径免鉴权。
   - SQLite FTS5 全文索引：bm25 排序、标题列加权、高亮片段、按库过滤；纯 Go 驱动（modernc.org/sqlite），编译为静态二进制。
   - 部署：CGO 关闭的单文件静态二进制，拷到服务器直接运行；GitHub Actions CI 在 `v*` tag 构建 linux/darwin × amd64/arm64 发 Releases。
   - 环境变量前缀 `DOCS_`（`DOCS_ADDR` / `DOCS_DB_PATH` / `DOCS_PUSH_TOKEN` / `DOCS_CONFIG`）。

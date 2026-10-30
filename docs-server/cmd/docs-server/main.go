@@ -8,9 +8,16 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/api"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
+)
+
+// 调用记录只保留 7 天；启动即清理一次，之后每小时滚动清理。
+const (
+	callLogRetention       = 7 * 24 * time.Hour
+	callLogCleanupInterval = time.Hour
 )
 
 func main() {
@@ -36,10 +43,28 @@ func run(configFile string) error {
 	}
 	defer store.Close()
 
+	go cleanupCallLogs(ctx, store)
+
 	srv := &http.Server{
 		Addr:    cfg.Addr,
 		Handler: api.NewServer(store, cfg.PushToken),
 	}
 	slog.Info("HTTP 服务启动", "addr", cfg.Addr, "db", cfg.DBPath)
 	return srv.ListenAndServe()
+}
+
+// cleanupCallLogs 先立即清理一次超过保留期的调用记录，再按间隔滚动清理，直到 ctx 结束。
+func cleanupCallLogs(ctx context.Context, store *search.Store) {
+	for {
+		if n, err := store.CleanupCallLogs(ctx, callLogRetention); err != nil {
+			slog.Error("清理调用记录失败", "err", err)
+		} else if n > 0 {
+			slog.Info("清理过期调用记录", "deleted", n)
+		}
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(callLogCleanupInterval):
+		}
+	}
 }

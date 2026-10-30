@@ -457,6 +457,95 @@ func TestGetDocumentTocMode(t *testing.T) {
 	}
 }
 
+func TestCallRecording(t *testing.T) {
+	s := newTestServer(t)
+	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
+		goodDoc("intro.md", "入门", "sqlite 内容")); rec.Code != http.StatusOK {
+		t.Fatalf("推送失败: %d", rec.Code)
+	}
+
+	// 三类读路径调用各一次：search（带库）、get、toc。
+	if rec := do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&library=alpha", "", ""); rec.Code != http.StatusOK {
+		t.Fatalf("搜索失败: %d", rec.Code)
+	}
+	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/intro.md", "", ""); rec.Code != http.StatusOK {
+		t.Fatalf("取文档失败: %d", rec.Code)
+	}
+	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/intro.md?toc=1", "", ""); rec.Code != http.StatusOK {
+		t.Fatalf("toc 取文档失败: %d", rec.Code)
+	}
+
+	// calls 端点返回全部记录（最新在前），自身不产生记录。
+	var body struct {
+		Calls []struct {
+			Action    string `json:"action"`
+			Library   string `json:"library"`
+			Query     string `json:"query"`
+			IP        string `json:"ip"`
+			CreatedAt string `json:"created_at"`
+		} `json:"calls"`
+	}
+	rec := do(t, s, http.MethodGet, "/api/v1/calls", "", "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("取调用记录失败: %d, body=%s", rec.Code, rec.Body.String())
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("解析调用记录响应: %v", err)
+	}
+	if len(body.Calls) != 3 {
+		t.Fatalf("期望 3 条调用记录，实际 %d: %+v", len(body.Calls), body.Calls)
+	}
+	want := []struct{ action, library, query string }{
+		{"toc", "alpha", ""},
+		{"get", "alpha", ""},
+		{"search", "alpha", "sqlite"},
+	}
+	for i, w := range want {
+		got := body.Calls[i]
+		if got.Action != w.action || got.Library != w.library || got.Query != w.query {
+			t.Errorf("第 %d 条应为 %+v，实际 %+v", i, w, got)
+		}
+		if got.CreatedAt == "" {
+			t.Errorf("第 %d 条 created_at 不应为空", i)
+		}
+		// httptest 默认 RemoteAddr 为 192.0.2.1:1234，应剥掉端口只记 IP。
+		if got.IP != "192.0.2.1" {
+			t.Errorf("第 %d 条 ip 应为 192.0.2.1，实际 %q", i, got.IP)
+		}
+	}
+
+	// limit 校验：非法值 400。
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?limit=0", "", ""), http.StatusBadRequest)
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?limit=abc", "", ""), http.StatusBadRequest)
+}
+
+func TestCallRecordingForwardedFor(t *testing.T) {
+	s := newTestServer(t)
+
+	// 经反向代理调用：X-Forwarded-For 取最原始的一段作为调用方 IP。
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/search?q=任意", nil)
+	req.Header.Set("X-Forwarded-For", "203.0.113.9, 10.0.0.1")
+	s.ServeHTTP(httptest.NewRecorder(), req)
+
+	var body struct {
+		Calls []struct {
+			Action string `json:"action"`
+			Query  string `json:"query"`
+			IP     string `json:"ip"`
+		} `json:"calls"`
+	}
+	rec := do(t, s, http.MethodGet, "/api/v1/calls", "", "")
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("解析调用记录响应: %v", err)
+	}
+	if len(body.Calls) != 1 {
+		t.Fatalf("期望 1 条调用记录，实际 %d: %+v", len(body.Calls), body.Calls)
+	}
+	if body.Calls[0].IP != "203.0.113.9" {
+		t.Errorf("ip 应取 X-Forwarded-For 最原始一段，实际 %q", body.Calls[0].IP)
+	}
+}
+
 func TestDeleteLibrary(t *testing.T) {
 	s := newTestServer(t)
 	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,

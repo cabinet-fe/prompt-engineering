@@ -8,8 +8,10 @@ const state = { library: null, activePath: null };
 const libraryList = document.getElementById("library-list");
 const docTree = document.getElementById("doc-tree");
 const viewer = document.getElementById("viewer");
+const callsButton = document.getElementById("calls-button");
 
 loadLibraries();
+callsButton.addEventListener("click", openCalls);
 
 async function loadLibraries() {
   let libraries;
@@ -42,6 +44,7 @@ async function loadLibraries() {
 async function selectLibrary(slug) {
   state.library = slug;
   state.activePath = null;
+  callsButton.classList.remove("active");
   for (const button of libraryList.querySelectorAll("button")) {
     button.classList.toggle("active", button.dataset.slug === slug);
   }
@@ -114,6 +117,7 @@ function renderTree(container, node) {
 // openDocument 进入查看：一次请求拿全文后整篇渲染，非流式、非分页。
 async function openDocument(doc) {
   state.activePath = doc.path;
+  callsButton.classList.remove("active");
   for (const button of docTree.querySelectorAll("button[data-path]")) {
     button.classList.toggle("active", button.dataset.path === doc.path);
   }
@@ -133,6 +137,91 @@ async function openDocument(doc) {
 // encodeDocPath 只编码路径段内的字符、保留分隔符「/」，与 docs-search 查询脚本一致。
 function encodeDocPath(docPath) {
   return docPath.split("/").map(encodeURIComponent).join("/");
+}
+
+// 调用记录动作的展示文案。
+const callActionLabels = { search: "检索", get: "取文档", toc: "目录" };
+
+// openCalls 在查看区展示最近的调用记录（服务端仅保留 7 天），时间 / 库 / 动作 / 查询词 / IP。
+async function openCalls() {
+  callsButton.classList.add("active");
+  for (const button of docTree.querySelectorAll("button[data-path]")) {
+    button.classList.remove("active");
+  }
+  let calls;
+  try {
+    const res = await fetch("/api/v1/calls?limit=200");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    ({ calls } = await res.json());
+  } catch (err) {
+    showNotice(viewer, `调用记录加载失败：${err.message}`);
+    return;
+  }
+  renderCalls(calls);
+}
+
+// renderCalls 渲染调用记录表：时间转本地时区，库为空表示跨库检索。
+function renderCalls(calls) {
+  const wrap = document.createElement("div");
+  wrap.className = "calls";
+
+  const heading = document.createElement("h1");
+  heading.textContent = "调用记录";
+  const meta = document.createElement("p");
+  meta.className = "calls-meta";
+  meta.textContent =
+    calls.length === 0
+      ? "服务端仅保留最近 7 天的调用记录。"
+      : `最近 ${calls.length} 条调用（服务端仅保留 7 天）`;
+  wrap.append(heading, meta);
+
+  if (calls.length === 0) {
+    const p = document.createElement("p");
+    p.className = "placeholder";
+    p.textContent = "近 7 天还没有任何检索调用。";
+    wrap.appendChild(p);
+    viewer.replaceChildren(wrap);
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.className = "calls-table";
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  for (const label of ["时间", "库", "动作", "查询词", "IP"]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    headRow.appendChild(th);
+  }
+  thead.appendChild(headRow);
+  const tbody = document.createElement("tbody");
+  for (const call of calls) {
+    const row = document.createElement("tr");
+    appendCell(row, formatTime(call.created_at));
+    appendCell(row, call.library || "（跨库）");
+    appendCell(row, callActionLabels[call.action] || call.action);
+    appendCell(row, call.query || "—", "wrap");
+    appendCell(row, call.ip);
+    tbody.appendChild(row);
+  }
+  table.append(thead, tbody);
+  wrap.appendChild(table);
+  viewer.replaceChildren(wrap);
+}
+
+// appendCell 往表格行追加一个 td，className 可选。
+function appendCell(row, text, className) {
+  const td = document.createElement("td");
+  td.textContent = text;
+  if (className) td.className = className;
+  row.appendChild(td);
+}
+
+// formatTime 把服务端 UTC 时间（RFC3339）转为本地时区显示。
+function formatTime(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleString("zh-CN", { hour12: false });
 }
 
 // renderDocument 把整篇 Markdown 一次性渲染进查看区：marked 裸用（内容自推送管道自控，

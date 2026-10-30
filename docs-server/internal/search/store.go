@@ -1,4 +1,4 @@
-// Package search 提供基于 SQLite FTS5 的文档存储与全文检索。
+// Package search 提供基于 SQLite FTS5 的文档存储与全文检索，以及读路径调用记录存储。
 package search
 
 import (
