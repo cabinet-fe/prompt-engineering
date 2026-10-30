@@ -238,7 +238,7 @@ node --env-file=.env <脚本绝对路径> --clear   # 下架整库
 | GET | `/api/v1/libraries/{slug}/documents` | 免 | 列出该库全部文档的 path 与 title，按 path 排序：`{"library","documents":[...]}` |
 | GET | `/api/v1/libraries/{slug}/documents/{path}` | 免 | 取文档；可选 `?section=` 提取 `## ` 章节、`?toc=1` 只返回元数据与章节列表（省略 content）；返回 `{library,path,title,description,keywords,aliases,sections,content}` |
 | GET | `/api/v1/search?q=关键词&library=slug&limit=20` | 免 | 全文检索，`library`、`limit`（1~50，缺省 20）可选；返回 `{"results":[{library,path,title,description,snippet,sections}]}`，命中词以 `<mark>` 包裹，`sections` 为命中文档的章节名列表；索引覆盖 title / keywords（含 aliases）/ 文档路径 / description / content，文件名与目录词元可直接检索 |
-| GET | `/api/v1/calls?limit=200` | 免 | 最近调用记录（最新在前）：search / get / toc 每次成功调用记一条 `{action,library,query,ip,created_at}`（`library` 空为跨库；IP 优先取 `X-Forwarded-For` / `X-Real-IP` 透传，直连取连接地址）；仅保留 7 天；`limit` 缺省 200、上限 1000 |
+| GET | `/api/v1/calls?limit=50&offset=0` | 免 | 调用记录分页查询（最新在前）：search / get / toc 每次成功调用记一条 `{action,library,query,ip,created_at}`（`library` 空为跨库；IP 优先取 `X-Forwarded-For` / `X-Real-IP` 透传，直连取连接地址）；仅保留 7 天；返回 `{"calls":[...],"total":总条数}`，`limit` 缺省 50、上限 1000，`offset` 缺省 0 |
 
 ```bash
 # 搜索示例
@@ -254,7 +254,7 @@ curl 'http://localhost:8080/api/v1/search?q=如何分页'
 - **Markdown 渲染**：浏览器端整篇渲染（一次请求拿全文，非流式、非分页），支持 GFM 表格、删除线、任务列表与链接自动识别。
 - **代码高亮**：fenced 代码块按语言用 highlight.js 语法高亮。
 - **页内目录**：正文标题自动生成 TOC，点击滚动定位到对应标题。
-- **调用记录**：顶栏「调用记录」进入，表格展示最近的检索调用（时间 / 库 / 动作 / 查询词 / IP，跨库检索显示「（跨库）」），服务端仅保留 7 天。
+- **调用记录**：顶栏「调用记录」进入，分页展示检索调用（时间 / 库 / 动作 / 查询词 / IP，跨库检索显示「（跨库）」，每页 50 条可翻页），服务端仅保留 7 天。
 
 实现说明：
 

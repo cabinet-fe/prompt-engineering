@@ -7,7 +7,7 @@ import (
 )
 
 // defaultCallLogLimit 是 ListCallLogs limit 非法（<= 0）时的返回条数。
-const defaultCallLogLimit = 200
+const defaultCallLogLimit = 50
 
 // CallLog 是一条读路径调用记录：action 为 search / get / toc，library 为空串表示
 // 跨库检索，query 仅 search 有值，ip 为调用方地址，created_at 为 UTC RFC3339。
@@ -31,16 +31,19 @@ func (s *Store) RecordCall(ctx context.Context, log CallLog) error {
 	return nil
 }
 
-// ListCallLogs 返回最近的调用记录，按 id 倒序（最新在前），最多 limit 条。
-func (s *Store) ListCallLogs(ctx context.Context, limit int) ([]CallLog, error) {
+// ListCallLogs 返回最近的调用记录，按 id 倒序（最新在前），跳过 offset 条后最多取 limit 条。
+func (s *Store) ListCallLogs(ctx context.Context, limit, offset int) ([]CallLog, error) {
 	if limit <= 0 {
 		limit = defaultCallLogLimit
+	}
+	if offset < 0 {
+		offset = 0
 	}
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT action, library, query, ip, created_at
 		FROM call_logs
 		ORDER BY id DESC
-		LIMIT ?`, limit)
+		LIMIT ? OFFSET ?`, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("列出调用记录: %w", err)
 	}
@@ -58,6 +61,15 @@ func (s *Store) ListCallLogs(ctx context.Context, limit int) ([]CallLog, error) 
 		return nil, fmt.Errorf("遍历调用记录: %w", err)
 	}
 	return logs, nil
+}
+
+// CountCallLogs 返回调用记录总条数，供分页计算页数。
+func (s *Store) CountCallLogs(ctx context.Context) (int, error) {
+	var n int
+	if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM call_logs`).Scan(&n); err != nil {
+		return 0, fmt.Errorf("统计调用记录: %w", err)
+	}
+	return n, nil
 }
 
 // CleanupCallLogs 删除创建时间早于当前时间减 olderThan 的调用记录，返回删除条数。

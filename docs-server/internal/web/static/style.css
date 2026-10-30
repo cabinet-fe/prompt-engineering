@@ -282,6 +282,39 @@ body {
   word-break: break-all;
 }
 
+/* 调用记录分页导航 */
+.calls-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.calls-nav button {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  color: inherit;
+  cursor: pointer;
+}
+
+.calls-nav button:hover:not(:disabled) {
+  background: var(--bg-soft);
+}
+
+.calls-nav button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.calls-nav-label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
 /* 页内 TOC：标题锚点点击滚动定位 */
 .doc-body h1,
 .doc-body h2,

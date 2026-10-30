@@ -21,7 +21,7 @@ func TestCallLogsRecordAndList(t *testing.T) {
 		}
 	}
 
-	got, err := s.ListCallLogs(ctx, 0)
+	got, err := s.ListCallLogs(ctx, 0, 0)
 	if err != nil {
 		t.Fatalf("ListCallLogs: %v", err)
 	}
@@ -39,19 +39,36 @@ func TestCallLogsRecordAndList(t *testing.T) {
 		}
 	}
 
-	// limit 限制条数，取最新的。
-	got, err = s.ListCallLogs(ctx, 1)
+	// limit + offset 翻页：limit 限制条数取最新，offset 跳过最新若干条。
+	got, err = s.ListCallLogs(ctx, 1, 0)
 	if err != nil {
 		t.Fatalf("ListCallLogs(limit=1): %v", err)
 	}
 	if len(got) != 1 || got[0].Action != "get" {
 		t.Errorf("limit=1 应只返回最新 1 条 get，实际 %+v", got)
 	}
+	got, err = s.ListCallLogs(ctx, 2, 1)
+	if err != nil {
+		t.Fatalf("ListCallLogs(limit=2, offset=1): %v", err)
+	}
+	if len(got) != 2 || got[0].Action != "search" || got[0].Library != "" || got[1].Library != "alpha" {
+		t.Errorf("offset=1 应跳过最新一条返回其余两条，实际 %+v", got)
+	}
+	// offset 超出总条数返回空。
+	if got, err = s.ListCallLogs(ctx, 10, 3); err != nil || len(got) != 0 {
+		t.Errorf("offset 超出总数应返回空，实际 (%+v, %v)", got, err)
+	}
 
-	// 空表返回 nil，由 api 层兜底为空数组。
+	// 计数与空表。
+	if n, err := s.CountCallLogs(ctx); err != nil || n != 3 {
+		t.Errorf("CountCallLogs 应为 3，实际 (%d, %v)", n, err)
+	}
 	s2, _ := openTestStore(t)
-	if got, err = s2.ListCallLogs(ctx, 0); err != nil || got != nil {
+	if got, err = s2.ListCallLogs(ctx, 0, 0); err != nil || got != nil {
 		t.Errorf("空表应返回 (nil, nil)，实际 (%+v, %v)", got, err)
+	}
+	if n, err := s2.CountCallLogs(ctx); err != nil || n != 0 {
+		t.Errorf("空表计数应为 0，实际 (%d, %v)", n, err)
 	}
 }
 
@@ -77,7 +94,7 @@ func TestCallLogsCleanup(t *testing.T) {
 	if n != 1 {
 		t.Errorf("应删除 1 条过期记录，实际 %d", n)
 	}
-	got, err := s.ListCallLogs(ctx, 0)
+	got, err := s.ListCallLogs(ctx, 0, 0)
 	if err != nil {
 		t.Fatalf("ListCallLogs: %v", err)
 	}

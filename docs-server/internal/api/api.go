@@ -22,7 +22,7 @@ const maxSearchLimit = 50
 
 // 调用记录：limit 缺省与上限；action 为读路径的三类检索动作。
 const (
-	defaultCallsLimit = 200
+	defaultCallsLimit = 50
 	maxCallsLimit     = 1000
 
 	actionSearch = "search"
@@ -346,10 +346,12 @@ func (s *Server) handleGetDocument(w http.ResponseWriter, r *http.Request) {
 
 type callsResponse struct {
 	Calls []search.CallLog `json:"calls"`
+	Total int              `json:"total"`
 }
 
-// handleCalls 处理 GET /api/v1/calls[?limit=...]：返回最近的读路径调用记录
-// （最新在前），供内置 UI「调用记录」视图展示；limit 缺省 200，上限 1000。
+// handleCalls 处理 GET /api/v1/calls[?limit=50][&offset=0]：分页返回最近的读路径
+// 调用记录（最新在前），total 为全量条数供分页导航；供内置 UI「调用记录」视图展示。
+// limit 缺省 50、上限 1000；offset 缺省 0。
 func (s *Server) handleCalls(w http.ResponseWriter, r *http.Request) {
 	if !requireMethod(w, r, http.MethodGet) {
 		return
@@ -364,7 +366,22 @@ func (s *Server) handleCalls(w http.ResponseWriter, r *http.Request) {
 		}
 		limit = n
 	}
-	calls, err := s.store.ListCallLogs(r.Context(), limit)
+	offset := 0
+	if raw := r.URL.Query().Get("offset"); raw != "" {
+		n, err := strconv.Atoi(raw)
+		if err != nil || n < 0 {
+			writeError(w, http.StatusBadRequest, "invalid_offset", "offset 须为不小于 0 的整数")
+			return
+		}
+		offset = n
+	}
+	total, err := s.store.CountCallLogs(r.Context())
+	if err != nil {
+		slog.Error("统计调用记录失败", "err", err)
+		writeError(w, http.StatusInternalServerError, "internal", "统计调用记录失败")
+		return
+	}
+	calls, err := s.store.ListCallLogs(r.Context(), limit, offset)
 	if err != nil {
 		slog.Error("列出调用记录失败", "err", err)
 		writeError(w, http.StatusInternalServerError, "internal", "列出调用记录失败")
@@ -373,7 +390,7 @@ func (s *Server) handleCalls(w http.ResponseWriter, r *http.Request) {
 	if calls == nil {
 		calls = []search.CallLog{}
 	}
-	writeJSON(w, http.StatusOK, callsResponse{Calls: calls})
+	writeJSON(w, http.StatusOK, callsResponse{Calls: calls, Total: total})
 }
 
 // handleNotFound 兜底未匹配路由，保持错误格式统一。

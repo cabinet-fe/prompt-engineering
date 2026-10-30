@@ -139,40 +139,53 @@ function encodeDocPath(docPath) {
   return docPath.split("/").map(encodeURIComponent).join("/");
 }
 
-// 调用记录动作的展示文案。
+// 调用记录动作的展示文案；每页条数与服务端 /api/v1/calls 缺省 limit 一致。
 const callActionLabels = { search: "检索", get: "取文档", toc: "目录" };
+const callsPageSize = 50;
+const callsState = { page: 1 };
 
-// openCalls 在查看区展示最近的调用记录（服务端仅保留 7 天），时间 / 库 / 动作 / 查询词 / IP。
-async function openCalls() {
+// openCalls 在查看区分页展示调用记录（服务端仅保留 7 天）：时间 / 库 / 动作 / 查询词 / IP。
+async function openCalls(page = callsState.page) {
   callsButton.classList.add("active");
   for (const button of docTree.querySelectorAll("button[data-path]")) {
     button.classList.remove("active");
   }
-  let calls;
+  let body;
   try {
-    const res = await fetch("/api/v1/calls?limit=200");
+    const params = new URLSearchParams({
+      limit: callsPageSize,
+      offset: (page - 1) * callsPageSize,
+    });
+    const res = await fetch(`/api/v1/calls?${params}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    ({ calls } = await res.json());
+    body = await res.json();
   } catch (err) {
     showNotice(viewer, `调用记录加载失败：${err.message}`);
     return;
   }
-  renderCalls(calls);
+  // 记录被滚动清理后当前页可能已空，退回第一页。
+  if (body.calls.length === 0 && page > 1) {
+    openCalls(1);
+    return;
+  }
+  callsState.page = page;
+  renderCalls(body.calls, body.total);
 }
 
-// renderCalls 渲染调用记录表：时间转本地时区，库为空表示跨库检索。
-function renderCalls(calls) {
+// renderCalls 渲染当前页调用记录表与分页导航：时间转本地时区，库为空表示跨库检索。
+function renderCalls(calls, total) {
   const wrap = document.createElement("div");
   wrap.className = "calls";
 
   const heading = document.createElement("h1");
   heading.textContent = "调用记录";
+  const start = (callsState.page - 1) * callsPageSize;
   const meta = document.createElement("p");
   meta.className = "calls-meta";
   meta.textContent =
-    calls.length === 0
+    total === 0
       ? "服务端仅保留最近 7 天的调用记录。"
-      : `最近 ${calls.length} 条调用（服务端仅保留 7 天）`;
+      : `第 ${start + 1}–${start + calls.length} 条 / 共 ${total} 条（服务端仅保留 7 天）`;
   wrap.append(heading, meta);
 
   if (calls.length === 0) {
@@ -206,7 +219,39 @@ function renderCalls(calls) {
   }
   table.append(thead, tbody);
   wrap.appendChild(table);
+
+  // 分页导航：上一页 / 页码 / 下一页。
+  const pages = Math.max(1, Math.ceil(total / callsPageSize));
+  const nav = document.createElement("div");
+  nav.className = "calls-nav";
+  nav.append(
+    callsNavButton("上一页", callsState.page > 1, () => openCalls(callsState.page - 1)),
+    callsNavLabel(`第 ${callsState.page} / ${pages} 页`),
+    callsNavButton("下一页", callsState.page < pages, () => openCalls(callsState.page + 1)),
+  );
+  wrap.appendChild(nav);
   viewer.replaceChildren(wrap);
+  viewer.scrollTop = 0;
+}
+
+// callsNavButton 构造分页按钮，不可用时置 disabled。
+function callsNavButton(label, enabled, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  button.disabled = !enabled;
+  if (enabled) {
+    button.addEventListener("click", onClick);
+  }
+  return button;
+}
+
+// callsNavLabel 构造分页页码文本。
+function callsNavLabel(text) {
+  const span = document.createElement("span");
+  span.className = "calls-nav-label";
+  span.textContent = text;
+  return span;
 }
 
 // appendCell 往表格行追加一个 td，className 可选。

@@ -484,6 +484,7 @@ func TestCallRecording(t *testing.T) {
 			IP        string `json:"ip"`
 			CreatedAt string `json:"created_at"`
 		} `json:"calls"`
+		Total int `json:"total"`
 	}
 	rec := do(t, s, http.MethodGet, "/api/v1/calls", "", "")
 	if rec.Code != http.StatusOK {
@@ -494,6 +495,9 @@ func TestCallRecording(t *testing.T) {
 	}
 	if len(body.Calls) != 3 {
 		t.Fatalf("期望 3 条调用记录，实际 %d: %+v", len(body.Calls), body.Calls)
+	}
+	if body.Total != 3 {
+		t.Errorf("total 应为 3，实际 %d", body.Total)
 	}
 	want := []struct{ action, library, query string }{
 		{"toc", "alpha", ""},
@@ -514,9 +518,21 @@ func TestCallRecording(t *testing.T) {
 		}
 	}
 
-	// limit 校验：非法值 400。
+	// 分页：limit + offset 翻页，total 始终为全量条数。
+	rec = do(t, s, http.MethodGet, "/api/v1/calls?limit=2&offset=1", "", "")
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("解析分页响应: %v", err)
+	}
+	if len(body.Calls) != 2 || body.Calls[0].Action != "get" || body.Calls[1].Action != "search" || body.Total != 3 {
+		t.Errorf("limit=2&offset=1 应跳过最新一条返回 get/search，total=3，实际 %+v total=%d",
+			body.Calls, body.Total)
+	}
+
+	// limit / offset 校验：非法值 400。
 	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?limit=0", "", ""), http.StatusBadRequest)
 	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?limit=abc", "", ""), http.StatusBadRequest)
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?offset=-1", "", ""), http.StatusBadRequest)
+	requireError(t, do(t, s, http.MethodGet, "/api/v1/calls?offset=abc", "", ""), http.StatusBadRequest)
 }
 
 func TestCallRecordingForwardedFor(t *testing.T) {
