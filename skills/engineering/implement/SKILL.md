@@ -6,7 +6,7 @@ description: >
 
 # implement
 
-两条路径，不要混用。不要因用户提到「实现 / 开发」就自动进入本技能。不改 spec（唯一例外：阶段路径收尾可向 spec「影响文件」追加条目，见「实现」第 4 条）、不拆新阶段。不改 `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `PROJECT.md` / `SMELLS.md`，让用户跑 `sync-docs`。
+两条路径，不要混用。不要因用户提到「实现 / 开发」就自动进入本技能。不改 spec、不拆新阶段。不改 `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `PROJECT.md` / `SMELLS.md`，让用户跑 `sync-docs`。
 
 ## 前置检查
 
@@ -24,11 +24,11 @@ description: >
 
 ## 编码规则（两条路径通用）
 
-1. 代码类读 `DEV-STANDARDS.md`、`SMELLS.md`；需要定位模块时按模块名/路径检索 `.agents/docs/CODE-MAP.md` 相关行（目标子包在根树下陈列了 `CODE-MAP.md` 时再按需检索该 `<pkg>/CODE-MAP.md`），不要全文加载。改动涉及的语言 / 框架 / 角色在可用技能里有对应的 `langs/` / `frameworks/` / `roles/` 类技能时，按需读其 `SKILL.md` 并遵守。非代码对照 `PROJECT.md`，不虚构 DEV-STANDARDS，不打开 ARCHITECTURE / DEV-STANDARDS / CODE-MAP / SMELLS。
+1. 按 [common.md](../setup/references/common.md)「前置检查」按类别读 docs。改动涉及的语言 / 框架 / 角色在可用技能里有对应规范技能时，按需读其 `SKILL.md` 并遵守。
 2. 小 diff，只做要求的内容。对照 `SMELLS.md` 把本次引入的坏味道当场收掉；不扩到与本次无关的重构。
 3. 改动等于架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md) 的「架构级变更」节）：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`。
 4. 代码类触及 [code-map-update.md](../setup/references/code-map-update.md) 的要改项：按「分层归属」只改根 `.agents/docs/CODE-MAP.md` 和/或对应子包 `<pkg>/CODE-MAP.md` 的相关行。非代码不改 CODE-MAP。本轮若把技能、包/模块 `AGENTS.md`、`ACCEPTANCE.md` 或其它已有约定文档说错：当场改那一份；没说错则不动。不要改 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`PROJECT.md`、`SMELLS.md`。
-5. 仓库已有的 lint / typecheck / 测试命令（`DEV-STANDARDS.md`「代码风格」「测试」节、package.json scripts、Makefile 等写明的）覆盖改动文件时：收尾前跑一遍，不过不算完成。测试只跑覆盖改动范围的最小命令：优先用 `DEV-STANDARDS.md`「测试」节的「局部验证」命令；没写则按仓库测试框架收窄到单文件 / 单包。全量只在 `DEV-STANDARDS.md` 明确写了「收尾必须全量」时跑；规范里只是列出全量命令不算要求，全量留给 CI 与收口阶段。`.agents/docs/ACCEPTANCE.md` 的必跑项（标「跳过」的除外）同样收尾前跑：阶段路径只跑追加进该 `Pn.md`「完成标准」的条目；直写路径只跑与改动相关的条目——能按路径 / 包收窄的测试命令收窄后跑，e2e / HTTP 等无法收窄的只在改动触及其验证的入口（页面、接口）时跑，其余不跑并在汇报中注明。不为此新装工具或新建配置。
+5. 仓库已有的 lint / typecheck / 测试命令（`DEV-STANDARDS.md`「代码风格」「测试」节、package.json scripts、Makefile 等写明的）覆盖改动文件时：收尾前跑一遍，不过不算完成。测试只跑覆盖改动范围的最小命令：优先用 `DEV-STANDARDS.md`「测试」节的「局部验证」命令；没写则按仓库测试框架收窄到单文件 / 单包。全量只在 `DEV-STANDARDS.md` 明确写了「收尾必须全量」时跑；规范里只是列出全量命令不算要求，全量留给 CI 与收口阶段。存在 `.agents/docs/ACCEPTANCE.md` 时，按 [common.md](../setup/references/common.md)「ACCEPTANCE 必跑范围」收尾前跑。不为此新装工具或新建配置。
 6. 禁止 `git stash`、`git checkout --`、`git clean` 等清除或回滚工作区的操作。工作区已有的非本轮脏文件绕开，不纳入汇报与提交路径，必要时在汇报中列出。
 
 ## 阶段路径
@@ -50,8 +50,7 @@ description: >
 1. 读该 `Pn.md`、`spec.md` 里相关验收标准。返工（「评审」为「不通过」）：同时读 `reviews/Pn.md` 的「阻塞项」，只针对阻塞项修复；汇报的改动路径只含本次返工改动，供 review 增量评审。
 2. `node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 进行中`。
 3. 按编码规则做清单项，勾选已完成项。
-4. 收尾对齐 spec「影响文件」：本阶段实际新增 / 删除 / 修改的文件未被 spec 任何同类别条目覆盖时，当场向 spec.md「影响文件」对应类别追加该路径，并复跑 `node .agents/scripts/spec-files.mjs parse .agents/cooking/<feature>/spec.md` 到通过；只动「影响文件」章节，不动 spec 其它章节。改动落进新目录属架构级变更时不补录，按编码规则第 3 条停止上报。
-5. `node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 完成`（脚本同时把「评审」置回 `未开始`）。
+4. `node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 完成`（脚本同时把「评审」置回 `未开始`）。
 
 ## 直写路径
 
@@ -59,7 +58,7 @@ description: >
 
 ## 结束
 
-汇报固定包含：改了哪些路径；spec「影响文件」追加的条目（阶段路径补录的，没有则写无）；跑了哪些 lint / typecheck / 测试命令及结果（没有则写「无可跑命令」）；CODE-MAP 及其它已有文档是否更新；是否需要 `sync-docs`。
+汇报固定包含：改了哪些路径；跑了哪些 lint / typecheck / 测试命令及结果（没有则写「无可跑命令」）；CODE-MAP 及其它已有文档是否更新；是否需要 `sync-docs`。
 
 - **阶段路径**：由 rush 派发时只汇报，review 由 rush 派。用户直接调用时：读 `review/SKILL.md`，本对话当派发方，按阶段评审模板派 review 子代理（带改动路径、前置检查类别），返回后按派发方步骤处理结论；本对话不评、不读 `reviews/` 正文、不改 `reviews/Pn.md`，不动「评审」状态。派 review 前不提交。未 review 通过前，不得开始依赖本阶段的后续阶段。
 - **直写路径**：汇报后，若改动 ≤ 3 个文件且没新增依赖，用 `交互式提问` 问用户走 git 评审还是本次跳过；跳过则不提交（由用户自行决定提交），就此结束。其余情况或用户选评审：读 `review/SKILL.md`，本对话当派发方，按 git 评审模板派 review 子代理（不走阶段评审、不写 `reviews/`），返回后按派发方步骤处理结论。派 review 前不提交，本对话不评。

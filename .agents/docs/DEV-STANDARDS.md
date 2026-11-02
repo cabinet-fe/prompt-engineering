@@ -45,6 +45,5 @@
 
 ## 明确禁止
 
-- cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
 - 查询脚本或检索技能保存文档副本或检索缓存（检索状态只在服务端 SQLite）
 - 在 `docs-server/` 里引入 HTTP 框架依赖（已定标准库 net/http）

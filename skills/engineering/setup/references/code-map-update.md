@@ -1,6 +1,6 @@
 # CODE-MAP 更新契约
 
-implement / review / sync-docs / archive / setup 都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。适用根 `.agents/docs/CODE-MAP.md` 与已有的嵌套子包 `<pkg>/CODE-MAP.md`。
+implement / review / sync-docs / setup 都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。适用根 `.agents/docs/CODE-MAP.md` 与已有的嵌套子包 `<pkg>/CODE-MAP.md`。
 
 只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接。
 
@@ -39,7 +39,6 @@ implement / review / sync-docs / archive / setup 都引用本文，禁止各写�
 | 架构级变更（见「架构级变更」节） | sync-docs（一并改 ARCHITECTURE + 相关 CODE-MAP） |
 | 本轮实现触及「要改」节条目 | implement（阶段或直写，按「分层归属」改根和/或子包 CODE-MAP） |
 | 用户点名 sync-docs 且路径或职责已被代码推翻 | sync-docs |
-| 归档时地图明显过期 | 停止，列出要改的行，让 implement 修；若新目录等于新分层，让用户先 `sync-docs` |
 
 全栈架构形态变化：`sync-docs` 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步本文件。
 

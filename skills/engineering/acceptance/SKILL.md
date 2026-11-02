@@ -1,7 +1,7 @@
 ---
 name: acceptance
 description: >
-  仅用户显式调用 acceptance 时使用。
+  按项目类别检索并生成全局验收标准与可选脚手架。仅用户显式调用 acceptance 时使用。
 ---
 
 # acceptance

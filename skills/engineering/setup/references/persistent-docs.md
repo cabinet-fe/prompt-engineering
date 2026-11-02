@@ -36,4 +36,4 @@
 | 为子包新增 `<pkg>/CODE-MAP.md`（用户点名，或根 `CODE-MAP.md` 树下已陈列但文件未建） | `sync-docs` 写入 `<pkg>/CODE-MAP.md`，并在根 `.agents/docs/CODE-MAP.md` 树下对应子包节点陈列 |
 | 代码/非代码切换、缺脚本/缺必有 docs、根 `AGENTS.md` 缺模板必有行或掺了短注 | 仅 setup |
 
-review 发现说错且未改 → 阻塞。archive 发现仍说错 → 停止，不要另写一份来补。
+review 发现说错且未改 → 阻塞。

@@ -53,26 +53,14 @@ spec 的「架构影响」非「无」：做完 spec 就停，不要做 tasks，
 <返工行>
 由 rush 派发：不要自行派 review，不要提交，不要实现其它阶段。状态只经 cooking.mjs set 改。
 不要改 ARCHITECTURE.md；发现架构级变更则停止编码，在汇报里说明。
-完成后只汇报：改了哪些路径、spec「影响文件」追加的条目（没有则写无）、清单是否全部勾选、跑了哪些 lint / typecheck / 测试命令及结果、CODE-MAP 及其它已有文档是否更新、是否需要 sync-docs 更新架构（需要则附条目原文）。
+完成后只汇报：改了哪些路径、清单是否全部勾选、跑了哪些 lint / typecheck / 测试命令及结果、CODE-MAP 及其它已有文档是否更新、是否需要 sync-docs 更新架构（需要则附条目原文）。
 ```
 
 ## review（每个刚完成实现的阶段单独一个子代理）
 
-任务书以 `<engineering>/review/references/subagent-prompt.md` 的阶段评审模板为准，第一行必须是 `执行评审:`。中间阶段 `<defer-commit 行>` 留空；收尾阶段写成 `调用方：defer-commit。通过后不要提交。`首次评审 `<返工行>` 留空；返工评审按模板的返工行填写，「改动文件」只填 implement 返工汇报的路径。
+任务书以 `<engineering>/review/references/subagent-prompt.md` 的阶段评审模板为准，第一行必须是 `执行评审:`。首次评审 `<返工行>` 留空；返工评审按模板的返工行填写，「改动文件」只填 implement 返工汇报的路径。
 
-本对话当派发方：通过且非收尾则 `git-commit` auto；不通过则进返工闭环。
-
-## archive
-
-```text
-你在仓库 <repo> 中工作。cooking 标识：<feature>。归档该单位。
-前置检查已通过，项目类别：<类别>。
-先读 <engineering>/archive/SKILL.md 并完整执行。
-有阶段未评审通过则不归档，汇报缺什么。
-发现已有文档说错则停止归档，汇报哪几份与对应条目。
-归档后执行 git-commit auto：把工作区里本轮未提交的代码（收尾阶段 defer-commit）一并提交。不要 push。
-完成后只汇报：cooking 目录是否已删、commit hash（未 push）。
-```
+本对话当派发方：通过则只暂存该阶段改动文件执行 `git-commit` auto；不通过则进返工闭环。
 
 ## sync-docs（「sync-docs 派发」触发时）
 

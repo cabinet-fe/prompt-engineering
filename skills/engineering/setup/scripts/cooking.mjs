@@ -6,9 +6,7 @@
 //     总览：每个 cooking 单位一行：标识、下一步、各阶段状态；没有单位输出 无
 //   node .agents/scripts/cooking.mjs status <feature>
 //     详情：goal.md（无|未确认|已确认）、spec.md（有|无）、tasks/；每个阶段一行：前置 / 实现 / 评审；
-//     再给出 可做（可并行 implement）、待评审、收尾、可归档、评审文件、下一步
-//   node .agents/scripts/cooking.mjs ready <feature>
-//     只列现在可做的阶段 id，一行一个；没有则输出 无
+//     再给出 可做（可并行 implement）、待评审、可归档、评审文件、下一步
 //   node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 <进行中|完成>
 //   node .agents/scripts/cooking.mjs set <feature> <Pn> 评审 <通过|不通过>
 // 下一步：goal 未确认→explore；无 spec→to-spec；无 tasks→to-tasks；全部阶段通过→archive；
@@ -35,7 +33,6 @@ function usage() {
   process.stderr.write(`usage:
   node cooking.mjs status
   node cooking.mjs status <feature>
-  node cooking.mjs ready <feature>
   node cooking.mjs set <feature> <Pn> 实现 <进行中|完成>
   node cooking.mjs set <feature> <Pn> 评审 <通过|不通过>
 `);
@@ -170,21 +167,19 @@ function unmetDeps(stage, stages) {
 }
 
 // 可做：前置全部通过，且本阶段未实现完成或评审不通过（返工）
-// 待评审：实现完成、评审未开始；其中其它阶段都已通过的为收尾
+// 待评审：实现完成、评审未开始
 function derive(stages) {
   const ordered = [...stages.values()].sort((a, b) => stageNumber(a.id) - stageNumber(b.id));
   const ready = [];
   const pending = [];
-  const closing = [];
   for (const stage of ordered) {
     const needsWork = stage.status.实现 !== '完成' || stage.status.评审 === '不通过';
     if (needsWork && unmetDeps(stage, stages).length === 0) ready.push(stage.id);
     if (stage.status.实现 === '完成' && stage.status.评审 === '未开始') {
       pending.push(stage.id);
-      if (ordered.every((other) => other === stage || isPassed(other))) closing.push(stage.id);
     }
   }
-  return { ordered, ready, pending, closing, archivable: ordered.every(isPassed) };
+  return { ordered, ready, pending, archivable: ordered.every(isPassed) };
 }
 
 const joinIds = (ids) => (ids.length ? ids.join('、') : '无');
@@ -290,7 +285,7 @@ function printStatus(feature) {
     process.stdout.write(`tasks/：无\n下一步：${nextStep(unit)}\n`);
     return;
   }
-  const { ordered, ready, pending, closing, archivable } = unit.derived;
+  const { ordered, ready, pending, archivable } = unit.derived;
   process.stdout.write(`tasks/：${ordered.length} 个阶段\n`);
   for (const stage of ordered) {
     process.stdout.write(
@@ -299,16 +294,10 @@ function printStatus(feature) {
   }
   process.stdout.write(`可做：${joinIds(ready)}\n`);
   process.stdout.write(`待评审：${joinIds(pending)}\n`);
-  process.stdout.write(`收尾：${joinIds(closing)}\n`);
   process.stdout.write(`可归档：${archivable ? '是' : '否'}\n`);
   const issues = reviewFileIssues(unit);
   process.stdout.write(`评审文件：${issues.length ? issues.join('、') : '一致'}\n`);
   process.stdout.write(`下一步：${nextStep(unit)}\n`);
-}
-
-function printReady(feature) {
-  const { ready } = derive(loadStages(feature));
-  process.stdout.write(ready.length ? `${ready.join('\n')}\n` : '无\n');
 }
 
 function nextImpl(stage, stages, value) {
@@ -364,7 +353,6 @@ function main() {
   try {
     if (cmd === 'status' && !feature) return printOverview();
     if (cmd === 'status' && rest.length === 0) return printStatus(feature);
-    if (cmd === 'ready' && feature && rest.length === 0) return printReady(feature);
     if (cmd === 'set' && feature && rest.length === 3 && /^P\d+$/.test(rest[0])) {
       return setStatus(feature, rest[0], rest[1], rest[2]);
     }

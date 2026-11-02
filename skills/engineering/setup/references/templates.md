@@ -4,7 +4,7 @@
 
 ## 根目录 `AGENTS.md`
 
-按类别用 shell 从 `.agents/scripts/` 复制对应模板文件（setup 第 2 步已把它们连同脚本一起复制过去）。模板是必有行；允许在文档表追加其它 `.agents/docs/` 行。禁止短注、流程章、把规范全文/技术栈/目录树塞进本文件。setup 覆写时保留追加行。precheck：模板每行都在即可，多出的行不算失败。
+按类别用 shell 从 `.agents/scripts/` 复制对应模板文件（setup「目录与 gitignore」已把它们连同脚本一起复制过去）。模板是必有行；允许在文档表追加其它 `.agents/docs/` 行。禁止短注、流程章、把规范全文/技术栈/目录树塞进本文件。setup 覆写时保留追加行。precheck：模板每行都在即可，多出的行不算失败。
 
 - 代码类：[root-agents-code.md](../scripts/root-agents-code.md)
 - 非代码：[root-agents-non-code.md](../scripts/root-agents-non-code.md)
@@ -112,8 +112,7 @@
 
 ## 明确禁止
 
-- cooking `spec.md` 缺少可被 `spec-files.mjs parse` 通过的「影响文件」章节
-- <其它本仓库不要做的事。没有则只保留上一条。>
+- <本仓库不要做的事。没有则删本节。>
 
 ```
 

@@ -35,16 +35,14 @@ description: >
 ### 2. 目录与 gitignore
 
 - 创建 `.agents/docs/`、`.agents/cooking/`（空目录即可，不要写 README）
-- 创建 `.agents/scripts/`，把 `<engineering>/setup/scripts/` **整目录**复制到 `.agents/scripts/`（`<engineering>` = 本技能包目录）。里面有 precheck / spec-files / cooking 三个脚本和两份根 AGENTS 模板，precheck 运行时读同目录模板，缺一不可
+- 创建 `.agents/scripts/`，把 `<engineering>/setup/scripts/` **整目录**复制到 `.agents/scripts/`（`<engineering>` = 本技能包目录）。里面有 precheck / cooking 两个脚本和两份根 AGENTS 模板，precheck 运行时读同目录模板，缺一不可
 - `.gitignore` 追加 `.agents/cooking/`（已有则跳过）
 - 若 `.gitignore` 忽略了整个 `.agents/`：改成只忽略 cooking，`.agents/docs/` 和 `.agents/scripts/` 必须能提交
 - 模板见 [templates.md](references/templates.md)
 
 ### 3. 分类，写 PROJECT.md
 
-按 [classify.md](references/classify.md)：现有项目先推断；新项目能从描述定类别就不要再问类别。写 `.agents/docs/PROJECT.md`，模板见 [templates.md](references/templates.md)。只留类别、组织结构、（全栈才有）架构形态、一句「是什么」。
-
-新项目判定见 [new-project.md](references/new-project.md)。
+按 [classify.md](references/classify.md)：现有项目先推断；新项目（几乎无业务代码）能从描述定类别就不要再问类别，不要拿空仓推断架构。写 `.agents/docs/PROJECT.md`，模板见 [templates.md](references/templates.md)。只留类别、组织结构、（全栈才有）架构形态、一句「是什么」。
 
 ### 4. 覆写根 `AGENTS.md`
 
@@ -77,7 +75,7 @@ CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已�
 
 列出写入的路径，每个文件一句话。不要把流程教程写进 `AGENTS.md`。提醒：流程可选；技能默认不自动触发；`.agents/docs` 过时跑 `sync-docs`；脚本 / 根 `AGENTS.md` 走样再跑更新模式。
 
-工作流第 6 步汇报之后、以及更新模式正常结束之后：用 `交互式提问` 询问是否为编码加一层验收保障（token 与工时会明显增加）。
+「汇报」完成之后、以及「更新模式」正常结束之后：用 `交互式提问` 询问是否为编码加一层验收保障（token 与工时会明显增加）。
 选否或跳过：不生成验收文件、不代跑 `acceptance`。选是：只提示显式调用 `acceptance`。
 不把验收访谈写入 `interview.md`，不在 setup 里生成 `.agents/docs/ACCEPTANCE.md`。
 
@@ -87,11 +85,11 @@ docs 已存在、用户要刷新底座，或 precheck 缺项时：
 
 | 变更                                                                          | 做                                                                                           |
 | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| 代码/非代码切换                                                               | 改用对应 AGENTS 模板；按第 5 步补缺的代码类 docs。从代码改为非代码不强制删旧的代码类 docs     |
+| 代码/非代码切换                                                               | 改用对应 AGENTS 模板；按「写其余 docs」补缺的代码类 docs。从代码改为非代码不强制删旧的代码类 docs |
 | `.agents/scripts/` 缺失任一脚本 / 模板或与技能包不一致                        | 从 `<engineering>/setup/scripts/` 整目录覆盖复制                                             |
-| `AGENTS.md` 掺了短注、流程章，或缺模板必有行                                  | 按第 4 步重建必有行，保留用户追加的 `.agents/docs/` 索引行                                   |
-| 代码类必有 docs 缺失                                                          | 按第 5 步补写                                                                                |
-| `.agents/docs/INSTRUCTIONS.md` 缺失                                          | 按第 4 步补写；已有 `AGENTS.md` 里的个人指令一并迁入                                         |
+| `AGENTS.md` 掺了短注、流程章，或缺模板必有行                                  | 按「覆写根 `AGENTS.md`」重建必有行，保留用户追加的 `.agents/docs/` 索引行                    |
+| 代码类必有 docs 缺失                                                          | 按「写其余 docs」补写                                                                        |
+| `.agents/docs/INSTRUCTIONS.md` 缺失                                          | 按「覆写根 `AGENTS.md`」补写；已有 `AGENTS.md` 里的个人指令一并迁入                          |
 | `.agents/docs/` 已有文档内容过时                                              | 让用户跑 `sync-docs`，不要在这里改                                                           |
 
 禁止：删除 `cooking/` 里进行中的功能、把规范全文写回根目录 `AGENTS.md`。

@@ -10,8 +10,6 @@
 
 ## 阶段评审
 
-中间阶段：`<defer-commit 行>` 留空。
-收尾阶段（评完即全部通过）：写成 `调用方：defer-commit。通过后不要提交。`
 首次评审：`<返工行>` 留空。返工评审：写成 `本轮为返工评审：上一轮阻塞项见 reviews/<Pn>.md「评审记录」，按 SKILL「返工评审收窄」执行。`
 
 ```text
@@ -20,7 +18,6 @@
 前置检查已通过，项目类别：<类别>。
 先读 <engineering>/review/SKILL.md 并完整执行。你是执行方，不要再派子代理。
 只评不改代码。不要提交、不要跑 sync-docs。
-<defer-commit 行>
 <返工行>
 改动文件：<implement 给出的路径，返工评审只填返工改动的路径；没有则自己按 SKILL 用 git 收集>
 测试结果：<implement 汇报的 lint / typecheck / 测试命令与结果；没有则写 无>
