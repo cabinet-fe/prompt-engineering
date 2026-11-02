@@ -48,7 +48,7 @@ description: >
 两套共同遵守的契约（细节见各自参考文件）：
 
 - **入口**：根 `package.json` 的 `release` 脚本；`--dry-run` 演练，结束后工作区恢复原样。参数解析忽略单独出现的 `--`。
-- **起点**：工作区干净（含未跟踪文件）、在发版分支、不落后于远端。
+- **起点**：工作区干净（含未跟踪文件）、在发版分支、不落后于远端。脚本只检查、不修复；Agent 在演练前先同步到位（见流程「同步仓库」）。
 - **版本**：有版本工具时由工具计算；没有时传目标版本 `release <x.y.z>`，所有可发布包同一版本。
 - **顺序**：先提交并推送发版提交，再发布；tag 只在发布成功后创建。
 - **命名**：提交 `chore(release): 发布 …`；tag 单包或整仓同版本 `v<版本>`，changesets 多包 `<包名>@<版本>`；预发布版的 dist-tag 取预发布标识，绝不落到 `latest`。见 release-content.md。
@@ -102,16 +102,17 @@ description: >
 
 ### 3. 执行发版
 
-1. **定内容**：按 release-content.md 收集上次发版以来的改动。changesets 项目补齐、修正待消费的 changeset；无工具的 npm 项目，以及全部 Go 项目，判定幅度、算出目标版本，并在 CHANGELOG 顶部写好该版本一节。
-2. **给计划**：向用户列出发布物 → 新版本 → 渠道（npm 的 dist-tag，或 Go 的 tag / GitHub Release / 模块代理），以及发版内容摘要。下列情况用 `交互式提问` 确认一次：幅度拿不准（尤其 major、0.x 的破坏性改动）、首次发布、预发布转正式版、Go 模块升到 v2 及以上（要改模块路径）。其余情况用户说「发版」即视为同意推送与发布。
-3. **演练**：npm 用 `<pm> run release -- [<版本>] --dry-run`；Go 用 `scripts/release.sh <版本> --dry-run`。核对输出的版本、文件与发布计划。
-4. **执行**：去掉 `--dry-run` 重跑。需要 OTP 或登录时请用户提供或在其终端完成，Agent 不代填、不猜测。
-5. **验证**：
+1. **同步仓库**：有未提交改动（含未跟踪文件）时，先按仓库提交规范单独提交——它们不属于发版提交；是否入库拿不准、或是未完成的工作，用 `交互式提问` 让用户决定。然后 `git pull --rebase` 同步发版分支，冲突时停下请用户解决，禁止绕过。同步必须先于定内容：其他维护者可能已推送新提交、新 changeset 甚至新发版，版本基准与改动清单一律以同步后的状态为准；发现目标版本已被占用（他人新写的 CHANGELOG 节、远端 tag、`npm view`）就重新判定版本。
+2. **定内容**：按 release-content.md 收集上次发版以来的改动。changesets 项目补齐、修正待消费的 changeset；无工具的 npm 项目，以及全部 Go 项目，判定幅度、算出目标版本，并在 CHANGELOG 顶部写好该版本一节。npm 写好的 CHANGELOG 一节与待消费的 changeset 先提交再演练（演练的前置检查要求工作区干净；Go 的 CHANGELOG 由脚本提交）。
+3. **给计划**：向用户列出发布物 → 新版本 → 渠道（npm 的 dist-tag，或 Go 的 tag / GitHub Release / 模块代理），以及发版内容摘要。下列情况用 `交互式提问` 确认一次：幅度拿不准（尤其 major、0.x 的破坏性改动）、首次发布、预发布转正式版、Go 模块升到 v2 及以上（要改模块路径）。其余情况用户说「发版」即视为同意推送与发布。
+4. **演练**：npm 用 `<pm> run release -- [<版本>] --dry-run`；Go 用 `scripts/release.sh <版本> --dry-run`。核对输出的版本、文件与发布计划。
+5. **执行**：去掉 `--dry-run` 重跑。需要 OTP 或登录时请用户提供或在其终端完成，Agent 不代填、不猜测。
+6. **验证**：
    - npm 公开发版：跟踪 CI 直到结束（public-release.md「跟踪与验证」），再查 `npm view <包>@<版本> version` 与 GitHub Release。
    - npm 本地发版：以脚本的 registry 查询结果为准，抽查 `npm view <包>@<版本> version --registry <源>`。
    - 不要靠在下游项目安装来验证 npm 包：pnpm ≥ 11（`minimumReleaseAge` 默认 1440 分钟）与新版 Yarn（`npmMinimalAgeGate` 默认 `1d`）默认不安装发布不满一天的版本。下游需要立即使用时，在下游配置 pnpm `minimumReleaseAgeExclude` 或 Yarn `npmPreapprovedPackages`，加入包名或 `@scope/*`。
    - Go：按 go-release.md「跟踪与验证」。应用公开发版时脚本退出 0 只表示 tag 已推送，还要盯 CI 到 GitHub Release 资产齐全。
-6. **报告**：发布物与版本、渠道（dist-tag 或 tag / Release / 代理）、发版提交 hash。失败时说明停在哪一步、已完成什么、下一步怎么做。
+7. **报告**：发布物与版本、渠道（dist-tag 或 tag / Release / 代理）、发版提交 hash。失败时说明停在哪一步、已完成什么、下一步怎么做。
 
 失败时按参考文件的排查表处理：修复原因后重跑，禁止重复猜测式重试；禁止删除或移动已推送的 tag；禁止 force push 发版分支；撤回发版提交必须先征得用户同意。
 
@@ -121,6 +122,7 @@ description: >
 - [ ] 生态已识别。npm：包管理器、可发布包、版本工具已识别，changesets 项目已按实际版本（3.x / 2.x）选用命令。Go：没有把子目录前端包当成发版对象
 - [ ] 设施符合对应参考文件的契约；接入改动单独提交
 - [ ] 发版内容按 release-content.md 写，幅度判定有依据
+- [ ] 发版前已提交全部改动并 `git pull --rebase` 同步远端；目标版本以同步后的状态判定
 - [ ] 先 `--dry-run` 再正式执行
 - [ ] npm：以 registry 查询确认每个包都已发布；公开发版的 CI 已跟踪到结束
 - [ ] Go 应用：CI 已结束，`gh release view` 的资产与校验和齐全。Go 模块：正式发布后 `go list -m` 返回该版本（私有模块改为 `git ls-remote`）

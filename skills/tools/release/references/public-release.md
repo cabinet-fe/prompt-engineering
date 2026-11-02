@@ -35,7 +35,7 @@
 
 `--dry-run`：执行第 1–4 步并打印版本变化与将提交的文件，然后恢复工作区：`git restore --staged --worktree .` 加 `git clean -fd`（起点干净所以安全；禁止 `-x`，否则会删掉 `node_modules` 等被忽略文件）。不提交、不推送。
 
-推送失败（远端有新提交）：`git pull --rebase` 后直接 `git push`，不要重跑脚本。
+推送失败（远端有新提交）：`git pull --rebase` 后直接 `git push`，不要重跑脚本。但 rebase 带来了他人的发版提交（CHANGELOG 顶部出现新版本、可发布包版本已变）时不能直接 push：目标版本已被占用或内容已过期，回到流程重新判定版本后再走一遍。
 
 ## CI 契约
 

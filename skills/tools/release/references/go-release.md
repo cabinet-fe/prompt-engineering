@@ -249,7 +249,7 @@ gh release view "v<版本>" --json tagName,assets,isPrerelease
 | tag 上的 workflow 本身有缺陷 | 重跑不会采用之后提交里的 workflow | 这个版本作废，修 workflow 后发下一个版本 |
 | 公共代理查不到私有模块 | 对私有模块跑了 `proxy.golang.org` | 只核 `git ls-remote` |
 | `gh release` 401 / 403 | 本机未登录，或 publish job 没有 `contents: write` | 用户自己 `gh auth login`；或补上 job 权限后发下一个版本（tag 上的旧 workflow 不会因此改变） |
-| 推送被拒（远端有新提交） | 发版期间有人推送 | `git pull --rebase` 后重跑脚本。禁止 force push。rebase 若改写了已推送的发版提交，先征得用户同意 |
+| 推送被拒（远端有新提交） | 发版期间有人推送 | `git pull --rebase` 后重跑脚本。禁止 force push。rebase 若改写了已推送的发版提交，先征得用户同意；重跑被版本占用检查拦下（他人已推同一 `v*` tag）就换版本号 |
 
 ## 撤回与补救
 

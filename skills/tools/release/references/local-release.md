@@ -117,7 +117,7 @@
 | E403 / E409 版本已存在 | 版本号被占用 | 续发会自动跳过；若是他人发布的同号版本 → 升版本 |
 | 包出现在别的源 | `.npmrc` 中 `@scope:registry` 覆盖了目标 | 发布命令带 `--@<scope>:registry=<源>` |
 | tarball 含 `workspace:` / `catalog:`，或展开的版本范围仍是旧值 | 打包前没更新 lockfile（`bun pm pack` 从 `bun.lock` 读 `workspace:` 和 `catalog:`），或用了 `npm pack` 打包 pnpm / bun 仓库 | 先 `<pm> install` 同步 lockfile，再用项目包管理器打包 |
-| 推送被拒（远端有新提交） | 发版期间有人推送 | `git pull --rebase` 后重跑 `release`（续发）；禁止 force push |
+| 推送被拒（远端有新提交） | 发版期间有人推送 | `git pull --rebase` 后重跑 `release`（续发）；禁止 force push。rebase 带来了他人的发版提交时，目标版本可能已被占用（按 E403/409 一行升版本） |
 | 部分包发布失败 | 网络、权限、OTP 过期 | 修复后直接重跑 `release`（续发） |
 
 ## 撤回与补救
