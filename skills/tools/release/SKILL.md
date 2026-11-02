@@ -1,8 +1,8 @@
 ---
 name: release
 description: >
-  npm 包与 Go 项目发版的通用标准与执行。npm 分公开发版（本地升版本并推送，CI 发布到 npm、建 GitHub Release）与本地发版（本机发布到私有 registry）。Go 分应用发版（检查通过后打 tag，CI 构建二进制并建 GitHub Release）与模块发版（打 tag 供 go get；私有模块只推 tag）。规范发版脚本行为和发版内容写法，并按标准为项目接入或执行发版。
-  用户要求发版、发布包或二进制、写 changeset / CHANGELOG / release notes、接入或修复发版流程时使用。
+  npm 包与 Go 项目的发版标准与执行：接入或修正发版脚本与 CI、执行发版、写 changeset / CHANGELOG / release notes。
+  用户要求发版、发布包或二进制、写发版内容、接入或修复发版流程时使用。
 ---
 
 # release 发版
