@@ -87,8 +87,8 @@
 - 内部依赖的版本范围覆盖本次新版本；源 `package.json` 中写成 `catalog:` / `catalog:<名>` 的依赖，在 tarball 中的范围与当前根配置的 catalog 定义一致（防 `bun.lock` 等 lockfile 过期打入旧值）。内部包之间的依赖必须用 `workspace:`，禁止用 `catalog:`
 - `exports`、`main`、`module`、`types`、`bin` 指向的文件都在包内
 - 不含 `.env*`、`.npmrc`
-- `<包>@<版本>` 在 `<源>` 上尚不存在（续发时已存在的标记为跳过）
-- 实际目标源正确：对尚未发布的版本执行 `npm publish <tarball> --dry-run` 加第 6 步的全部参数（必须传 `--dry-run`，否则会真实发包；已发布的版本跳过此项，因 npm 会在打印目标源前报版本已存在），输出必须含 `Publishing to <源>`（这一步验证的是 `.npmrc`、scope 配置叠加后的真实去向，不能代替 `npm ping` / `npm whoami`）
+- `<包>@<版本>` 在 `<源>` 上尚不存在（续发时已存在的标记为跳过）。各包的存在性查询并发执行：私有源单次元数据请求可达数秒到数十秒，逐包串行仅此一步就可能等数分钟；本地校验（tarball 定位、manifest 核对）先行，再并发发起查询
+- 实际目标源正确：对第一个待发布的包执行一次 `npm publish <tarball> --dry-run` 加第 6 步的全部参数（必须传 `--dry-run`，否则会真实发包；没有待发布包则跳过），输出必须含 `Publishing to <源>`（这一步验证的是 `.npmrc`、scope 配置叠加后的真实去向，不能代替 `npm ping` / `npm whoami`）。命令形态（registry / scope / dist-tag 参数）对所有包一致，npm 的参数与目标源解析不随包变化，不必逐包重复
 
 项目已装 `publint` 或 `@arethetypeswrong/cli` 时，再对 tarball 运行 `publint <tarball> --strict`、`attw <tarball>`。
 
