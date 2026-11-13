@@ -1,14 +1,14 @@
 ---
 name: sync-docs
 description: >
-  把已有持久文档与仓库现状对齐；可新增 `.agents/docs/` 自定义文档（写入根 AGENTS 索引）或子包 `<pkg>/CODE-MAP.md`（在根 CODE-MAP 树下陈列）。仅用户显式调用、由 rush 编排触发，或未走 implement 的直接改文件可能让已有文档撒谎时使用。
+  把已有持久文档与仓库现状对齐；可新增 `.agents/docs/` 自定义文档（写入根 AGENTS 索引）或子包 `<pkg>/CODE-MAP.md`（在根 CODE-MAP 树下陈列）。仅用户显式调用，或发现已有文档漏改、需要批量对齐时使用。
 ---
 
 # sync-docs
 
 `.agents/docs/` 下所有已有文件与已有的子包 `<pkg>/CODE-MAP.md` 都在范围内。用户点名新增时，可以新建 `.agents/docs/` 自定义文档并在根 `AGENTS.md` 文档表追加一行，或为多包/workspace 仓库的子包新建 `<pkg>/CODE-MAP.md` 并在根 `.agents/docs/CODE-MAP.md` 树下对应目录陈列。细则见 [persistent-docs.md](../setup/references/persistent-docs.md)。
 
-不由 review 自动触发。走 `implement` / `rush` 时文档对齐在实现当轮完成（架构级变更由 rush 派本技能处理），review 只检查有没有漏。
+日常文档更新不靠本技能：任何会话按根 `AGENTS.md`「收尾」当轮改，review 检查有没有漏。本技能用于补漏、批量对齐、新增文档，不由 review 或 rush 自动触发。
 
 ## 前置检查
 
@@ -38,14 +38,13 @@ description: >
 1. 路径：`.agents/docs/<NAME>.md`。`<NAME>` 用大写短横线（如 `TEAM-RULES.md`）。已存在则改为更新正文，仍确保索引行在。
 2. 不要新建 setup 必有项（`PROJECT.md`、`INSTRUCTIONS.md`；代码类还有根 `.agents/docs/` 下的 `ARCHITECTURE.md`、`DEV-STANDARDS.md`、`CODE-MAP.md`、`SMELLS.md`）和 `ACCEPTANCE.md`。缺这些让用户跑 `setup` 或 `acceptance`。
 3. 写入正文：只写该仓库要执行的内容，不写教程。
-4. 在根 `AGENTS.md` 文档表追加一行：`| `.agents/docs/<NAME>.md` | <何时读> | <何时更新> |`。何时更新默认 `sync-docs`。不可删改模板规定的必有行，不可在 `AGENTS.md` 写正文。
+4. 在根 `AGENTS.md` 文档表追加一行：`| `.agents/docs/<NAME>.md` | <何时读> | <何时更新> |`。「何时更新」写成触发条件（什么变了就要改），不写执行者，以便任何会话收尾时都能据此判断。不可删改模板规定的必有行，不可在 `AGENTS.md` 写正文。
 5. 非代码也可以新增自定义文档；不要因此去写代码类必有 docs。
 
 ## 输入
 
 对齐路径用。已走新增路径且用户没给对照路径、工作区和暂存区也没有变更：跳过本节和对齐，不要问对照哪次提交。
 
-- 由 rush 派发（任务书点名变更）：以点名条目为准，走对齐路径，不要问用户。
 - 用户点名改 `.agents/docs/` 某份文档，或给出类别 / 架构 / 规范 / 地图等变更：以用户原意为准。
 - 用户给了路径：只根据这些路径判断哪些已有文档被说错。
 - 否则用 git 取工作区和暂存区变更（`git status --porcelain`、`git diff --name-only`、`git diff --cached --name-only` 并集，去重）。
@@ -73,7 +72,7 @@ description: >
 
 ## 禁止
 
-不写业务代码，不改 cooking。根 `AGENTS.md` 只动文档表：可追加或修正自定义行，不可删改模板必有行，不可写入正文。除新增路径（及根树已陈列但文件未建的子包 `CODE-MAP.md`）外，不新建文件。
+不写业务代码，不改 cooking。根 `AGENTS.md` 只动文档表：可追加或修正自定义行，不可删改模板必有行（含「收尾」节），不可写入正文。除新增路径（及根树已陈列但文件未建的子包 `CODE-MAP.md`）外，不新建文件。
 
 ## 结束
 

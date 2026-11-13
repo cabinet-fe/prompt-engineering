@@ -10,23 +10,23 @@
   const PICKS = {
     first: {
       cmd: "setup",
-      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。"
+      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，并在根 AGENTS.md 写入索引与「收尾」约定——后续无论走工作流还是直接对话，交付前都会自动更新文档并触发独立审查。"
     },
     vague: {
-      cmd: "explore → to-spec → to-tasks → implement → archive",
-      desc: "需求含糊或边界不清时使用。explore 只沟通梳理、不写代码，逐一澄清歧义并在你确认无误后才推进到后续环节，避免方向跑偏。"
+      cmd: "explore → blueprint → rush",
+      desc: "需求含糊或边界不清时使用。explore 只沟通梳理、不写代码，逐一澄清歧义并在你确认无误后才推进到 blueprint 拆解和 rush 实现，避免方向跑偏。"
     },
     rush: {
       cmd: "rush 审批单支持批量转办",
-      desc: "全自动编排器：可在流程起点或 explore / to-spec / to-tasks / implement / review 之后的任意位置介入，读取当前进度断点续跑。无依赖阶段并行开发，每阶段完成即审查，不通过自动返工，适合大中型功能。"
+      desc: "全自动编排器：可在流程起点或 explore / blueprint / 阶段实现与 review 之后的任意位置介入，读取当前进度断点续跑。无依赖阶段并行开发，每阶段完成即审查，不通过自动返工，全部通过后自动归档，适合大中型功能。"
     },
     steps: {
-      cmd: "to-spec → to-tasks → implement → review → archive",
-      desc: "需求明确时可跳过前期探讨，直接进入技术规格拆解与分步实现。每一步你都可以手动检查验收标准与实际代码，节奏完全由你掌控。"
+      cmd: "blueprint → rush <feature>",
+      desc: "需求明确但想先确认技术规格、验收标准与阶段切分时，先跑 blueprint 生成 spec 与阶段任务，确认无误后再交给 rush 自动并行实现、审查与归档。"
     },
     small: {
-      cmd: "implement 把 UserCard 的头像换成懒加载",
-      desc: "改个 Bug、加个字段等日常小改动，无需复杂的规格拆解，直接描述需求即可编码。改完自动调用代码审查子代理，审查通过后自动生成本地提交。"
+      cmd: "直接对话（如：把 UserCard 的头像换成懒加载）",
+      desc: "日常开发、改 Bug 或小功能无需走规格拆解，直接对话编码即可。setup 生成的根 AGENTS.md「收尾」约定会在交付前自动更新受影响文档，非琐碎改动还会自动派独立子代理做 git 审查。"
     },
     review: {
       cmd: "review  /  review main  /  review <需求名> P2",
@@ -34,7 +34,7 @@
     },
     sync: {
       cmd: "sync-docs src/modules/approval",
-      desc: "手动修改代码导致现有文档与代码不一致时调用。精准修正受影响的架构说明与规范，未受影响的内容绝不乱动，且不新建多余文件。"
+      desc: "日常改动会按根 AGENTS.md「收尾」当轮更新文档；当发现已有文档漏改、需要批量对齐，或需新增自定义文档 / 子包代码地图时调用 sync-docs。"
     },
     accept: {
       cmd: "acceptance",
@@ -56,37 +56,27 @@
     setup: {
       title: "STEP 1 · setup · 初始化底座",
       cmd: "setup",
-      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本。其他工程技能都会基于这套底座运行。"
+      desc: "新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，并在根 AGENTS.md 写入文档索引与「收尾」约定。日常对话与工程技能都基于这套底座运行。"
     },
     explore: {
       title: "STEP 2 · explore · 需求探索",
       cmd: "explore 审批单支持批量转办",
       desc: "只沟通梳理、不改写代码。逐条分析并澄清需求中的不明确之处，向你提问确认。直到所有关键疑惑消除并经你确认，才进入下一阶段。"
     },
-    "to-spec": {
-      title: "STEP 3 · to-spec · 制定规格",
-      cmd: "to-spec approval-batch-transfer",
-      desc: "把明确需求转化为技术设计规格。制定客观可判定的验收标准，并精确划定本次改动涉及的文件范围。"
+    blueprint: {
+      title: "STEP 3 · blueprint · 规格与任务切分",
+      cmd: "blueprint approval-batch-transfer",
+      desc: "一次产出技术设计规格（spec.md）与可并行的阶段任务（tasks/Pn.md），制定可判定的验收标准，并标明是否涉及架构级变更。"
     },
-    "to-tasks": {
-      title: "STEP 4 · to-tasks · 拆解阶段任务",
-      cmd: "to-tasks approval-batch-transfer",
-      desc: "将大功能细化拆解为多个独立阶段任务（P1、P2 等），理清任务依赖关系。无前后依赖的任务可直接并行开发。"
-    },
-    implement: {
-      title: "STEP 5 · implement · 编码实现",
-      cmd: "implement approval-batch-transfer P1",
-      desc: "按阶段任务编写代码（或针对小需求直接修改）。严格遵循既有代码风格，完成必要测试并同步修正受影响的文档，随后自动发起审查。"
+    rush: {
+      title: "STEP 4 · rush · 并行实现与编排",
+      cmd: "rush approval-batch-transfer",
+      desc: "按阶段依赖自动调度实现子代理并行编码，遵守代码规范并当轮同步文档，每完成一个阶段即刻送交独立审查，全部通过后自动归档。"
     },
     review: {
-      title: "STEP 6 · review · 独立审查",
+      title: "STEP 5 · review · 独立审查与归档",
       cmd: "review approval-batch-transfer P2",
-      desc: "在独立子代理中审查代码，主会话只接收审查结果。比对功能实现与代码规范，通过后自动在本地提交，不通过则指出具体问题并返工。"
-    },
-    archive: {
-      title: "STEP 7 · archive · 交付与归档",
-      cmd: "archive approval-batch-transfer",
-      desc: "所有阶段均完成并审查通过后，核对项目文档状态，清理开发过程中的临时记录（cooking 目录），完成交付。"
+      desc: "在独立子代理中审查代码与文档同步情况，主会话只接收审查结果。通过后自动生成本地提交，全部阶段通过时自动清理 cooking 临时目录。"
     }
   };
   const flowNodes = [...document.querySelectorAll(".flow-node")];

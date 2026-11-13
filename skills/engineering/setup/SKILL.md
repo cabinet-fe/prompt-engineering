@@ -46,11 +46,11 @@ description: >
 
 ### 4. 覆写根 `AGENTS.md`
 
-按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打必有行。禁止短注、流程章、把项目特例写成正文。
+按类别用 shell 复制文件：`cp .agents/scripts/root-agents-code.md AGENTS.md` 或 `cp .agents/scripts/root-agents-non-code.md AGENTS.md`（源文件见 [root-agents-code.md](scripts/root-agents-code.md) / [root-agents-non-code.md](scripts/root-agents-non-code.md)）。不要手打必有行。模板自带的「收尾」节之外，禁止短注、流程章、把项目特例写成正文。
 
 - **没有**：直接复制
 - **已有且很长**：代码类把技术栈 → `ARCHITECTURE.md`，开发偏好 → `DEV-STANDARDS.md`，目录/模块 → `CODE-MAP.md`；个人偏好与自定义指令 → `INSTRUCTIONS.md`（两类都收）。能对应上的原文尽量搬迁。然后按下一则处理
-- **已有且已是索引**：复制模板后，把原表里自定义 `.agents/docs/` 行追加回表末（不是 `PROJECT.md` / `INSTRUCTIONS.md` / `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `SMELLS.md` / `CODE-MAP.md` 的才算自定义）。个人偏好类短注与正文迁入 `INSTRUCTIONS.md`，纯流程章丢掉。禁止改模板必有行的文案
+- **已有且已是索引**：复制模板后，把原表里自定义 `.agents/docs/` 行追加回表末（不是 `PROJECT.md` / `INSTRUCTIONS.md` / `ARCHITECTURE.md` / `DEV-STANDARDS.md` / `SMELLS.md` / `CODE-MAP.md` 的才算自定义），「何时更新」里的执行者（如 `sync-docs：`）去掉，只留触发条件。个人偏好类短注与正文迁入 `INSTRUCTIONS.md`，纯流程章丢掉。禁止改模板必有行的文案
 
 覆写后写 `.agents/docs/INSTRUCTIONS.md`（模板见 [templates.md](references/templates.md)）：已有 `AGENTS.md` 按上面的路由迁移；无可迁则写占位。两类都写。之后用户直接编辑，agent 不自动写入（迁移与点名除外）。
 
@@ -69,11 +69,11 @@ description: >
 | `CODE-MAP.md`      | 扫真实目录（多包仓库按需连带复杂子包的 `<pkg>/CODE-MAP.md`）；模块怎么切拿不准才问 | 按组织结构写规划目录，确认模块切分（及是否建子包 `CODE-MAP.md`）；尚未建目录就标明「规划」 |
 | `SMELLS.md`        | 从 [smells.md](references/smells.md) **原样复制**；已有则覆写为当前模板      | 同左。禁止按项目改写、追加或删条                             |
 
-CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。`.agents/docs` 已有文件之后由 `sync-docs` 更新。
+CODE-MAP 何时改见 [code-map-update.md](references/code-map-update.md)。已有文档对齐见 [persistent-docs.md](references/persistent-docs.md)。`.agents/docs` 已有文件之后由做改动的会话按根 `AGENTS.md`「收尾」当轮更新，漏改由 `sync-docs` 补。
 
 ### 6. 汇报
 
-列出写入的路径，每个文件一句话。不要把流程教程写进 `AGENTS.md`。提醒：流程可选；技能默认不自动触发；`.agents/docs` 过时跑 `sync-docs`；脚本 / 根 `AGENTS.md` 走样再跑更新模式。
+列出写入的路径，每个文件一句话。不要把流程教程写进 `AGENTS.md`。提醒：流程可选；技能默认不自动触发；任何会话收尾都会按根 `AGENTS.md`「收尾」更新文档并评审；`.agents/docs` 漏改跑 `sync-docs`；脚本 / 根 `AGENTS.md` 走样再跑更新模式。
 
 「汇报」完成之后、以及「更新模式」正常结束之后：用 `交互式提问` 询问是否为编码加一层验收保障（token 与工时会明显增加）。
 选否或跳过：不生成验收文件、不代跑 `acceptance`。选是：只提示显式调用 `acceptance`。

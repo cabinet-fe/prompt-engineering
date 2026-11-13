@@ -5,7 +5,7 @@
 ```markdown
 # 验收
 
-由 `acceptance` 技能生成。to-tasks 只把「完成标准」追加进各阶段；review 按本文件评，标明跳过的项不阻塞。
+由 `acceptance` 技能生成。blueprint 只把「完成标准」追加进各阶段；review 按本文件评，标明跳过的项不阻塞。
 
 ## 手段
 

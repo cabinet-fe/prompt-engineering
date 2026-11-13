@@ -6,49 +6,41 @@ description: >
 
 # rush
 
-本技能的胜场是多阶段、可并行、要逐阶段评审提交的功能。简单改动、一个阶段就能做完的改动不要用，直接 implement 直写 + git 评审。本技能是编排器，不是另一套流程：产物、模板、阶段并行规则与单独调用各技能完全相同。主对话不读技能细节，派子代理去执行对应 `SKILL.md`。只走 cooking 阶段路径，不走 implement 直写、不走 git 评审。
+本技能的胜场是多阶段、可并行、要逐阶段评审提交的功能。一个阶段就能做完的改动不要用：直接在对话里改，收尾按根 `AGENTS.md`「收尾」更新文档并评审。cooking 的阶段只由本技能推进。主对话是编排器：不读技能细节，派子代理去执行。
 
 ## 前置检查
 
-整条流程只跑一次，在主对话跑：运行 `node .agents/scripts/precheck.mjs`，FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后每份子代理任务书都写上 `前置检查已通过，项目类别：<类别>`，子代理不再跑；主对话内执行的 explore 也不再跑。按根 AGENTS.md 按需读 docs。
+整条流程只跑一次，在主对话跑：运行 `node .agents/scripts/precheck.mjs`，FAIL 则停止，提示用户执行 `setup`，不要代跑；PASS 输出带项目类别。之后每份子代理任务书都写上 `前置检查已通过，项目类别：<类别>`，子代理不再跑；主对话内执行的 explore 也不再跑。
 
 ## 参数
 
 标识与命中规则见 [common.md](../setup/references/common.md)。一次 rush 只推进一个 cooking 单位。
 
-- **命中标识**：只推进该单位。标识后若还有文本，当作对该单位的需求补充，按「主对话做什么」改需求条款处理。
+- **命中标识**：只推进该单位。标识后若还有文本，当作对该单位的需求补充，按「进行中改需求」处理。
 - **参数为空**：cooking 单位 0 个则按用户需求新开；1 个则用它；多个则问用户。
 - **未命中且参数非空**：整段当作需求描述新开单位，不要误配到别的单位。
 
 ## 主对话做什么
 
-1. **从「下一步」接着跑**：已有单位运行 `node .agents/scripts/cooking.mjs status <feature>`，按输出的「下一步」行进入对应环节：explore / to-spec / to-tasks / implement 与 review（实现循环）/ archive。不自己查 `goal.md`、`spec.md`、`tasks/` 是否存在，不读 `goal.md` 判确认状态。脚本判不了需求是否含糊：「下一步」为 to-spec 且 `goal.md：无` 时，存在「不问就可能做错」的歧义才 explore（判据同 explore 决策树首句），否则直接 to-spec。新开单位（目录尚不存在，不跑脚本）：同样判定。
-2. **explore 必须留在主对话执行**：读 `explore/SKILL.md` 并执行，直到该 feature 的 `goal.md` 为 `已确认`。查事实派子代理。确认后继续派发后续子代理，不换会话：下游输入只有 goal.md，问答内容不写进子代理任务书。
-3. **派发子代理**：其余环节按 [subagent-prompts.md](references/subagent-prompts.md) 派子代理：`to-spec+to-tasks`（同一子代理连做；spec「架构影响」非「无」时它只做 spec 即停）→ 实现循环（见「并行」）→ 全部阶段评审通过后直接删除 `.agents/cooking/<feature>/` 完成归档（不单派 archive 子代理）。`sync-docs` 只按「架构闸门」与「sync-docs 派发」节触发。
-4. **架构闸门在 spec 之后，不在实现中途**：to-spec+to-tasks 子代理汇报「架构影响」非「无」（此时它已按任务书停在做完 spec）→ 不继续，先按「sync-docs 派发」处理，过了闸门再单独派 `to-tasks` 子代理。不在主对话改架构文档。实现中子代理仍汇报需要更新 `ARCHITECTURE.md` 的，同样走「sync-docs 派发」，之后重新派该阶段 `implement`（返工行写明中断续做）。
-5. **提交节奏**：本对话当 review 派发方。每个阶段 review 通过后，执行 `git-commit` 技能（auto 模式），只暂存并提交该阶段的改动文件。
-6. **主对话只读**：`goal.md` 的「需求目标」、`node .agents/scripts/cooking.mjs status` 的输出（总览与单位详情）、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`，不把 spec 全文、任务清单、`reviews/` 正文加载进主对话。脚本报错（前置成环、状态非法）：停下，原文给用户。
-7. **返工闭环**：review 不通过：派该阶段 `implement` 子代理返工（任务书写返工行），完成后再派该阶段 `review`，任务书写返工行、「改动文件」只填返工汇报的路径。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
-8. **已通过阶段回归**：已通过阶段被发现回归（后续阶段的 implement / review 汇报，或长耗时验证、冒烟发现）：按 [subagent-prompts.md](references/subagent-prompts.md) 的「to-tasks 增量补阶段」任务书派子代理（带回归描述与根因），返回后按「并行」节正常推进新阶段；不回退已通过状态、不开新单位。属需求变化才走下条 explore。
-9. **进行中改需求**：进行中用户改需求或补需求：不再派新的 implement/review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后回到「派发子代理」继续。
-10. 没有子代理工具：主对话按同一顺序亲自执行 to-spec / to-tasks / implement / archive，需要 sync-docs 时同样亲自执行（「sync-docs 派发」的条目直接作输入）；并行阶段改为串行；到 review 必须停止，不得在主对话代评。
-
-## sync-docs 派发
-
-触发点：① to-spec+to-tasks 子代理汇报「架构影响」非「无」；② to-tasks 因「架构影响」未收录而停止；③ implement 子代理汇报架构级变更（定义见 [code-map-update.md](../setup/references/code-map-update.md)）。
-
-- 技能包内 `sync-docs/SKILL.md` 存在：按 [subagent-prompts.md](references/subagent-prompts.md) 的 sync-docs 任务书派子代理，点名条目用触发子代理汇报的条目原文；返回后 `git-commit` auto 提交文档改动，再重新派被中断的环节（to-tasks / 该阶段 implement）。
-- 不存在：停下，把条目给用户，让用户先跑 `sync-docs`，再 `rush <feature>` 接着跑。
-- 同一触发点对同一条目只自动派一次；其它阶段后来汇报的新条目可再各派一次。sync-docs 汇报仍有未处理项，或重派后原环节仍停止：停下，把条目与未处理项给用户。
+1. **从「下一步」接着跑**：已有单位运行 `node .agents/scripts/cooking.mjs status <feature>`，按输出的「下一步」进入 explore / blueprint / 实现循环 / 归档。不自己查 `goal.md`、`spec.md`、`tasks/` 是否存在。「下一步」为 blueprint 且 `goal.md：无`，或新开单位（目录尚不存在，不跑脚本）：存在「不问就可能做错」的歧义才 explore，否则直接 blueprint。
+2. **explore 留在主对话执行**：读 `explore/SKILL.md` 并执行，直到 `goal.md` 为 `已确认`。查事实派子代理。确认后不换会话继续；下游输入只有 `goal.md`，问答内容不写进任务书。
+3. **blueprint**：按 [subagent-prompts.md](references/subagent-prompts.md) 派一个子代理。spec 有「架构影响」照常继续：落到哪个阶段，该阶段的实现子代理当轮改 `ARCHITECTURE.md` 与 `CODE-MAP.md`，review 核对。
+4. **实现循环**：见「并行」。每个阶段一个实现子代理，返回后派该阶段 review 子代理。
+5. **提交节奏**：本对话当 review 派发方。阶段 review 通过后执行 `git-commit` 技能（auto 模式），只暂存并提交该阶段的改动文件。
+6. **主对话只读**：`goal.md` 的「需求目标」、`cooking.mjs status` 的输出、子代理汇报的结论与阻塞项。不读 `tasks/P*.md`、spec 全文、`reviews/` 正文。脚本报错（成环、状态非法）：停下，原文给用户。
+7. **返工闭环**：review 不通过：派该阶段实现子代理返工（任务书写返工行），完成后再派 review（写返工行，「改动文件」只填返工汇报的路径）。单阶段最多自动返工 3 轮；超限仍不通过，或子代理执行异常：停下，把阻塞项给用户。
+8. **已通过阶段回归**：后续阶段的实现 / review 汇报或冒烟发现已通过阶段回归：按「blueprint 增量补阶段」任务书派子代理（带回归描述与根因），返回后按「并行」推进新阶段；不回退已通过状态、不开新单位。属需求变化走下条。
+9. **进行中改需求**：不再派新的实现 / review 子代理，在主对话执行 explore 的「改已有单位」流程；`goal.md` 重新 `已确认` 后回到第 3 步。
+10. **归档**：`status` 输出「可归档：是」且「评审文件：一致」→ 删除 `.agents/cooking/<feature>/`，不新建任何文件。
+11. **没有子代理工具**：主对话按同一顺序亲自执行 blueprint 与各阶段实现（遵守实现任务书的全部约束），并行改串行；到 review 必须停止，不得在主对话代评。
 
 ## 并行
 
 每轮运行 `node .agents/scripts/cooking.mjs status <feature>`，不自己算依赖：
 
-- 「可做」里的每个阶段**一个 implement 子代理**，同时开。依赖未通过评审的阶段脚本不会列出，也不得手动派。
-- 某个阶段的 implement 子代理返回后立刻派**该阶段**的 review 子代理，不等其它并行阶段实现完；review 通过即按该阶段改动路径 `git-commit` auto。
-- 「可归档：是」且「评审文件：一致」→ 直接删除 `.agents/cooking/<feature>/` 归档结束。
+- 「可做」里的每个阶段**一个实现子代理**，同时开。脚本没列出的阶段不得手动派。
+- 某阶段的实现子代理返回后立刻派**该阶段**的 review 子代理，不等其它并行阶段。
 
 ## 结束
 
-汇报：feature 路径、各阶段评审结论、是否已本地提交、若已 archive 则说明 cooking 目录已删。中途停下时写明卡在哪一环节、缺什么。
+汇报：feature 路径、各阶段评审结论、是否已本地提交、cooking 目录是否已删、实现子代理汇报的需用户处理的文档项。中途停下时写明卡在哪一环节、缺什么。

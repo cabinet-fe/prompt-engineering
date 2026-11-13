@@ -28,10 +28,11 @@
 
 | 场景 | 谁 |
 | --- | --- |
-| 本轮实现把 `CODE-MAP.md`（根或子包） / 技能 / 包内 `AGENTS.md` / `ACCEPTANCE.md` / 模块约定说错 | implement（阶段或直写），同一轮改掉 |
-| 未走 implement 的直接改文件（技能、包内文档等） | 当前对话当场改，或用户点名 `sync-docs` |
-| `.agents/docs/` 已有文件说错或用户点名改 | `sync-docs`。`SMELLS.md` 只从技能包模板原样覆写；`DEV-STANDARDS.md` 不从代码推断新规范 |
-| 用户点名改 `INSTRUCTIONS.md` | `sync-docs`，只改点名条目。主路径是用户直接编辑，agent 不自动增改 |
+| 本次改动让已有文档说错：根 `AGENTS.md` 文档表按「何时更新」该改的（含 `CODE-MAP.md`，架构级变更连同 `ARCHITECTURE.md`）、技能、包内 `AGENTS.md` / README、`ACCEPTANCE.md`、模块约定 | 做改动的会话当轮改：普通对话按根 `AGENTS.md`「收尾」，rush 由该阶段实现子代理改 |
+| 事后发现漏改、批量对齐，或用户点名改 `.agents/docs/` 某份 | `sync-docs` |
+| `DEV-STANDARDS.md` | 仅用户要求改规范时改；不从代码推断新规范 |
+| `SMELLS.md` | 只由 setup / `sync-docs` 从技能包模板原样覆写 |
+| `INSTRUCTIONS.md` | 用户直接编辑；用户点名时只改点名条目，agent 不自动增改 |
 | 用户点名新增自定义文档 | `sync-docs` 写入 `.agents/docs/<NAME>.md`，并在根 `AGENTS.md` 文档表追加一行。不可删改模板必有行 |
 | 为子包新增 `<pkg>/CODE-MAP.md`（用户点名，或根 `CODE-MAP.md` 树下已陈列但文件未建） | `sync-docs` 写入 `<pkg>/CODE-MAP.md`，并在根 `.agents/docs/CODE-MAP.md` 树下对应子包节点陈列 |
 | 代码/非代码切换、缺脚本/缺必有 docs、根 `AGENTS.md` 缺模板必有行或掺了短注 | 仅 setup |

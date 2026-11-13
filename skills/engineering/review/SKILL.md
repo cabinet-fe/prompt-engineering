@@ -1,7 +1,7 @@
 ---
 name: review
 description: >
-  只评不改代码。仅用户显式调用 review，或由 implement/rush 按流程触发时使用。
+  只评不改代码。仅用户显式调用 review，或由 rush、根 AGENTS.md「收尾」按流程触发时使用。
 ---
 
 # review
@@ -23,7 +23,7 @@ description: >
 4. 没有子代理工具：停止，不能在本对话降级代评。
 5. 子代理返回后只转述：结论、阻塞项。
 6. 不通过或无改动：结束（由 rush 编排时，rush 自动进入返工闭环）。
-7. 通过：执行 `git-commit` 技能（auto 模式），只暂存并提交本轮/本阶段的应入库改动文件（代码、根与子包 `CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`），不混入其它并行阶段的未提交文件。没有该技能则停止，不要另写提交流程。
+7. 通过：执行 `git-commit` 技能（auto 模式），只暂存并提交本轮/本阶段的应入库改动文件（代码、根与子包 `CODE-MAP.md`、本轮改过的技能 / 包内 AGENTS.md / `ACCEPTANCE.md`），不混入其它并行阶段的未提交文件。没有该技能则停止，不要另写提交流程。阶段评审通过后 `cooking.mjs status <feature>` 显示「可归档：是」且「评审文件：一致」：删除 `.agents/cooking/<feature>/`（由 rush 编排时由 rush 删）。
 
 ## 前置检查
 
@@ -40,10 +40,10 @@ description: >
 
 ## 已有文档
 
-两条路径都做。只读，不改文档、不代跑 `sync-docs`。对照本次 diff（细则见 [persistent-docs.md](../setup/references/persistent-docs.md)）：
+两条路径都做。只读，不改文档、不代跑 `sync-docs`。对照本次 diff 与根 `AGENTS.md` 文档表的「何时更新」（细则见 [persistent-docs.md](../setup/references/persistent-docs.md)）：
 
-- 已有的技能 / 包内 AGENTS.md / ACCEPTANCE.md 被 diff 说错且未改 → 阻塞。不存在对应文档则不阻塞。
-- 代码类：diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的「要改」节条目但对应 `CODE-MAP.md`（根或子包）对应行没改 → 阻塞。非代码不要求 CODE-MAP。
+- 已有文档被 diff 说错且未改 → 阻塞：按「何时更新」该改的 `.agents/docs/` 文件、技能正文、包内 `AGENTS.md` / README、`ACCEPTANCE.md`。不存在对应文档则不阻塞。
+- 代码类：diff 触及 [code-map-update.md](../setup/references/code-map-update.md) 的「要改」节条目但对应 `CODE-MAP.md`（根或子包）对应行没改 → 阻塞。diff 属于架构级变更（阶段评审还包括 spec「架构影响」落在本阶段的条目）但 `ARCHITECTURE.md` 没改 → 阻塞。非代码不要求 CODE-MAP / ARCHITECTURE。
 
 ## 评审轴
 
@@ -54,7 +54,7 @@ description: >
 | --------- | -------------------------------------------- | ----------------------------------------------------------- |
 | Spec      | `spec.md` + 该 `Pn.md` 完成标准；有无超范围  | 无                                                          |
 | Standards | 见下                                         | 见下                                                        |
-| 正确性    | 改动是否自洽、有无明显 bug、是否满足该 `Pn.md` 完成标准的行为语义；核对 implement 汇报的测试命令与结果 | 改动是否自洽、有无明显 bug、是否与提交说明 / 本对话意图一致 |
+| 正确性    | 改动是否自洽、有无明显 bug、是否满足该 `Pn.md` 完成标准的行为语义；核对实现方汇报的测试命令与结果 | 改动是否自洽、有无明显 bug、是否与提交说明 / 本对话意图一致 |
 
 ### Standards
 
@@ -70,8 +70,8 @@ description: >
 1. 读该 `Pn.md`、`spec.md` 相关段、本阶段改动文件、任务书里的测试结果；做「已有文档」与「评审轴」。`reviews/Pn.md` 的「评审记录」非「无」→ 本轮为返工评审，加读既有记录并按「返工评审收窄」执行。
 2. 按 [review-template.md](references/review-template.md) 写 `.agents/cooking/<feature>/reviews/Pn.md`。
 3. 回写「评审」：`node .agents/scripts/cooking.mjs set <feature> <Pn> 评审 通过|不通过`，不手改 `Pn.md`。脚本报错（如实现未完成）：停止，原文汇报。
-4. 不通过：列阻塞项（带 `B<n>` 编号），写明需针对阻塞项返工（独立调用时提示用户 `implement <feature> <Pn>`；rush 编排时由 rush 自动触发）。不改代码。依赖本阶段的后续阶段不能开始。
-5. 通过：还有可做阶段则列出；全部阶段通过则提示可 `archive <feature>`。
+4. 不通过：列阻塞项（带 `B<n>` 编号），写明需针对阻塞项返工（独立调用时提示用户 `rush <feature>` 接着返工；rush 编排时由 rush 自动触发）。不改代码。依赖本阶段的后续阶段不能开始。
+5. 通过：还有可做阶段则列出；全部阶段通过则写明可归档（由派发方删除 cooking 目录）。
 
 返工评审收窄（只对返工轮；首轮全量）：
 

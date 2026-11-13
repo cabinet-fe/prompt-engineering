@@ -15,7 +15,7 @@
 ## Standards
 
 - 通过 / 不通过
-- 文档：<哪条规范；代码类触及 CODE-MAP「要改」条目时对应行是否已改；已有技能 / 包内 AGENTS.md / ACCEPTANCE.md 是否被说错>
+- 文档：<哪条规范；按根 AGENTS「何时更新」该改的文档是否已改（代码类含 CODE-MAP「要改」条目与架构级变更对应的 ARCHITECTURE）；已有技能 / 包内 AGENTS.md / ACCEPTANCE.md 是否被说错>
 - 技能：无对应 / <技能名：遵守或违反哪条>
 - 坏味道：无 / <名称与位置；启发式，不阻塞>
 

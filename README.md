@@ -2,7 +2,7 @@
 
 面向 AI Agent 的提示词工程仓库，两大件：
 
-- **技能（`skills/`）**：工程流程、语言/框架规范、角色把关、实用工具，共 26 个，入口 `SKILL.md`。让 AI 按标准流程干活、对齐项目实际版本，不靠训练数据猜 API。
+- **技能（`skills/`）**：工程流程、语言/框架规范、角色把关、实用工具，共 23 个，入口 `SKILL.md`。让 AI 按标准流程干活、对齐项目实际版本，不靠训练数据猜 API。
 - **文档库引擎（docs-server）**：企业内部库文档检索系统。中心 Go 服务（`docs-server/`）用 SQLite FTS5 建全文索引，零依赖推送脚本（`scripts/push-docs.mjs`）把库文档整库推上去；配套 `docs-gen`（库维护者：生成、同步、推送文档）与 `docs-search`（库使用者：一个技能检索所有库）两个技能。
 
 门户站点（报刊风）：<https://cabinet-fe.github.io/prompt-engineering/>，源码在 `docs/`。
@@ -26,11 +26,11 @@ npx skills add cabinet-fe/prompt-engineering -g              # 装到所有项�
 | --- | --- |
 | 仓库第一次接入 | `setup`，一次性 |
 | 需求含糊，边界还没定 | `explore` |
-| 大功能，全自动跑完 | `rush` |
-| 需求明确，想自己把关每一步 | `to-spec` → `to-tasks` → `implement` → `archive` |
-| 改个 bug、加个字段 | `implement <描述>` 直写 |
+| 多阶段大功能，全自动跑完 | `rush` |
+| 先看清规格与阶段切分，再跑实现 | `blueprint` → `rush <feature>` |
+| 日常开发、改 bug、小功能 | 直接对话，收尾按根 `AGENTS.md` 自动更新文档并做独立评审 |
 | 只想让人评一遍现有改动 | `review` |
-| 手动改完代码，已有文档可能撒谎 | `sync-docs` |
+| 发现已有文档漏改，或需批量对齐 / 新增文档 | `sync-docs` |
 
 每个技能的用法、规则、停下来的条件，见对应 `SKILL.md`；场景化介绍见[门户站点](https://cabinet-fe.github.io/prompt-engineering/)。
 

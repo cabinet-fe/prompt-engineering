@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>提示词工程 · 面向 AI Agent 的技能与文档库引擎</title>
-<meta name="description" content="面向 AI Agent 的提示词工程：26 个即装即用的工程技能（流程、语言框架、角色、工具），加一套 docs-server 文档库引擎——让内部库文档跟得上代码、能被 AI 直接检索。">
+<meta name="description" content="面向 AI Agent 的提示词工程：23 个即装即用的工程技能（流程、语言框架、角色、工具），加一套 docs-server 文档库引擎——让内部库文档跟得上代码、能被 AI 直接检索。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Noto+Serif+SC:wght@400..900&family=Source+Serif+4:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
     </h1>
     <div class="edition-line hairline-bottom double-under">
       <span class="mono-caps">工作流</span>
-      <span class="mono-caps">26 个即装即用技能</span>
+      <span class="mono-caps">23 个即装即用技能</span>
       <span class="mono-caps">文档库引擎 docs-server</span>
     </div>
   </div>
@@ -56,7 +56,7 @@
 
     <div class="front-cols">
       <div class="lead-article">
-        <p class="drop-cap">这个仓库分三块。<b>工作流</b>：从需求梳理到交付归档的标准管线，治临时记录乱堆、过程不可控。<b>技能库</b>：26 个即装即用的 Agent 技能，让 AI 对齐项目实际版本、按角色把关，不靠训练数据猜 API。<b>文档库引擎</b>：库维护者把内部库文档推上 docs-server 建全文索引，使用者的 AI 用一个技能检索所有库——内部库的真实用法，不再靠模型猜。</p>
+        <p class="drop-cap">这个仓库分三块。<b>工作流</b>：从需求梳理到交付归档的标准管线，治临时记录乱堆、过程不可控。<b>技能库</b>：23 个即装即用的 Agent 技能，让 AI 对齐项目实际版本、按角色把关，不靠训练数据猜 API。<b>文档库引擎</b>：库维护者把内部库文档推上 docs-server 建全文索引，使用者的 AI 用一个技能检索所有库——内部库的真实用法，不再靠模型猜。</p>
         <p>工程流程类技能需要<b>显式输入命令调用</b>；语言与框架规范在你编辑对应代码文件时<b>自动生效</b>。安装只要一条命令：</p>
         <div class="install-box bordered-boxout">
           <span class="install-prompt mono">$</span>
@@ -69,9 +69,9 @@
       <aside class="side-briefs">
         <h3 class="brief-title">三个核心优势</h3>
         <article class="brief">
-          <h4>文档与代码实时对齐</h4>
-          <p>代码改动如果影响了架构、规范或模块说明，当场直接更新对应文档，确保文档永远不说假话。没受影响的内容绝不乱碰，坚决不建冗余重复的摘要。</p>
-          <p class="brief-meta mono-caps">精准更新 · 拒绝冗余</p>
+          <h4>收尾自动同步文档与独立评审</h4>
+          <p><code>setup</code> 在根 <code>AGENTS.md</code> 写入「收尾」约定：无论走工作流还是日常直接对话，交付前都会当场更新受影响的架构、地图或约定文档，非琐碎改动自动派独立子代理做 git 审查。</p>
+          <p class="brief-meta mono-caps">AGENTS.md 收尾 · 精准更新 · 独立审查</p>
         </article>
         <article class="brief">
           <h4>识别实际版本，杜绝幻觉</h4>
@@ -90,7 +90,7 @@
   <!-- ================= 跑马灯分隔带 ================= -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-inner mono-caps">
-      <span>setup ✳ explore ✳ to-spec ✳ to-tasks ✳ implement ✳ review ✳ sync-docs ✳ archive ✳ rush ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳ release ✳ docs-server ✳&nbsp;</span>
+      <span>setup ✳ explore ✳ blueprint ✳ rush ✳ review ✳ sync-docs ✳ acceptance ✳ TypeScript ✳ Node ✳ Go ✳ Rust ✳ Vue ✳ React ✳ Svelte ✳ Gin ✳ frontend-expert ✳ backend-expert ✳ git-commit ✳ build-lib-skill ✳ analysis ✳ docs-gen ✳ docs-search ✳ release ✳ docs-server ✳&nbsp;</span>
     </div>
   </div>
 
@@ -110,17 +110,17 @@
         <button class="pick-row active" data-pick="first" role="tab">新仓库首次接入</button>
         <button class="pick-row" data-pick="vague" role="tab">需求还不明确，需要梳理</button>
         <button class="pick-row" data-pick="rush" role="tab">需求明确，想全自动跑完</button>
-        <button class="pick-row" data-pick="steps" role="tab">需求明确，想每步手动把关</button>
-        <button class="pick-row" data-pick="small" role="tab">简单改个 Bug 或字段</button>
+        <button class="pick-row" data-pick="steps" role="tab">先看规格与任务切分，再自动跑</button>
+        <button class="pick-row" data-pick="small" role="tab">日常开发、改 Bug 或小功能</button>
         <button class="pick-row" data-pick="review" role="tab">仅对现有改动做代码审查</button>
-        <button class="pick-row" data-pick="sync" role="tab">手动改完代码，更新失真文档</button>
+        <button class="pick-row" data-pick="sync" role="tab">文档漏改，批量对齐或新增</button>
         <button class="pick-row" data-pick="accept" role="tab">为项目增加自动化验收</button>
       </div>
 
       <div class="pick-note bordered-boxout" id="pick-note" aria-live="polite">
         <p class="pick-note-label mono-caps">推荐命令</p>
         <p class="pick-note-cmd"><code id="pick-cmd" class="mono">setup</code></p>
-        <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，建立统一的开发底座。后续其他技能都以此为依据。</p>
+        <p class="pick-note-desc" id="pick-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，并在根 AGENTS.md 写入索引与「收尾」约定——后续无论走工作流还是直接对话，交付前都会自动更新文档并触发独立审查。</p>
       </div>
     </div>
 
@@ -133,15 +133,11 @@
         <span class="flow-sep" aria-hidden="true">→</span>
         <button class="flow-node" data-flow="explore"><span class="flow-step mono">STEP 2</span><span class="flow-name">explore</span></button>
         <span class="flow-sep" aria-hidden="true">→</span>
-        <button class="flow-node" data-flow="to-spec"><span class="flow-step mono">STEP 3</span><span class="flow-name">to-spec</span></button>
+        <button class="flow-node" data-flow="blueprint"><span class="flow-step mono">STEP 3</span><span class="flow-name">blueprint</span></button>
         <span class="flow-sep" aria-hidden="true">→</span>
-        <button class="flow-node" data-flow="to-tasks"><span class="flow-step mono">STEP 4</span><span class="flow-name">to-tasks</span></button>
+        <button class="flow-node" data-flow="rush"><span class="flow-step mono">STEP 4</span><span class="flow-name">rush</span></button>
         <span class="flow-sep" aria-hidden="true">→</span>
-        <button class="flow-node" data-flow="implement"><span class="flow-step mono">STEP 5</span><span class="flow-name">implement</span></button>
-        <span class="flow-sep" aria-hidden="true">→</span>
-        <button class="flow-node" data-flow="review"><span class="flow-step mono">STEP 6</span><span class="flow-name">review</span></button>
-        <span class="flow-sep" aria-hidden="true">→</span>
-        <button class="flow-node" data-flow="archive"><span class="flow-step mono">STEP 7</span><span class="flow-name">archive</span></button>
+        <button class="flow-node" data-flow="review"><span class="flow-step mono">STEP 5</span><span class="flow-name">review</span></button>
       </div>
 
       <div class="rush-strip">
@@ -150,17 +146,15 @@
         <div class="rush-strip-points mono-caps">
           <span>流程起点</span>
           <span>explore 后</span>
-          <span>to-spec 后</span>
-          <span>to-tasks 后</span>
-          <span>implement 后</span>
-          <span>review 后</span>
+          <span>blueprint 后</span>
+          <span>阶段实现 / review 中途</span>
         </div>
       </div>
 
       <div class="flow-note bordered-boxout" id="flow-note" aria-live="polite">
         <p class="flow-note-title" id="flow-title">STEP 1 · setup · 初始化底座</p>
         <p class="flow-note-cmd"><code id="flow-cmd" class="mono">setup</code></p>
-        <p class="flow-note-desc" id="flow-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本。其他工程技能都会基于这套底座运行。</p>
+        <p class="flow-note-desc" id="flow-desc">新仓库只需运行一次。通过简短沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，并在根 AGENTS.md 写入文档索引与「收尾」约定。日常对话与工程技能都基于这套底座运行。</p>
       </div>
     </div>
   </section>
@@ -169,7 +163,7 @@
   <section id="skills" class="section">
     <div class="section-part mono-caps">PART Ⅱ</div>
     <header class="section-head">
-      <h2 class="section-title">技能库 · 26 个内置技能</h2>
+      <h2 class="section-title">技能库 · 23 个内置技能</h2>
     </header>
     <p class="section-deck">工程流程、语言、框架、角色、工具五类。点击卡片展开详情，查看适用场景、常用命令与使用提示。</p>
 
@@ -190,7 +184,7 @@
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
           <p><b>适用场景：</b>新仓库首次接入，或技术栈、架构分层发生重大调整时。</p>
-          <p><b>具体功能：</b>与你沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，写入 <code>PROJECT.md</code> 等底座文件。其他工程技能均依赖此底座。</p>
+          <p><b>具体功能：</b>与你沟通确认项目类型，生成架构与规范文档、模块地图及辅助脚本，写入 <code>PROJECT.md</code> 等底座文件，并在根 <code>AGENTS.md</code> 写入按需索引与「收尾」约定（交付前更新文档、非琐碎改动派独立子代理评审）。</p>
           <p><b>常用命令：</b><code>setup</code></p>
           <p><b>使用提示：</b>完成后运行预检脚本应显示 PASS。其他工程技能若发现未初始化会暂停并提示先运行 setup。</p>
         </div>
@@ -202,45 +196,21 @@
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
           <p><b>适用场景：</b>需求想法还不成熟、业务逻辑存在模糊点，需要提前澄清时。</p>
-          <p><b>具体功能：</b>只沟通不写代码。将潜在疑问整理为清单并向你提问，直到核心问题全部澄清并经你确认，才推进到规格制定环节。</p>
+          <p><b>具体功能：</b>只沟通不写代码。将潜在疑问整理为清单并向你提问，直到核心问题全部澄清并经你确认，才推进到 blueprint 拆解或交由 rush 编排。</p>
           <p><b>常用命令：</b><code>explore 审批单支持批量转办</code></p>
           <p><b>使用提示：</b>若后续需求发生大幅改动，可再次对该需求运行 explore 重新梳理方案。</p>
         </div>
       </button>
 
       <button class="skill-card cat-engineering" data-cat="engineering">
-        <span class="skill-name mono">to-spec</span>
-        <span class="skill-one">将明确需求转化为可量化验收的技术规格</span>
+        <span class="skill-name mono">blueprint</span>
+        <span class="skill-one">一次产出技术规格与可并行的阶段任务</span>
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>需求已经完全明确（或已通过 explore 梳理完毕），准备沉淀技术设计时。</p>
-          <p><b>具体功能：</b>编写清晰的技术规格文档，制定客观、可判定的验收标准，并精确划定本次预计改动或新增的文件范围。</p>
-          <p><b>常用命令：</b><code>to-spec approval-batch-transfer</code></p>
-          <p><b>使用提示：</b>若需求本身就足够清晰，可直接调用此命令跳过 explore。</p>
-        </div>
-      </button>
-
-      <button class="skill-card cat-engineering" data-cat="engineering">
-        <span class="skill-name mono">to-tasks</span>
-        <span class="skill-one">将规格拆解为可独立编码的阶段任务清单</span>
-        <span class="skill-cat mono-caps">工程流程</span>
-        <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>技术规格编写完成后，将大功能切分为细粒度、低耦合的开发步骤。</p>
-          <p><b>具体功能：</b>把规格拆分为多个阶段任务（P1、P2 等），明确前后依赖关系。无依赖的任务可直接并行开发。</p>
-          <p><b>常用命令：</b><code>to-tasks approval-batch-transfer</code></p>
-          <p><b>使用提示：</b>若项目配置了自动化验收规则，会自动将验收指标追加到各任务的完成标准中。</p>
-        </div>
-      </button>
-
-      <button class="skill-card cat-engineering" data-cat="engineering">
-        <span class="skill-name mono">implement</span>
-        <span class="skill-one">执行具体阶段的编码实现，或处理轻量改动</span>
-        <span class="skill-cat mono-caps">工程流程</span>
-        <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>按拆解的任务分步编写代码；或直接处理改 Bug、增减字段等轻量改动。</p>
-          <p><b>具体功能：</b>严格按现有代码规范编写代码，运行测试验证，当场同步受影响的现有文档，并在编码完成后自动发起代码审查。</p>
-          <p><b>常用命令：</b><code>implement approval-batch-transfer P1</code> 或 <code>implement 将 UserCard 头像改为懒加载</code></p>
-          <p><b>使用提示：</b>小改动直接在命令后附带描述即可（直写模式），无需走规格与任务拆解。遇到重构分层变动会提示先重新初始化底座。</p>
+          <p><b>适用场景：</b>需求已经明确（或已通过 explore 梳理完毕），准备拆解大功能并确认规格与阶段切分时。</p>
+          <p><b>具体功能：</b>一次产出 <code>spec.md</code> 与 <code>tasks/Pn.md</code>：制定可判定的验收标准，标注架构影响，并按依赖切分可并行的阶段任务。</p>
+          <p><b>常用命令：</b><code>blueprint approval-batch-transfer</code></p>
+          <p><b>使用提示：</b>需求本身已足够清晰时可直接调用跳过 explore；完成后可直接交由 <code>rush</code> 推进实现。</p>
         </div>
       </button>
 
@@ -252,31 +222,19 @@
           <p><b>适用场景：</b>阶段编码完成、或想对当前工作区 / 分支变动做一次严格质量把关时。</p>
           <p><b>具体功能：</b>只做审查不改代码。在独立子代理中比对功能契约、代码规范、文档同步与逻辑正确性，防止自写自审带来盲区。</p>
           <p><b>常用命令：</b><code>review</code>、<code>review main</code> 或 <code>review approval-batch-transfer P2</code></p>
-          <p><b>使用提示：</b>审查通过后自动生成本地提交；发现阻断问题则列出清单要求返工修复，未通过前禁止推进下游任务。</p>
+          <p><b>使用提示：</b>审查通过后自动生成本地提交，全部阶段通过时自动清理 cooking 目录；发现阻断问题则列出清单要求返工修复。</p>
         </div>
       </button>
 
       <button class="skill-card cat-engineering" data-cat="engineering">
         <span class="skill-name mono">sync-docs</span>
-        <span class="skill-one">定向同步与最新代码不一致的现有文档</span>
+        <span class="skill-one">补漏对齐失真文档，或新增自定义文档</span>
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>手动改动代码后，导致现有架构说明、模块地图或开发规范过时失效时。</p>
-          <p><b>具体功能：</b>核对最新代码，仅修订被改动影响的现有文档，未受影响的内容绝不乱动，且禁止新建多余文档。</p>
+          <p><b>适用场景：</b>发现已有持久文档漏改、需要批量对齐，或要新增自定义 <code>.agents/docs/</code> 文档与子包 <code>CODE-MAP.md</code> 时。</p>
+          <p><b>具体功能：</b>核对最新代码，精准修订受影响的文档，未受影响的内容绝不乱动。</p>
           <p><b>常用命令：</b><code>sync-docs</code> 或 <code>sync-docs src/modules/approval</code></p>
-          <p><b>使用提示：</b>正常走 implement 流程时会自动同步；本命令主要用于脱离流程手动修改代码后的兜底对齐。</p>
-        </div>
-      </button>
-
-      <button class="skill-card cat-engineering" data-cat="engineering">
-        <span class="skill-name mono">archive</span>
-        <span class="skill-one">功能全部完成交付后，清理临时过程记录</span>
-        <span class="skill-cat mono-caps">工程流程</span>
-        <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>某个功能的所有阶段任务均已实现并通过代码审查，准备正式交付时。</p>
-          <p><b>具体功能：</b>最终确认对外文档与代码完全对齐，清理开发过程中的临时目录（cooking/），使仓库恢复整洁。</p>
-          <p><b>常用命令：</b><code>archive approval-batch-transfer</code></p>
-          <p><b>使用提示：</b>若仍有任务未完成或审查未通过，会明确提示阻断原因并拒绝归档。</p>
+          <p><b>使用提示：</b>日常改动都会按根 <code>AGENTS.md</code>「收尾」当轮同步文档；本命令主要用于事后补漏、批量对齐与新增文档。</p>
         </div>
       </button>
 
@@ -285,10 +243,10 @@
         <span class="skill-one">自动编排开发全流程，可在任意环节介入接手</span>
         <span class="skill-cat mono-caps">工程流程</span>
         <div class="skill-detail" hidden>
-          <p><b>适用场景：</b>需求明确的大中型功能开发，希望自动推进任务拆解、并行编码、逐阶段审查与提交；或流程进行到一半，想从当前进度继续。</p>
-          <p><b>具体功能：</b>读取当前进度断点续跑：可在流程起点、explore / to-spec / to-tasks / implement / review 之后的任意位置接手，自动补齐剩余环节。无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环。</p>
+          <p><b>适用场景：</b>需求明确的大中型功能开发，希望自动推进规格拆解、并行编码、逐阶段审查、提交与归档；或流程进行到一半，想从当前进度继续。</p>
+          <p><b>具体功能：</b>读取当前进度断点续跑：可在流程起点、explore / blueprint / 阶段实现与 review 之后的任意位置接手，自动补齐剩余环节。无依赖阶段并行开发，单阶段完成即刻审查，未通过自动返工闭环，全部通过后自动归档。</p>
           <p><b>常用命令：</b><code>rush 审批单支持批量转办</code> 或 <code>rush approval-batch-transfer</code></p>
-          <p><b>使用提示：</b>适合多阶段大功能；日常简单修改建议直接使用 <code>implement</code> 直写更轻巧。</p>
+          <p><b>使用提示：</b>适合多阶段大功能；日常简单修改直接对话开发即可，收尾会自动更新文档并做独立评审。</p>
         </div>
       </button>
 
@@ -300,7 +258,7 @@
           <p><b>适用场景：</b>需要给项目增加端到端测试或接口自动化验证，提高交付质量时。</p>
           <p><b>具体功能：</b>扫描项目现有的测试和构建命令，针对性推荐适合的自动化测试方案，生成验收规范 <code>ACCEPTANCE.md</code>。</p>
           <p><b>常用命令：</b><code>acceptance</code></p>
-          <p><b>使用提示：</b>配置后，拆解的任务会自动追加验收要求，审查时也会以此为硬性标准。</p>
+          <p><b>使用提示：</b>配置后，<code>blueprint</code> 拆解阶段任务时会自动追加验收要求，<code>review</code> 审查时也会以此为硬性标准。</p>
         </div>
       </button>
 
@@ -541,16 +499,14 @@ push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search �
       <div class="start-col">
         <h3 class="start-h">② 两种常见使用方式</h3>
         <div class="cmd-block">
-          <p class="cmd-comment mono-caps"># 方式 A：分步执行（适合探索与精细把关）</p>
-          <div class="cmd-line"><code class="mono">explore 审批单想支持批量转办</code></div>
-          <div class="cmd-line"><code class="mono">to-spec approval-batch-transfer</code></div>
-          <div class="cmd-line"><code class="mono">to-tasks approval-batch-transfer</code></div>
-          <div class="cmd-line"><code class="mono">implement approval-batch-transfer P1</code></div>
-          <div class="cmd-line"><code class="mono">archive approval-batch-transfer</code></div>
+          <p class="cmd-comment mono-caps"># 日常开发 / 小改动：直接对话，收尾自动更新文档并独立审查</p>
+          <div class="cmd-line"><code class="mono">把 UserCard 的头像换成懒加载</code></div>
         </div>
         <div class="cmd-block">
-          <p class="cmd-comment mono-caps"># 方式 B：rush 自动编排（任意环节可介入，大需求一键跑完）</p>
-          <div class="cmd-line"><code class="mono">rush 审批单想支持批量转办</code></div>
+          <p class="cmd-comment mono-caps"># 多阶段大功能：先看清规格再跑，或直接 rush 全自动编排</p>
+          <div class="cmd-line"><code class="mono">explore 审批单想支持批量转办</code></div>
+          <div class="cmd-line"><code class="mono">blueprint approval-batch-transfer</code></div>
+          <div class="cmd-line"><code class="mono">rush approval-batch-transfer</code></div>
         </div>
       </div>
 
@@ -563,9 +519,9 @@ push-docs.mjs ──HTTP──▶ docs-server ◀──REST── docs-search �
 ├── scripts/    预检 precheck、任务管理 cooking
 │               与规范模板
 └── cooking/    临时开发记录（gitignore，不提交）
-AGENTS.md       根索引文件，供 AI 按需加载具体文档</pre>
+AGENTS.md       根索引 + 收尾约定（按需读文档、交付前同步文档与独立评审）</pre>
         </div>
-        <p class="start-note"><code>INSTRUCTIONS.md</code> 存放用户自定义指令，始终读取，由用户直接维护。若执行过 <code>acceptance</code> 会额外生成 <code>ACCEPTANCE.md</code> 验收规范。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
+        <p class="start-note">根 <code>AGENTS.md</code> 既是按需读取的文档索引，也约束任何会话收尾时同步受影响文档并做独立审查；<code>INSTRUCTIONS.md</code> 存放用户自定义指令，由用户直接维护。任务完成后 <code>cooking/</code> 临时记录会自动清除。</p>
       </div>
 
       <div class="start-col">

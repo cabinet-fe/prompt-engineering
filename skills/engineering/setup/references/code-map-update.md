@@ -1,6 +1,6 @@
 # CODE-MAP 更新契约
 
-implement / review / sync-docs / setup 都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。适用根 `.agents/docs/CODE-MAP.md` 与已有的嵌套子包 `<pkg>/CODE-MAP.md`。
+blueprint / rush / review / sync-docs / setup 都引用本文，禁止各写一套。根 `AGENTS.md` 只写一句何时更新；细则以本文为准。适用根 `.agents/docs/CODE-MAP.md` 与已有的嵌套子包 `<pkg>/CODE-MAP.md`。
 
 只改相关树节点、模块行、依赖边。禁止重写全文。禁止在本文件写上下文链接。
 
@@ -12,7 +12,7 @@ implement / review / sync-docs / setup 都引用本文，禁止各写一套。�
 
 ## 架构级变更（统一定义）
 
-换栈、改分层（含新增分层，无论在根还是子包内）、加/删应用边界、新包（多包仓库里落在 `PROJECT.md` 所列包路径之外的新增路径）、拆合包。同一分层内新增模块（含已设 `<pkg>/CODE-MAP.md` 的子包内同层新增子模块）不算架构级变更，implement 时改对应 `CODE-MAP.md` 即可。判定口径只有本文这一份，各技能（to-spec / implement / rush / sync-docs）引用本文，不再各自枚举。
+换栈、改分层（含新增分层，无论在根还是子包内）、加/删应用边界、新包（多包仓库里落在 `PROJECT.md` 所列包路径之外的新增路径）、拆合包。同一分层内新增模块（含已设 `<pkg>/CODE-MAP.md` 的子包内同层新增子模块）不算架构级变更，改对应 `CODE-MAP.md` 即可。判定口径只有本文这一份，各技能引用本文，不再各自枚举；根 `AGENTS.md` 文档表里的简述以本文为准。
 
 ## 要改
 
@@ -36,16 +36,13 @@ implement / review / sync-docs / setup 都引用本文，禁止各写一套。�
 | --- | --- |
 | 首次生成（根及按需子包 `CODE-MAP.md`） | setup |
 | 为已有子包新增 `<pkg>/CODE-MAP.md`（并在根 `CODE-MAP.md` 树下陈列） | sync-docs |
-| 架构级变更（见「架构级变更」节） | sync-docs（一并改 ARCHITECTURE + 相关 CODE-MAP） |
-| 本轮实现触及「要改」节条目 | implement（阶段或直写，按「分层归属」改根和/或子包 CODE-MAP） |
+| 架构级变更（见「架构级变更」节） | 做改动的会话当轮改（一并改 `ARCHITECTURE.md` + 相关 CODE-MAP） |
+| 本次改动触及「要改」节条目 | 做改动的会话当轮改（按「分层归属」改根和/或子包 CODE-MAP） |
+| 事后发现漏改 | sync-docs |
 | 用户点名 sync-docs 且路径或职责已被代码推翻 | sync-docs |
 
-全栈架构形态变化：`sync-docs` 更新 `PROJECT.md` + `ARCHITECTURE.md`，并同步本文件。
+全栈架构形态变化：做改动的会话一并更新 `PROJECT.md` + `ARCHITECTURE.md` 与相关 CODE-MAP。
 
 ## review 阻塞
 
-代码类且本 diff 触及「要改」节条目，但按「分层归属」对应的根 `.agents/docs/CODE-MAP.md` 或子包 `<pkg>/CODE-MAP.md` 对应行没改。
-
-## implement 停止
-
-若改动等于架构级变更（见「架构级变更」节）：停止编码，不要只改 CODE-MAP。告诉用户先跑 `sync-docs` 更新 `ARCHITECTURE.md`，再由 sync-docs 同步本文件。
+代码类且本 diff 触及「要改」节条目，但按「分层归属」对应的根 `.agents/docs/CODE-MAP.md` 或子包 `<pkg>/CODE-MAP.md` 对应行没改；或本 diff 属于架构级变更但 `ARCHITECTURE.md` 没改。

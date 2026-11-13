@@ -6,11 +6,11 @@
 //     总览：每个 cooking 单位一行：标识、下一步、各阶段状态；没有单位输出 无
 //   node .agents/scripts/cooking.mjs status <feature>
 //     详情：goal.md（无|未确认|已确认）、spec.md（有|无）、tasks/；每个阶段一行：前置 / 实现 / 评审；
-//     再给出 可做（可并行 implement）、待评审、可归档、评审文件、下一步
+//     再给出 可做（可并行实现）、待评审、可归档、评审文件、下一步
 //   node .agents/scripts/cooking.mjs set <feature> <Pn> 实现 <进行中|完成>
 //   node .agents/scripts/cooking.mjs set <feature> <Pn> 评审 <通过|不通过>
-// 下一步：goal 未确认→explore；无 spec→to-spec；无 tasks→to-tasks；全部阶段通过→archive；
-//         否则 implement <可做> / review <待评审>。需求含糊与否脚本判不了，由技能按 goal 有无处理。
+// 下一步：goal 未确认→explore；无 spec 或无 tasks→blueprint；全部阶段通过→归档（删除该单位目录）；
+//         否则 实现 <可做> / review <待评审>。需求含糊与否脚本判不了，由技能按 goal 有无处理。
 // 转移：
 //   实现  未开始→进行中（前置须全部 实现完成 且 评审通过）；进行中→完成（评审同时置回 未开始）；
 //         完成→进行中 仅当 评审=不通过（返工）
@@ -70,7 +70,7 @@ function featureDir(feature) {
 
 function tasksDir(feature) {
   const dir = path.join(featureDir(feature), 'tasks');
-  if (!fs.existsSync(dir)) fail(`找不到 ${dir}（先 to-tasks）`);
+  if (!fs.existsSync(dir)) fail(`找不到 ${dir}（先 blueprint）`);
   return dir;
 }
 
@@ -237,12 +237,12 @@ function reviewFileIssues(unit) {
 
 function nextStep(unit) {
   if (unit.goal === '未确认') return 'explore（goal 未确认）';
-  if (!unit.hasSpec) return unit.goal === '无' ? 'to-spec（无 goal，需求含糊则先 explore）' : 'to-spec';
-  if (!unit.derived) return 'to-tasks';
+  if (!unit.hasSpec) return unit.goal === '无' ? 'blueprint（无 goal，需求含糊则先 explore）' : 'blueprint';
+  if (!unit.derived) return 'blueprint（补 tasks）';
   const { ready, pending, archivable } = unit.derived;
-  if (archivable) return 'archive';
+  if (archivable) return '归档（删除本单位目录）';
   const parts = [];
-  if (ready.length) parts.push(`implement ${ready.join('、')}`);
+  if (ready.length) parts.push(`实现 ${ready.join('、')}`);
   if (pending.length) parts.push(`review ${pending.join('、')}`);
   return parts.join('；');
 }
@@ -303,7 +303,7 @@ function printStatus(feature) {
 function nextImpl(stage, stages, value) {
   const { 实现: impl, 评审: review } = stage.status;
   if (!['进行中', '完成'].includes(value)) {
-    fail('实现 只能置为 进行中 | 完成（未开始 是 to-tasks 的初始值，不可回退）');
+    fail('实现 只能置为 进行中 | 完成（未开始 是 blueprint 写的初始值，不可回退）');
   }
   if (value === impl) return {};
   if (value === '进行中') {
