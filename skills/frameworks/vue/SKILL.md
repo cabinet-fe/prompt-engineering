@@ -41,6 +41,19 @@ description: Vue 3 开发实践。按项目 Vue minor（优先 3.4 / 3.5）选�
 
 列表要追踪元素字段用 `ref([])`；只在替换整表时更新，用 `shallowRef`。
 
+### 直接更新，不要滥用不可变拷贝
+
+Vue 3 基于 Proxy 实现细粒度响应式。明确需要更新当前状态时直接修改即可，不要把 React 的不可变拷贝习惯搬过来（如 `{ ...state.value, filters: { ...state.value.filters } }`、`[...list.value, item]` 或 `structuredClone` 再整份赋值），既冗余低效又遮蔽意图：
+
+```ts
+// 正例：顺应响应式模型直接修改
+state.value.filters[key] = val;
+delete state.value.filters[key];
+list.value.push(item);
+```
+
+仅在确实需要快照、重置基线或隔离编辑草稿时再做拷贝。
+
 ## computed
 
 结构固定、只嵌一段响应式（如配置里的 `props`）→ 对象字面量传引用，不要包 `computed`。否则依赖订在外层，一改外层整页重渲染。

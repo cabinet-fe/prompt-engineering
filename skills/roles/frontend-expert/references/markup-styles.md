@@ -55,6 +55,20 @@
 
 用 `<el-button type="primary">`；删除无用自定义按钮样式。
 
+## 反例：样式累加覆盖（`!important` 补丁）
+
+为了调整外观，不断在文件末尾追加新规则或 `!important` 覆盖旧样式，留下一堆互相打架、实际无效的死样式：
+
+```scss
+.card-title { font-size: 16px; color: #333; }
+// 后续调整又在下面追加覆盖
+.card-title { font-size: 14px !important; color: #111 !important; }
+```
+
+## 正例：直接替换并收敛
+
+直接修改或替换原样式规则，同步删掉被覆盖且不再起作用的选择器和属性，不留 `!important` 补丁。
+
 ## 反例：为对齐多包三层 flex
 
 ```vue
@@ -82,3 +96,4 @@
 
 - 去掉某一层 wrapper 后布局是否仍成立？成立则删。
 - 这段 CSS 是否只是重复 UI 库 token/组件皮肤？是则删。
+- 是否靠后写规则或 `!important` 覆盖了前面的旧样式？是则合并回原规则并删掉被覆盖的死属性。
