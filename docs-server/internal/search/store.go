@@ -34,6 +34,10 @@ func Open(ctx context.Context, path string) (*Store, error) {
 		db.Close()
 		return nil, err
 	}
+	if err := s.ensureIndex(ctx); err != nil {
+		db.Close()
+		return nil, err
+	}
 	return s, nil
 }
 

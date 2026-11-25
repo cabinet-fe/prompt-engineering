@@ -5,19 +5,17 @@ import (
 	"unicode"
 )
 
-// FTS5 snippet() 使用的高亮标记与省略号，与 search.go 的 snippet 调用保持一致。
-const (
-	markOpen  = "<mark>"
-	markClose = "</mark>"
-	ellipsis  = "…"
-)
-
 // isCJK 判断字符是否属于 CJK 表意文字（汉字、日文假名、韩文音节）。
 func isCJK(r rune) bool {
 	return unicode.Is(unicode.Han, r) ||
 		unicode.Is(unicode.Hiragana, r) ||
 		unicode.Is(unicode.Katakana, r) ||
 		unicode.Is(unicode.Hangul, r)
+}
+
+// isWordRune 判断字符是否属于字母/数字整词段（CJK 除外）。
+func isWordRune(r rune) bool {
+	return !isCJK(r) && (unicode.IsLetter(r) || unicode.IsDigit(r))
 }
 
 // scanRuns 从左到右扫描文本，把 CJK 连续段与字母/数字整词段分别回调；
@@ -41,7 +39,7 @@ func scanRuns(text string, onCJK func(runes []rune), onWord func(runes []rune)) 
 		case isCJK(r):
 			flushWord()
 			cjk = append(cjk, r)
-		case unicode.IsLetter(r) || unicode.IsDigit(r):
+		case isWordRune(r):
 			flushCJK()
 			word = append(word, r)
 		default:
@@ -65,482 +63,57 @@ func bigrams(rs []rune) []string {
 	return tokens
 }
 
-// tokenize 产出供 FTS5 索引的 token 序列：CJK 连续段先产全部单字、再产相邻
-// 二元组（二元组彼此相邻，保证二元组短语查询可命中）；非 CJK 段保持整词。
-// 调用方以空格连接后写入索引，unicode61 会把每个 token 视为独立词元。
+// cjkTokens 产出 CJK 连续段的索引 token：相邻二元组按序排列（二元组短语查询可命中），
+// 段尾再补一个末字（段长 1 时只有该字）。这样每个字都是某个 token 的首字，单字查询
+// 用前缀匹配即可召回；token 序列也能无歧义地还原成原文（见 normalizeSnippet）。
+func cjkTokens(rs []rune) []string {
+	if len(rs) == 1 {
+		return []string{string(rs)}
+	}
+	return append(bigrams(rs), string(rs[len(rs)-1]))
+}
+
+// subwords 按驼峰与字母/数字边界拆分整词：useState → use State，HTTPServer → HTTP Server，
+// vue3 → vue 3。拆不出两段及以上时返回 nil。
+func subwords(word string) []string {
+	rs := []rune(word)
+	var parts []string
+	start := 0
+	for i := 1; i < len(rs); i++ {
+		prev, cur := rs[i-1], rs[i]
+		lowerToUpper := unicode.IsLower(prev) && unicode.IsUpper(cur)
+		acronymEnd := unicode.IsUpper(prev) && unicode.IsUpper(cur) &&
+			i+1 < len(rs) && unicode.IsLower(rs[i+1])
+		digitEdge := unicode.IsDigit(prev) != unicode.IsDigit(cur)
+		if lowerToUpper || acronymEnd || digitEdge {
+			parts = append(parts, string(rs[start:i]))
+			start = i
+		}
+	}
+	if len(parts) == 0 {
+		return nil
+	}
+	return append(parts, string(rs[start:]))
+}
+
+// wordTokens 产出整词段的索引 token：整词在前，可拆分时紧随其后产出各子词，
+// 使 state 能命中 useState。
+func wordTokens(word string) []string {
+	return append([]string{word}, subwords(word)...)
+}
+
+// tokenize 产出供 FTS5 索引的 token 序列：CJK 连续段见 cjkTokens，整词段见 wordTokens。
+// 调用方以空格连接后写入索引，unicode61 会把每个 token 视为独立词元
+// （FTS 表启用 porter 词干，英文词形变化在索引与查询两侧一致归一）。
 func tokenize(text string) []string {
 	var tokens []string
 	scanRuns(text,
-		func(rs []rune) {
-			if len(rs) > 1 {
-				// 单字段的单字已由 bigrams 产出，避免重复。
-				for _, r := range rs {
-					tokens = append(tokens, string(r))
-				}
-			}
-			tokens = append(tokens, bigrams(rs)...)
-		},
-		func(rs []rune) { tokens = append(tokens, string(rs)) })
+		func(rs []rune) { tokens = append(tokens, cjkTokens(rs)...) },
+		func(rs []rune) { tokens = append(tokens, wordTokens(string(rs))...) })
 	return tokens
 }
 
-// indexText 把原始文本转成写入 FTS 索引的预分词文本：token 以空格连接，
-// unicode61 会把每个 token 视为独立词元。
+// indexText 把原始文本转成写入 FTS 索引的预分词文本：token 以空格连接。
 func indexText(text string) string {
 	return strings.Join(tokenize(text), " ")
-}
-
-// zhStopWords 是在检索时用于切分和过滤自然语言的通用停用词表。
-var zhStopWords = []string{
-	// 疑问词与辅助短语
-	"如何", "怎么", "怎样", "什么", "哪个", "哪些", "请问", "有没有", "是不是", "能不能", "是否",
-	// 常见动词/副词/连词短语
-	"进行", "关于", "对于", "以及", "并且", "而且", "或者", "及其", "通过", "其中", "可以", "能够", "如果", "虽然", "但是", "这个", "那个", "一个", "没有", "使用",
-}
-
-// zhStopWordSet 与 zhStopWordsByLenDesc 供边界剥离时 O(1) 判断与长词优先匹配。
-var (
-	zhStopWordSet        map[string]bool
-	zhStopWordsByLenDesc []string
-)
-
-func init() {
-	zhStopWordSet = make(map[string]bool, len(zhStopWords))
-	for _, sw := range zhStopWords {
-		zhStopWordSet[sw] = true
-	}
-	zhStopWordsByLenDesc = append([]string(nil), zhStopWords...)
-	// 长词优先，避免「有没有」被拆成更短的停用词前缀。
-	for i := 0; i < len(zhStopWordsByLenDesc); i++ {
-		for j := i + 1; j < len(zhStopWordsByLenDesc); j++ {
-			if len(zhStopWordsByLenDesc[j]) > len(zhStopWordsByLenDesc[i]) {
-				zhStopWordsByLenDesc[i], zhStopWordsByLenDesc[j] = zhStopWordsByLenDesc[j], zhStopWordsByLenDesc[i]
-			}
-		}
-	}
-}
-
-// zhParticles 是单字助词与语气词，几乎不构成技术实体词。
-var zhParticles = map[rune]bool{
-	'的': true, '了': true, '么': true, '呢': true, '吧': true, '吗': true, '啊': true, '呀': true, '得': true, '地': true,
-}
-
-// cleanCJKChunk 清理 CJK 片段的首尾虚词（如“在表格”->“表格”、“表格中”->“表格”）。
-func cleanCJKChunk(chunk string) string {
-	rs := []rune(chunk)
-	// 前缀 "在" 仅在片段长于 2 时剥离（避免误伤单个字或专有名词）
-	if len(rs) > 2 && rs[0] == '在' {
-		rs = rs[1:]
-	}
-	// 后缀 "中" / "里" / "内" 仅在片段长于 2 时剥离
-	if len(rs) > 2 && (rs[len(rs)-1] == '中' || rs[len(rs)-1] == '里' || rs[len(rs)-1] == '内') {
-		rs = rs[:len(rs)-1]
-	}
-	return string(rs)
-}
-
-// stripParticles 把单字助词替换为空格，便于后续按空白切分。
-func stripParticles(s string) string {
-	var sb strings.Builder
-	for _, r := range s {
-		if zhParticles[r] {
-			sb.WriteRune(' ')
-		} else {
-			sb.WriteRune(r)
-		}
-	}
-	return sb.String()
-}
-
-// filterStopWords 在词边界剥离停用词，避免子串替换误伤复合词（如「使用率」里的「使用」）。
-func filterStopWords(s string) string {
-	var parts []string
-	scanRuns(s,
-		func(rs []rune) {
-			if t := filterStopWordsCJK(rs); t != "" {
-				parts = append(parts, t)
-			}
-		},
-		func(rs []rune) {
-			w := string(rs)
-			if !zhStopWordSet[w] {
-				parts = append(parts, w)
-			}
-		})
-	return strings.Join(parts, " ")
-}
-
-// filterStopWordsCJK 在 CJK 连续段的首尾或中间（两侧均 ≥2 字）剥离停用词；
-// 若剥离后剩余不足 2 字则保留原段，防止「使用率」→「率」。
-func filterStopWordsCJK(rs []rune) string {
-	if len(rs) == 0 {
-		return ""
-	}
-	if zhStopWordSet[string(rs)] {
-		return ""
-	}
-	for {
-		changed := false
-
-		for _, sw := range zhStopWordsByLenDesc {
-			swr := []rune(sw)
-			if len(rs) < len(swr) || string(rs[:len(swr)]) != sw {
-				continue
-			}
-			rest := rs[len(swr):]
-			if len(rest) == 0 || len(rest) >= 2 {
-				rs = rest
-				changed = true
-				break
-			}
-		}
-		if changed {
-			if len(rs) == 0 {
-				return ""
-			}
-			if zhStopWordSet[string(rs)] {
-				return ""
-			}
-			continue
-		}
-
-		for _, sw := range zhStopWordsByLenDesc {
-			swr := []rune(sw)
-			n := len(swr)
-			if len(rs) < n || string(rs[len(rs)-n:]) != sw {
-				continue
-			}
-			rest := rs[:len(rs)-n]
-			if len(rest) == 0 || len(rest) >= 2 {
-				rs = rest
-				changed = true
-				break
-			}
-		}
-		if changed {
-			if len(rs) == 0 {
-				return ""
-			}
-			if zhStopWordSet[string(rs)] {
-				return ""
-			}
-			continue
-		}
-
-		for _, sw := range zhStopWordsByLenDesc {
-			swr := []rune(sw)
-			idx := indexRunes(rs, swr)
-			if idx <= 0 || idx+len(swr) >= len(rs) {
-				continue
-			}
-			left, right := rs[:idx], rs[idx+len(swr):]
-			if len(left) < 2 || len(right) < 2 {
-				continue
-			}
-			l := filterStopWordsCJK(left)
-			r := filterStopWordsCJK(right)
-			switch {
-			case l == "" && r == "":
-				return ""
-			case l == "":
-				return r
-			case r == "":
-				return l
-			default:
-				return l + " " + r
-			}
-		}
-		break
-	}
-	return string(rs)
-}
-
-// indexRunes 在 rune 切片中查找子切片首次出现位置。
-func indexRunes(rs, sub []rune) int {
-	if len(sub) == 0 || len(sub) > len(rs) {
-		return -1
-	}
-	for i := 0; i+len(sub) <= len(rs); i++ {
-		match := true
-		for j := 0; j < len(sub); j++ {
-			if rs[i+j] != sub[j] {
-				match = false
-				break
-			}
-		}
-		if match {
-			return i
-		}
-	}
-	return -1
-}
-
-// expandEmbeddedIn 识别「在X中Y」并拆成 X、Y（两侧均 ≥2 字），仅当整段以「在」开头时触发。
-func expandEmbeddedIn(s string) []string {
-	rs := []rune(s)
-	if len(rs) < 5 || rs[0] != '在' {
-		return []string{s}
-	}
-	for i := 2; i < len(rs)-1; i++ {
-		if rs[i] != '中' {
-			continue
-		}
-		left, right := rs[1:i], rs[i+1:]
-		if len(left) >= 2 && len(right) >= 2 {
-			return []string{string(left), string(right)}
-		}
-		break
-	}
-	return []string{s}
-}
-
-// 1. 按空白切字段，单字助词替换为空格后再切分
-// 2. 在词边界剥离停用词（不做全串子串替换）
-// 3. 剥离 CJK 词的首尾常见介词/方位词（在...、...中）
-// 4. 若过滤后为空（如用户只搜“如何”或“的”），安全回退至原始空白切词结果
-func splitQueryTerms(query string) []string {
-	fields := strings.Fields(query)
-	if len(fields) == 0 {
-		return nil
-	}
-
-	var terms []string
-	for _, field := range fields {
-		for _, chunk := range strings.Fields(stripParticles(field)) {
-			for _, part := range strings.Fields(filterStopWords(chunk)) {
-				for _, piece := range expandEmbeddedIn(part) {
-					cleaned := cleanCJKChunk(piece)
-					if cleaned != "" {
-						terms = append(terms, cleaned)
-					}
-				}
-			}
-		}
-	}
-
-	if len(terms) == 0 {
-		// 安全回退：如果停用词过滤后没有剩余词，保留原始切词
-		return fields
-	}
-	return terms
-}
-
-// matchQueryAND 把用户查询转成安全严谨的 FTS5 MATCH 表达式：
-// 经 splitQueryTerms 停用词过滤后，多词以 AND 连接；
-// 每个词内按 CJK 段 / 整词段拆成加引号的短语（CJK 段用相邻二元组短语，与索引 token 对齐）。
-func matchQueryAND(query string) string {
-	terms := splitQueryTerms(query)
-	if len(terms) == 0 {
-		return ""
-	}
-	var phrases []string
-	for _, term := range terms {
-		scanRuns(term,
-			func(rs []rune) { phrases = append(phrases, quote(strings.Join(bigrams(rs), " "))) },
-			func(rs []rune) { phrases = append(phrases, quote(string(rs))) })
-	}
-	return strings.Join(phrases, " AND ")
-}
-
-// matchQuery 是 matchQueryAND 的别名，保持既有调用兼容。
-func matchQuery(query string) string {
-	return matchQueryAND(query)
-}
-
-// matchQueryOR 把用户查询转成宽容的 FTS5 MATCH 表达式：
-// 多词以 OR 连接；对长度 > 2 的 CJK 词，除完整二元组短语外，
-// 补充其构成二元组（如 "行内编辑" -> ("行内 内编 编辑" OR "行内" OR "编辑")），
-// 以便在 AND 失败时能最大程度召回相关文档。
-func matchQueryOR(query string) string {
-	terms := splitQueryTerms(query)
-	if len(terms) == 0 {
-		return ""
-	}
-	var clauses []string
-	for _, term := range terms {
-		scanRuns(term,
-			func(rs []rune) {
-				if len(rs) <= 2 {
-					clauses = append(clauses, quote(strings.Join(bigrams(rs), " ")))
-					return
-				}
-				fullPhrase := quote(strings.Join(bigrams(rs), " "))
-				bgs := bigrams(rs)
-				bgSet := make([]string, 0, len(bgs))
-				seen := make(map[string]bool, len(bgs))
-				for _, bg := range bgs {
-					if !seen[bg] {
-						seen[bg] = true
-						bgSet = append(bgSet, quote(bg))
-					}
-				}
-				if len(bgSet) > 0 {
-					clauses = append(clauses, "("+fullPhrase+" OR "+strings.Join(bgSet, " OR ")+")")
-				} else {
-					clauses = append(clauses, fullPhrase)
-				}
-			},
-			func(rs []rune) { clauses = append(clauses, quote(string(rs))) })
-	}
-	if len(clauses) == 0 {
-		return ""
-	}
-	return strings.Join(clauses, " OR ")
-}
-
-// quote 把一段 token 序列包成 FTS5 短语，内部引号双写转义。
-func quote(s string) string {
-	return `"` + strings.ReplaceAll(s, `"`, `""`) + `"`
-}
-
-// renderPathSnippet 把「只命中 path 列」的片段还原成原始路径并保留高亮：
-// FTS5 片段取自 path 列的预分词文本（如 `guide <mark>installation</mark> md`），
-// 直接展示会让使用者把路径词元误读成正文。这里按查询词在原始路径上重新打标
-// （`guide/<mark>installation</mark>.md`），去掉标记后即为路径原文的子串。
-// 查询词一个都没在路径里原样出现时返回 ""，调用方回退到常规片段。
-func renderPathSnippet(path, query string) string {
-	if path == "" {
-		return ""
-	}
-	pathRunes := []rune(path)
-	var ranges []markRange
-	from := 0
-	for _, term := range splitQueryTerms(query) {
-		termRunes := []rune(term)
-		for i := from; i+len(termRunes) <= len(pathRunes); i++ {
-			if !strings.EqualFold(string(pathRunes[i:i+len(termRunes)]), term) {
-				continue
-			}
-			ranges = append(ranges, markRange{start: i, end: i + len(termRunes)})
-			from = i + len(termRunes)
-			break
-		}
-	}
-	if len(ranges) == 0 {
-		return ""
-	}
-
-	// 在路径里紧邻的两个查询词（如 use dnd 命中 usednd.md）合成一个标记，
-	// 避免出现两个背靠背的 <mark>。
-	merged := ranges[:1]
-	for _, r := range ranges[1:] {
-		last := &merged[len(merged)-1]
-		if r.start <= last.end {
-			if r.end > last.end {
-				last.end = r.end
-			}
-			continue
-		}
-		merged = append(merged, r)
-	}
-
-	var b strings.Builder
-	prev := 0
-	for _, r := range merged {
-		b.WriteString(string(pathRunes[prev:r.start]))
-		b.WriteString(markOpen + string(pathRunes[r.start:r.end]) + markClose)
-		prev = r.end
-	}
-	b.WriteString(string(pathRunes[prev:]))
-	return b.String()
-}
-
-// markRange 是路径上需要 <mark> 包裹的区间（rune 下标，左闭右开）。
-type markRange struct{ start, end int }
-
-// normalizeSnippet 后处理 FTS5 高亮片段：去掉分词引入的空格（丢弃冗余单字
-// token、相邻二元组按重叠字符合并、CJK token 之间直接相连，词边界保留空格），
-// 并把相邻 <mark> 合并成对查询词的连续完整包裹。去掉标记与省略号后，
-// 结果为原文的连续子串（只命中 path 列的片段已由 renderPathSnippet 单独处理）。
-func normalizeSnippet(snippet string) string {
-	// 省略号统一成独立 token，便于作为分段边界处理。
-	snippet = strings.ReplaceAll(snippet, ellipsis, " "+ellipsis+" ")
-
-	var pieces []snippetPiece
-	appendRunes := func(rs []rune, marked bool) {
-		if len(rs) == 0 {
-			return
-		}
-		if n := len(pieces); n > 0 && pieces[n-1].marked == marked {
-			pieces[n-1].text += string(rs)
-		} else {
-			pieces = append(pieces, snippetPiece{string(rs), marked})
-		}
-	}
-	// dropLastRune 去掉已产出文本的最后一个字符：重叠字符优先留给后到的 <mark> 完整包裹。
-	dropLastRune := func() {
-		for len(pieces) > 0 {
-			p := &pieces[len(pieces)-1]
-			rs := []rune(p.text)
-			if len(rs) == 0 {
-				pieces = pieces[:len(pieces)-1]
-				continue
-			}
-			p.text = string(rs[:len(rs)-1])
-			if p.text == "" {
-				pieces = pieces[:len(pieces)-1]
-			}
-			return
-		}
-	}
-
-	var prev []rune // 上一 token 的原始字符；nil 表示处于片段开头或省略号之后
-	prevMarked := false
-	for _, tok := range strings.Fields(snippet) {
-		if tok == ellipsis {
-			appendRunes([]rune(ellipsis), false)
-			prev = nil
-			prevMarked = false
-			continue
-		}
-		marked := strings.HasPrefix(tok, markOpen)
-		raw := []rune(strings.NewReplacer(markOpen, "", markClose, "").Replace(tok))
-		if len(raw) == 0 {
-			continue
-		}
-		// 丢弃未命中的单字 token：它们是索引里二元组的冗余副本，保留会破坏原文连续性。
-		if !marked && len(raw) == 1 && isCJK(raw[0]) {
-			continue
-		}
-		switch {
-		case prev == nil:
-			appendRunes(raw, marked)
-		case isCJK(prev[len(prev)-1]) && isCJK(raw[0]):
-			if len(raw) >= 2 && prev[len(prev)-1] == raw[0] {
-				// 相邻二元组重叠（如 回高 + 高亮）：共享字只保留一份。
-				if marked && !prevMarked {
-					dropLastRune()
-					appendRunes(raw, true)
-				} else {
-					appendRunes(raw[1:], marked)
-				}
-			} else {
-				// 同一段落内的 CJK token 之间不存在原始空格。
-				appendRunes(raw, marked)
-			}
-		default:
-			// 词与词、词与 CJK 的边界保留空格（与原文有无空格无法区分，取可读形式）。
-			appendRunes([]rune(" "), false)
-			appendRunes(raw, marked)
-		}
-		prev = raw
-		prevMarked = marked
-	}
-
-	var b strings.Builder
-	for _, p := range pieces {
-		if p.marked {
-			b.WriteString(markOpen + p.text + markClose)
-		} else {
-			b.WriteString(p.text)
-		}
-	}
-	return b.String()
-}
-
-// snippetPiece 是片段里一段连续文本，marked 表示是否被 <mark> 包裹；
-// 相邻同 marked 的段在 appendRunes 里已合并，输出时天然形成连续包裹。
-type snippetPiece struct {
-	text   string
-	marked bool
 }

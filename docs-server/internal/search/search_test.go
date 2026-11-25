@@ -340,7 +340,7 @@ func TestUpgradeFrom0001(t *testing.T) {
 		t.Fatalf("关闭旧版库: %v", err)
 	}
 
-	// 新版 Open 应用 0002 迁移并重建索引，中文子串查询直接命中既有文档。
+	// 新版 Open 依次应用迁移，并由 Go 侧按当前分词方案重建索引，中文子串查询直接命中既有文档。
 	s, err := Open(context.Background(), path)
 	if err != nil {
 		t.Fatalf("升级 Open: %v", err)
@@ -353,8 +353,8 @@ func TestUpgradeFrom0001(t *testing.T) {
 		t.Errorf("升级后片段未完整包裹查询词: %q", results[0].Snippet)
 	}
 
-	// 迁移重建的索引文本与 Go 写入路径的预分词结果一致（空白归一后相同），
-	// path 列同理由 0004 迁移从 documents.path 重建，标题/正文都不含路径词。
+	// 重建的索引文本与 Go 写入路径的预分词结果一致（空白归一后相同），
+	// path 列同理，标题/正文都不含路径词。
 	for _, tc := range []struct{ docPath, column, want string }{
 		{"guide.md", "content", indexText(content)},
 		{"guide.md", "path", indexText("guide.md")},
@@ -645,6 +645,173 @@ func TestGetDocumentSection(t *testing.T) {
 		}
 		if !errors.Is(err, ErrSectionNotFound) {
 			t.Errorf("应包含 ErrSectionNotFound，实际 %v", err)
+		}
+	})
+}
+
+// searchPaths 返回检索结果的 path 列表，便于断言命中集合。
+func searchPaths(t *testing.T, s *Store, query string) []string {
+	t.Helper()
+	var paths []string
+	for _, r := range mustSearch(t, s, query, "") {
+		paths = append(paths, r.Path)
+	}
+	return paths
+}
+
+func TestSearchPrecisionAndRecallFixes(t *testing.T) {
+	s, _ := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "local.md", Title: "A", Content: "本地存储使用 localStorage 实现"},
+		{Path: "japan.md", Title: "B", Content: "日本的存储技术发展"},
+		{Path: "hook.md", Title: "C", Content: "调用 useState 管理状态"},
+		{Path: "install.md", Title: "D", Content: "installation guide for buttons"},
+		{Path: "compare.md", Title: "E", Content: "js 与 node 的对比"},
+		{Path: "runtime.md", Title: "F", Content: "Node.js 运行时"},
+		{Path: "community.md", Title: "G", Content: "国内编程社区很活跃"},
+		{Path: "ip.md", Title: "H", Content: "请填写 IP 地址"},
+	})
+
+	cases := []struct {
+		name  string
+		query string
+		want  []string
+	}{
+		{"助词字不拆实词：本地存储", "本地存储", []string{"local.md"}},
+		{"助词字不拆实词：IP地址", "IP地址", []string{"ip.md"}},
+		{"驼峰子词命中", "state", []string{"hook.md"}},
+		{"词干归一：install 命中 installation", "install", []string{"install.md"}},
+		{"词干归一：button 命中 buttons", "button", []string{"install.md"}},
+		{"标点相连的英文词要求相邻", "node.js", []string{"runtime.md"}},
+		{"OR 降级不引入跨词二元组", "行内编辑 xyz", nil},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := searchPaths(t, s, c.query); !reflect.DeepEqual(got, c.want) {
+				t.Errorf("q=%q 命中 %v，期望 %v", c.query, got, c.want)
+			}
+		})
+	}
+}
+
+func TestSearchSnippetIsOriginalText(t *testing.T) {
+	s, _ := openTestStore(t)
+	content := "这是一个很长的表格说明文档内容用于测试单字高亮的上下文是否保留"
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "a.md", Title: "A", Content: content},
+		{Path: "b.md", Title: "B", Content: "本教程帮助快速开始并返回高亮片段"},
+	})
+
+	for _, c := range []struct{ query, path, original, mark string }{
+		{"表", "a.md", content, "<mark>表</mark>格"},
+		{"快速开始", "b.md", "本教程帮助快速开始并返回高亮片段", "<mark>快速开始</mark>"},
+	} {
+		results := mustSearch(t, s, c.query, "")
+		if len(results) != 1 || results[0].Path != c.path {
+			t.Fatalf("q=%s 应只命中 %s，实际 %+v", c.query, c.path, results)
+		}
+		snippet := results[0].Snippet
+		if !strings.Contains(snippet, c.mark) {
+			t.Errorf("q=%s 片段 %q 缺少 %q", c.query, snippet, c.mark)
+		}
+		if stripped := stripSnippet(snippet); !strings.Contains(c.original, stripped) {
+			t.Errorf("q=%s 去标记后 %q 不是原文的连续子串", c.query, stripped)
+		}
+	}
+}
+
+func TestSearchReturnsStoredSections(t *testing.T) {
+	s, _ := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "a.md", Title: "UTable", Content: "# UTable\n\n## Props\n\n## Events\n"},
+	})
+	results := mustSearch(t, s, "utable", "")
+	if len(results) != 1 || !reflect.DeepEqual(results[0].Sections, []string{"Props", "Events"}) {
+		t.Fatalf("检索结果应携带章节列表，实际 %+v", results)
+	}
+}
+
+func TestOpenRebuildsOutdatedIndex(t *testing.T) {
+	s, path := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "a.md", Title: "UTable", Aliases: []string{"数据表格"}, Content: "# UTable\n\n## Props\n\n调用 useState 即可"},
+	})
+	// 模拟旧版索引：清空索引与派生列，并把版本记为落后。
+	for _, stmt := range []string{
+		`DELETE FROM documents_fts`,
+		`UPDATE documents SET sections = ''`,
+		`UPDATE index_meta SET version = 0`,
+	} {
+		if _, err := s.db.Exec(stmt); err != nil {
+			t.Fatalf("%s: %v", stmt, err)
+		}
+	}
+	if err := s.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+
+	reopened, err := Open(context.Background(), path)
+	if err != nil {
+		t.Fatalf("重开: %v", err)
+	}
+	defer reopened.Close()
+	for _, q := range []string{"state", "数据表格"} {
+		results := mustSearch(t, reopened, q, "")
+		if len(results) != 1 || !reflect.DeepEqual(results[0].Sections, []string{"Props"}) {
+			t.Errorf("重建后 q=%s 应命中且带章节，实际 %+v", q, results)
+		}
+	}
+	var version int
+	if err := reopened.db.QueryRow(`SELECT version FROM index_meta`).Scan(&version); err != nil || version != indexVersion {
+		t.Errorf("重建后索引版本应为 %d，实际 %d err=%v", indexVersion, version, err)
+	}
+}
+
+func TestSearchQueryFixesEndToEnd(t *testing.T) {
+	s, _ := openTestStore(t)
+	mustReplace(t, s, "alpha", []Document{
+		{Path: "table-config.md", Title: "表格配置", Content: "通过配置列属性开启表格行内编辑"},
+		{Path: "local-storage.md", Title: "本地存储", Content: "使用 localStorage 进行本地存储"},
+		{Path: "addr-config.md", Title: "地址设置", Content: "在表单中修改地址配置"},
+		{Path: "auto-focus.md", Title: "自动聚焦", Content: "弹窗打开后自动获得焦点"},
+		{Path: "compositions/useDnd.ts", Title: "Mock 工具", Content: "支持 useState.mock 模拟状态"},
+		{Path: "noise-mock.md", Title: "无关 mock", Content: "这里只提到 mock 和 ts"},
+		{Path: "staging/tag.md", Title: "标签", Content: "正文没有该词"},
+		{Path: "guide/installation.md", Title: "指南", Content: "开始使用"},
+	})
+
+	cases := []struct {
+		name  string
+		query string
+		want  []string
+	}{
+		{"句中停用词表格怎么配置", "表格怎么配置", []string{"table-config.md"}},
+		{"停用词后本地存储", "如何本地存储", []string{"local-storage.md"}},
+		{"句中修改地址配置", "修改地址配置", []string{"addr-config.md"}},
+		{"句中自动获得焦点", "自动获得焦点", []string{"auto-focus.md"}},
+		{"小写搜驼峰标点词组", "usestate.mock", []string{"compositions/useDnd.ts"}},
+		{"小写搜驼峰路径词组", "usednd.ts", []string{"compositions/useDnd.ts"}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := searchPaths(t, s, c.query); !reflect.DeepEqual(got, c.want) {
+				t.Errorf("q=%q 命中 %v，期望 %v", c.query, got, c.want)
+			}
+		})
+	}
+
+	t.Run("路径高亮不误标子串且兼容词干", func(t *testing.T) {
+		for _, tc := range []struct{ query, path, wantSnippet string }{
+			{"tag", "staging/tag.md", "staging/<mark>tag</mark>.md"},
+			{"installing", "guide/installation.md", "guide/<mark>installation</mark>.md"},
+		} {
+			results := mustSearch(t, s, tc.query, "alpha")
+			if len(results) != 1 || results[0].Path != tc.path {
+				t.Fatalf("q=%q 期望仅命中 %s，实际 %+v", tc.query, tc.path, results)
+			}
+			if results[0].Snippet != tc.wantSnippet {
+				t.Errorf("q=%q 片段 = %q，期望 %q", tc.query, results[0].Snippet, tc.wantSnippet)
+			}
 		}
 	})
 }

@@ -3,7 +3,6 @@ package search
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -28,8 +27,10 @@ type Result struct {
 }
 
 // Search 在 FTS5 索引中检索 query；library 非空时限定单库，缺省跨库。
-// 优先执行 AND 检索（高精确度）；若 AND 检索结果为 0，自动降级为 OR 检索。
-// 结果按 bm25 排序（title 与 keywords 加权 10.0，path 5.0，description 3.0，content 1.0），最多返回 limit 条。
+// query 经 splitQueryTerms 拆成检索词，优先执行精确 AND 检索（高精确度）；若无结果且含
+// 标点相连的多词组（如小写搜驼峰词组 usestate.mock），放宽词组内 NEAR 间距再做一次 AND 检索；
+// 仍无结果时自动降级为 OR 检索。结果按 bm25 排序（title 与 keywords 加权 10.0，path 5.0，
+// description 3.0，content 1.0），最多返回 limit 条。
 func (s *Store) Search(ctx context.Context, query string, library string, limit int) ([]Result, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, nil
@@ -38,12 +39,13 @@ func (s *Store) Search(ctx context.Context, query string, library string, limit 
 		limit = defaultLimit
 	}
 
-	matchAND := matchQueryAND(query)
+	terms := splitQueryTerms(query)
+	matchAND := andExpr(terms)
 	if matchAND == "" {
 		return nil, nil
 	}
 
-	results, err := s.searchWithMatch(ctx, matchAND, query, library, limit)
+	results, err := s.searchWithMatch(ctx, matchAND, terms, library, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -51,22 +53,34 @@ func (s *Store) Search(ctx context.Context, query string, library string, limit 
 		return results, nil
 	}
 
+	matchNear := nearAndExpr(terms)
+	if matchNear != "" && matchNear != matchAND {
+		results, err = s.searchWithMatch(ctx, matchNear, terms, library, limit)
+		if err != nil {
+			return nil, err
+		}
+		if len(results) > 0 {
+			return results, nil
+		}
+	}
+
 	// AND 检索无结果时，自动降级为 OR 检索
-	matchOR := matchQueryOR(query)
-	if matchOR == "" || matchOR == matchAND {
+	matchOR := orExpr(terms)
+	if matchOR == "" || matchOR == matchAND || matchOR == matchNear {
 		return nil, nil
 	}
 
-	return s.searchWithMatch(ctx, matchOR, query, library, limit)
+	return s.searchWithMatch(ctx, matchOR, terms, library, limit)
 }
 
-func (s *Store) searchWithMatch(ctx context.Context, match, query, library string, limit int) ([]Result, error) {
+// searchWithMatch 执行一次 MATCH 检索；terms 是检索词，用于还原片段高亮。
+func (s *Store) searchWithMatch(ctx context.Context, match string, terms []string, library string, limit int) ([]Result, error) {
 	// snippet 的第二参数 -1 表示取「命中最多的一列」的片段。FTS 列序为
 	// title/keywords/description/content/path，path 是第 5 列（下标 4）：另取一份 path 列
 	// 片段，用于判断片段是否只来自路径命中——那样的片段是路径的预分词文本，
 	// 需要还原成原始路径，见 renderPathSnippet。
 	q := `
-		SELECT l.slug, d.path, d.title, d.description, d.content,
+		SELECT l.slug, d.path, d.title, d.description, d.sections,
 			snippet(documents_fts, -1, '<mark>', '</mark>', '…', 64),
 			snippet(documents_fts, 4, '<mark>', '</mark>', '…', 64)
 		FROM documents_fts
@@ -93,8 +107,8 @@ func (s *Store) searchWithMatch(ctx context.Context, match, query, library strin
 	var results []Result
 	for rows.Next() {
 		var r Result
-		var content, pathColSnippet string
-		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &content, &r.Snippet, &pathColSnippet); err != nil {
+		var sections, pathColSnippet string
+		if err := rows.Scan(&r.Library, &r.Path, &r.Title, &r.Description, &sections, &r.Snippet, &pathColSnippet); err != nil {
 			return nil, fmt.Errorf("读取检索结果: %w", err)
 		}
 		rawSnippet := r.Snippet
@@ -102,13 +116,13 @@ func (s *Store) searchWithMatch(ctx context.Context, match, query, library strin
 		// 路径的预分词文本，改写成带高亮的原始路径；其余情况走常规归一化。
 		snippet := ""
 		if pathColSnippet != "" && pathColSnippet == rawSnippet {
-			snippet = renderPathSnippet(r.Path, query)
+			snippet = renderPathSnippet(r.Path, pathColSnippet, terms)
 		}
 		if snippet == "" {
-			snippet = normalizeSnippet(rawSnippet)
+			snippet = normalizeSnippet(rawSnippet, terms)
 		}
 		r.Snippet = snippet
-		r.Sections = ExtractSections(content)
+		r.Sections = decodeList(sections)
 		results = append(results, r)
 	}
 	if err := rows.Err(); err != nil {
@@ -135,13 +149,7 @@ func (s *Store) GetDocument(ctx context.Context, library, path string, section .
 		return Document{}, fmt.Errorf("查询文档 %s/%s: %w", library, path, err)
 	}
 
-	if kwRaw != "" {
-		_ = json.Unmarshal([]byte(kwRaw), &d.Keywords)
-	}
-	if alRaw != "" {
-		_ = json.Unmarshal([]byte(alRaw), &d.Aliases)
-	}
-
+	d.Keywords, d.Aliases = decodeList(kwRaw), decodeList(alRaw)
 	d.Sections = ExtractSections(d.Content)
 
 	if len(section) > 0 && strings.TrimSpace(section[0]) != "" {
