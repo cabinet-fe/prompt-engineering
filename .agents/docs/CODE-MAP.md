@@ -29,13 +29,13 @@ prompt-engineering/          # 本仓库：技能包 + docs-server 子项目
 
 | 模块 | 路径 | 职责 | 主要入口 |
 | --- | --- | --- | --- |
-| 服务端入口 | `docs-server/cmd/docs-server/` | 装配配置、存储、REST handler 与调用记录清理协程（每小时删 7 天前记录），起服务 | `docs-server/cmd/docs-server/main.go` |
+| 服务端入口 | `docs-server/cmd/docs-server/` | 装配配置、存储、REST handler 与调用记录清理协程（每小时删 7 天前记录），起服务；提供 `init`、`update`、`version` CLI 子命令 | `docs-server/cmd/docs-server/main.go` |
 | REST API 层 | `docs-server/internal/api/` | 路由、推送 Bearer 鉴权、请求/响应、错误格式、读路径调用记录埋点（search/get/toc）与 `/api/v1/calls` 查询 | `docs-server/internal/api/` |
 | 推送接收 | `docs-server/internal/ingest/` | frontmatter 解析、整批校验、整库替换写入 | `docs-server/internal/ingest/` |
 | 索引与检索 | `docs-server/internal/search/` | SQLite FTS5 建索引、bm25 标题/别名/路径加权、高亮片段、AND/OR 降级检索、章节切片、调用记录存储（call_logs） | `docs-server/internal/search/` |
 | 内置 Web UI | `docs-server/internal/web/` | 内置只读 Web UI（文档阅读 + 调用记录视图）静态资源与挂载 | `docs-server/internal/web/` |
 | 推送脚本 | `scripts/push-docs.mjs` | 扫描库内文档，HTTP 全量推送到服务端 | `scripts/push-docs.mjs` |
-| 安装脚本 | `scripts/install-docs-server.sh` | 服务端一键安装脚本：自动探测系统与架构并拉取对应 Release 二进制，生成配置文件（含推送令牌，已存在不覆盖），输出后台常驻（systemd / nohup）与前台运行指引 | `scripts/install-docs-server.sh` |
+| 安装脚本 | `scripts/install-docs-server.sh` | 服务端一键安装/更新脚本：自动探测系统与架构并拉取对应 Release 二进制，不生成配置文件 | `scripts/install-docs-server.sh` |
 | 大陆加速安装引导 | `scripts/install-docs-server-cn.sh` | 大陆网络一键安装引导：按序尝试 GitHub 加速代理（`GH_PROXY` 可覆盖，直连兜底）下载安装脚本与 Release 二进制 | `scripts/install-docs-server-cn.sh` |
 | docs-search 技能 | `skills/tools/docs-search/` | 通用检索技能：指导 AI 运行内嵌脚本 libraries / search / get / toc；提供宿主项目入口指令（内部库指引）模板，引导写代码前主动检索 | `skills/tools/docs-search/SKILL.md` |
 | 查询脚本 | `skills/tools/docs-search/scripts/query.mjs` | 零依赖 Node 脚本，读 `.pe.jsonc` 中的 `docs_server_url` 调 REST，stdout 打印 JSON；带请求超时 | `skills/tools/docs-search/scripts/query.mjs` |

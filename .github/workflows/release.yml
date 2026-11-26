@@ -52,7 +52,7 @@ jobs:
           GOARCH: ${{ matrix.arch }}
         run: |
           mkdir -p ../dist
-          go build -trimpath -ldflags="-s -w" -o "../dist/docs-server-${{ matrix.name }}" ./cmd/docs-server
+          go build -trimpath -ldflags="-s -w -X main.version=${GITHUB_REF_NAME}" -o "../dist/docs-server-${{ matrix.name }}" ./cmd/docs-server
       - name: 发布到 GitHub Releases
         uses: softprops/action-gh-release@v3
         with:

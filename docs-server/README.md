@@ -23,7 +23,7 @@ push-docs.mjs ──HTTP PUT──▶ docs-server（Go 单二进制） ◀──
 
 **方式 A：一键安装（可直连 GitHub，推荐）**
 
-在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`，随后自动生成配置文件 `/etc/docs-server.yaml`（自动生成的推送令牌已写入，已存在则不覆盖）并给出后台常驻运行指引：
+在服务器上运行一行命令，自动检测操作系统与 CPU 架构、下载最新版本并安装到 `/usr/local/bin/docs-server`（可通过 `INSTALL_DIR` 指定独立目录，如 `INSTALL_DIR=.`）。安装脚本只负责下载/替换二进制，不自动生成全局配置文件：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
@@ -49,11 +49,9 @@ curl -fsSL https://ghfast.top/https://raw.githubusercontent.com/cabinet-fe/promp
 
 | 环境变量 | 默认 | 说明 |
 | --- | --- | --- |
-| `INSTALL_DIR` | `/usr/local/bin` | 安装目录，如 `INSTALL_DIR=~/.local/bin` |
-| `VERSION` | `latest` | 指定版本，如 `VERSION=v0.1.0-beta.3` |
+| `INSTALL_DIR` | `/usr/local/bin` | 安装目录，如 `INSTALL_DIR=.` 或 `INSTALL_DIR=~/.local/bin` |
+| `VERSION` | `latest` | 指定版本，如 `VERSION=v0.1.0-beta.7` |
 | `GH_PROXY` | 直连（方式 B 内置加速源列表） | GitHub 下载代理前缀；方式 B 中可填空格分隔的多个前缀按序尝试 |
-| `CONFIG_PATH` | `/etc/docs-server.yaml` | 生成的配置文件路径（已存在则不覆盖） |
-| `DOCS_DATA_DIR` | Linux `/var/lib/docs-server`、macOS `~/.local/share/docs-server` | 数据目录，写入配置文件的 `db_path` |
 
 **方式 C：手动下载**
 
@@ -70,21 +68,28 @@ curl -LO https://ghfast.top/https://github.com/cabinet-fe/prompt-engineering/rel
 
 ### 2. 配置
 
-**推荐用 YAML 配置文件**：一键安装脚本已自动生成 `/etc/docs-server.yaml`（推送令牌已写入，权限 600，已存在则不覆盖）。配置来源可混用，优先级：环境变量 > 配置文件 > 默认值。
+**推荐在服务工作目录执行 `init` 生成配置文件**：进入你的运行目录执行 `docs-server init`，会在当前目录生成 `docs-server.yaml`（权限 600，自动写入随机 `push_token`，默认 `db_path: ./docs.db`）；若文件已存在会交互提示是否覆盖，默认不覆盖。配置来源可混用，优先级：环境变量 > 配置文件 > 默认值。
 
 **方式 A：YAML 配置文件（推荐）**
 
-```yaml
-# /etc/docs-server.yaml
-addr: ":8080"
-db_path: /var/lib/docs-server/docs.db
-push_token: <openssl rand -hex 32 生成的令牌>
+```bash
+# 在当前目录生成 docs-server.yaml（可用 -output 指定其他路径）
+docs-server init
 ```
 
-启动时用 `-config` 参数或 `DOCS_CONFIG` 环境变量指定文件路径：
+生成的配置文件示例：
+
+```yaml
+# docs-server 配置文件
+addr: ":8080"
+db_path: ./docs.db
+push_token: <随机生成的 64 位十六进制令牌>
+```
+
+启动时用 `-config` 参数或 `DOCS_CONFIG` 环境变量指定文件路径（也可用绝对路径）：
 
 ```bash
-./docs-server-linux-x64 -config /etc/docs-server.yaml
+./docs-server -config ./docs-server.yaml
 ```
 
 **方式 B：环境变量**（临时验证或无配置文件场景）
@@ -105,9 +110,9 @@ push_token: <openssl rand -hex 32 生成的令牌>
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/docs-server -config /etc/docs-server.yaml
+WorkingDirectory=/srv/docs-server
+ExecStart=/srv/docs-server/docs-server -config /srv/docs-server/docs-server.yaml
 Restart=on-failure
-StateDirectory=docs-server
 
 [Install]
 WantedBy=multi-user.target
@@ -119,22 +124,44 @@ sudo systemctl enable --now docs-server
 journalctl -u docs-server -f   # 查看日志
 ```
 
-`StateDirectory=docs-server` 会自动创建并归属 `/var/lib/docs-server`（即默认 `db_path` 所在目录）。
-
 **无 systemd / macOS：nohup 后台**
 
 ```bash
-nohup docs-server -config /etc/docs-server.yaml > "$HOME/docs-server.log" 2>&1 &
-tail -f "$HOME/docs-server.log"
+nohup ./docs-server -config ./docs-server.yaml > ./docs-server.log 2>&1 &
+tail -f ./docs-server.log
 ```
 
 **前台直接运行**（临时验证用，Ctrl+C 停止）
 
 ```bash
-docs-server -config /etc/docs-server.yaml
+./docs-server -config ./docs-server.yaml
 ```
 
-### 4. Nginx 反向代理（可选）
+### 4. 升级与版本
+
+查看当前版本：
+
+```bash
+docs-server -version   # 或 docs-server version
+```
+
+原地升级当前二进制（自动匹配当前系统与架构，只替换二进制本身，**不改动任何配置文件与数据库**）：
+
+```bash
+# 直连 GitHub 更新到最新版本
+docs-server update
+
+# 中国大陆服务器使用内置加速源按序尝试（直连兜底）
+docs-server update -cn
+
+# 指定自定义加速代理或指定版本
+docs-server update -proxy https://ghfast.top/
+docs-server update -version v0.1.0-beta.7
+```
+
+也可通过环境变量 `GH_PROXY` 传入代理前缀（支持空格分隔多个）。更新完成后，若服务正在后台运行，请重启进程（如 `sudo systemctl restart docs-server`）使新版本生效。
+
+### 5. Nginx 反向代理（可选）
 
 如果希望 docs-server 仅在本机运行、只通过 Nginx 暴露访问，把配置文件中的 `addr` 改为 `"127.0.0.1:8080"`，并在 Nginx 中添加如下配置：
 

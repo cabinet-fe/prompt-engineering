@@ -1,11 +1,12 @@
 #!/bin/sh
-# docs-server 一键安装脚本
+# docs-server 一键安装/更新脚本
 # 用法:
 #   curl -fsSL https://raw.githubusercontent.com/cabinet-fe/prompt-engineering/main/scripts/install-docs-server.sh | bash
 # 或者指定安装目录 / 版本 / 代理:
-#   INSTALL_DIR=/usr/local/bin VERSION=latest curl -fsSL ... | bash
-# 安装完成后自动生成配置文件 /etc/docs-server.yaml（CONFIG_PATH 可覆盖，已存在则不覆盖），
-# 并给出后台常驻（systemd / nohup）运行指引；前台直接运行用于临时验证。
+#   INSTALL_DIR=. VERSION=latest curl -fsSL ... | bash
+# 仅下载并安装或覆盖 docs-server 二进制文件，不自动生成配置文件。
+# 首次部署请执行 `docs-server init` 生成当前目录下的 docs-server.yaml；
+# 已安装二进制升级也可直接执行 `docs-server update`（大陆网络加 `-cn`）。
 
 set -e
 
@@ -91,7 +92,6 @@ has_sudo() {
 TMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t 'docs-server-install')"
 cleanup() {
   rm -rf "$TMP_DIR"
-  rm -f "${TMP_CONF:-}"
 }
 trap cleanup EXIT INT TERM
 
@@ -110,6 +110,10 @@ chmod +x "$TMP_BIN"
 
 # 6. 安装到目标目录
 TARGET_BIN="${INSTALL_DIR}/docs-server"
+IS_UPGRADE=0
+if [ -e "$TARGET_BIN" ]; then
+  IS_UPGRADE=1
+fi
 
 if [ ! -d "$INSTALL_DIR" ]; then
   if [ -w "$(dirname "$INSTALL_DIR" 2>/dev/null || echo ".")" ] || [ "$(id -u)" -eq 0 ]; then
@@ -138,82 +142,40 @@ else
   exit 1
 fi
 
-# 7. 生成或读取推送令牌 (push_token)
-GEN_PUSH_TOKEN="${DOCS_PUSH_TOKEN:-${PUSH_TOKEN:-}}"
-if [ -z "$GEN_PUSH_TOKEN" ]; then
-  if command -v openssl >/dev/null 2>&1; then
-    GEN_PUSH_TOKEN="$(openssl rand -hex 32)"
-  elif [ -r /dev/urandom ]; then
-    GEN_PUSH_TOKEN="$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \t\n')"
-  else
-    GEN_PUSH_TOKEN="$(date +%s%N 2>/dev/null || date +%s | shasum -a 256 2>/dev/null || sha256sum 2>/dev/null | head -c 64)"
-  fi
-fi
+# 7. 输出安装或更新结果（用 -version 读取版本，旧版也会在 flag 解析阶段安全退出）
+INSTALLED_VER="$("$TARGET_BIN" -version 2>/dev/null || true)"
 
-# 8. 准备数据目录（Linux 惯例 /var/lib，macOS 落在用户目录）
-if [ "$OS_TYPE" = "darwin" ]; then
-  DATA_DIR="${DOCS_DATA_DIR:-$HOME/.local/share/docs-server}"
-else
-  DATA_DIR="${DOCS_DATA_DIR:-/var/lib/docs-server}"
-fi
-if ! mkdir -p "$DATA_DIR" 2>/dev/null; then
-  if has_sudo && sudo mkdir -p "$DATA_DIR" 2>/dev/null; then
-    :
-  else
-    DATA_DIR="$HOME/.docs-server"
-    mkdir -p "$DATA_DIR" 2>/dev/null || true
-  fi
-fi
-
-# 9. 生成配置文件（推荐：之后一律以该文件配置；已存在则不覆盖）
-CONFIG_PATH="${CONFIG_PATH:-/etc/docs-server.yaml}"
-TMP_CONF="$(mktemp "${TMPDIR:-/tmp}/docs-server-config.XXXXXX")"
-cat > "$TMP_CONF" <<EOF
-# docs-server 配置（由一键安装脚本生成）
-# 优先级：环境变量 > 本文件 > 默认值；仅经 Nginx 反代对外时建议把 addr 改为 "127.0.0.1:8080"
-addr: ":8080"
-db_path: ${DATA_DIR}/docs.db
-push_token: ${GEN_PUSH_TOKEN}
-EOF
-CONFIG_NOTE="已生成（推送令牌已写入，权限 600）"
-if [ -e "$CONFIG_PATH" ]; then
-  CONFIG_NOTE="已存在，未覆盖，沿用原配置"
-elif [ -w "$(dirname "$CONFIG_PATH")" ] || [ "$(id -u)" -eq 0 ]; then
-  { mv "$TMP_CONF" "$CONFIG_PATH" && chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
-elif has_sudo; then
-  { sudo mv "$TMP_CONF" "$CONFIG_PATH" && sudo chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
-elif [ -w "$HOME" ]; then
-  CONFIG_PATH="$HOME/docs-server.yaml"
-  { mv "$TMP_CONF" "$CONFIG_PATH" && chmod 600 "$CONFIG_PATH"; } || CONFIG_FAIL=1
-  CONFIG_NOTE="默认位置无权限写入，已改生成到 HOME（可用 CONFIG_PATH 覆盖）"
-else
-  CONFIG_FAIL=1
-fi
-rm -f "$TMP_CONF"
-if [ -n "${CONFIG_FAIL:-}" ]; then
-  CONFIG_PATH=""
-  CONFIG_NOTE="写入失败，可改用环境变量方式启动（见 README）"
-fi
-
-# 10. 输出安装结果与运行指引
 echo ""
 echo "========================================="
-echo " 🎉 docs-server 安装成功！"
+if [ "$IS_UPGRADE" -eq 1 ]; then
+  echo " 🎉 docs-server 更新成功！"
+else
+  echo " 🎉 docs-server 安装成功！"
+fi
 echo " 二进制路径: $TARGET_BIN"
-if [ -n "$CONFIG_PATH" ]; then
-  echo " 配置文件:   $CONFIG_PATH"
-  echo "             ($CONFIG_NOTE)"
-else
-  echo " 配置文件:   未生成 ($CONFIG_NOTE)"
+if [ -n "$INSTALLED_VER" ]; then
+  echo " 当前版本:   $INSTALLED_VER"
 fi
 echo "========================================="
 echo ""
-echo "🔑 推送令牌 (push_token):"
-echo "   $GEN_PUSH_TOKEN"
-echo ""
-echo "💡 库仓库推送文档时，在仓库 .env 中配置 DOCS_TOKEN 为上述令牌（严禁提交入 git）。"
 
-# 11. PATH 检查
+if [ "$IS_UPGRADE" -eq 1 ]; then
+  echo "提示: 本脚本仅替换二进制，未改动任何配置文件与数据库。"
+  echo "      若服务正在后台运行，请重启对应进程（如 sudo systemctl restart docs-server）以使新版本生效。"
+  echo "      后续升级也可直接执行: $TARGET_BIN update（大陆网络加 -cn）"
+else
+  echo "下一步:"
+  echo "  1. 在你的服务工作目录下生成配置文件（默认生成 ./docs-server.yaml，已存在时会询问是否覆盖）:"
+  echo "     docs-server init"
+  echo ""
+  echo "  2. 使用配置文件启动服务:"
+  echo "     docs-server -config ./docs-server.yaml"
+  echo ""
+  echo "  3. 后续升级直接原地更新即可（不改动配置与数据）:"
+  echo "     docs-server update        # 大陆网络: docs-server update -cn"
+fi
+
+# 8. PATH 检查
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
   *)
@@ -222,53 +184,3 @@ case ":$PATH:" in
     echo "   export PATH=\"$INSTALL_DIR:\$PATH\""
     ;;
 esac
-
-# 后续运行指引统一走配置文件
-if [ -n "$CONFIG_PATH" ]; then
-  RUN_CMD="$TARGET_BIN -config $CONFIG_PATH"
-else
-  RUN_CMD="DOCS_DB_PATH=$DATA_DIR/docs.db DOCS_PUSH_TOKEN=$GEN_PUSH_TOKEN $TARGET_BIN"
-fi
-
-echo ""
-echo "-----------------------------------------"
-echo "▶ 默认运行方式：后台常驻（推荐）"
-echo "-----------------------------------------"
-if [ "$OS_TYPE" = "linux" ] && [ -n "$CONFIG_PATH" ]; then
-  echo "使用 systemd（开机自启、异常自动重启）："
-  echo ""
-  echo "  sudo tee /etc/systemd/system/docs-server.service >/dev/null <<'EOF'"
-  echo "  [Unit]"
-  echo "  After=network.target"
-  echo ""
-  echo "  [Service]"
-  echo "  ExecStart=$RUN_CMD"
-  echo "  Restart=on-failure"
-  echo "  StateDirectory=docs-server"
-  echo ""
-  echo "  [Install]"
-  echo "  WantedBy=multi-user.target"
-  echo "  EOF"
-  echo ""
-  echo "  sudo systemctl daemon-reload"
-  echo "  sudo systemctl enable --now docs-server"
-  echo "  journalctl -u docs-server -f    # 查看日志"
-  echo ""
-  echo "无 systemd 的环境可用 nohup："
-  echo "  nohup $RUN_CMD > /var/log/docs-server.log 2>&1 &"
-elif [ -n "$CONFIG_PATH" ]; then
-  echo "  nohup $RUN_CMD > \"\$HOME/docs-server.log\" 2>&1 &"
-  echo "  tail -f \"\$HOME/docs-server.log\"    # 查看日志；停止: pkill docs-server"
-  echo ""
-  echo "如需开机自启，macOS 可配置 launchd。"
-else
-  echo "未生成配置文件，请按 README 以环境变量或自备配置文件启动。"
-fi
-echo ""
-echo "-----------------------------------------"
-echo "▶ 或直接前台运行（临时验证用，Ctrl+C 停止）"
-echo "-----------------------------------------"
-echo "  $RUN_CMD"
-echo ""
-echo "仅通过 Nginx 反向代理对外时：把配置文件中的 addr 改为 \"127.0.0.1:8080\"，"
-echo "并在 Nginx location 中放宽请求体限制（client_max_body_size 50m），完整参考见 README。"
