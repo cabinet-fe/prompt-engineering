@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/ingest"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
@@ -20,10 +21,11 @@ import (
 // maxSearchLimit 是 search 端点 limit 参数的上限；缺省走存储层默认（20）。
 const maxSearchLimit = 50
 
-// 调用记录：limit 缺省与上限；action 为读路径的三类检索动作。
+// 调用记录：limit 缺省与上限；result 最大保存 rune 数；action 为读路径的三类检索动作。
 const (
-	defaultCallsLimit = 50
-	maxCallsLimit     = 1000
+	defaultCallsLimit  = search.MaxCallLogs
+	maxCallsLimit      = 1000
+	maxCallResultRunes = 4000
 
 	actionSearch = "search"
 	actionGet    = "get"
@@ -117,16 +119,81 @@ func clientIP(r *http.Request) string {
 
 // recordCall 记录一次读路径检索调用；写记录失败只告警、不影响响应。context 脱离
 // 请求生命周期，避免客户端提前断开时丢记录。
-func (s *Server) recordCall(r *http.Request, action, library, query string) {
+func (s *Server) recordCall(r *http.Request, action, library, query, result string) {
 	err := s.store.RecordCall(context.WithoutCancel(r.Context()), search.CallLog{
 		Action:  action,
 		Library: library,
 		Query:   query,
+		Result:  result,
 		IP:      clientIP(r),
 	})
 	if err != nil {
 		slog.Warn("写调用记录失败", "action", action, "library", library, "err", err)
 	}
+}
+
+func truncateRunes(s string, maxRunes int) string {
+	if maxRunes <= 0 || utf8.RuneCountInString(s) <= maxRunes {
+		return s
+	}
+	var b strings.Builder
+	n := 0
+	for _, r := range s {
+		if n >= maxRunes {
+			b.WriteRune('…')
+			break
+		}
+		b.WriteRune(r)
+		n++
+	}
+	return b.String()
+}
+
+func formatSearchCallResult(results []search.Result) string {
+	if len(results) == 0 {
+		return "无命中结果"
+	}
+	var b strings.Builder
+	b.WriteString("共 ")
+	b.WriteString(strconv.Itoa(len(results)))
+	b.WriteString(" 条命中：")
+	for i, res := range results {
+		b.WriteByte('\n')
+		b.WriteString(strconv.Itoa(i + 1))
+		b.WriteString(". ")
+		b.WriteString(res.Library)
+		b.WriteByte('/')
+		b.WriteString(res.Path)
+		if res.Title != "" {
+			b.WriteString(" — ")
+			b.WriteString(res.Title)
+		}
+	}
+	return truncateRunes(b.String(), maxCallResultRunes)
+}
+
+func formatDocCallResult(path, section string, doc search.Document, tocOnly bool) string {
+	header := path
+	if !tocOnly && section != "" {
+		header += "#" + section
+	}
+	if doc.Title != "" {
+		header += " — " + doc.Title
+	}
+	if tocOnly {
+		if len(doc.Sections) == 0 {
+			return truncateRunes(header+"\n无二级章节", maxCallResultRunes)
+		}
+		return truncateRunes(
+			header+"\n章节 ("+strconv.Itoa(len(doc.Sections))+"): "+strings.Join(doc.Sections, ", "),
+			maxCallResultRunes,
+		)
+	}
+	content := strings.TrimSpace(doc.Content)
+	if content == "" {
+		return truncateRunes(header, maxCallResultRunes)
+	}
+	return truncateRunes(header+"\n"+content, maxCallResultRunes)
 }
 
 // handleDocuments 分发库级文档端点：GET 列出库内全部文档（免鉴权读路径），PUT 整库覆盖推送。
@@ -258,7 +325,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	if results == nil {
 		results = []search.Result{}
 	}
-	s.recordCall(r, actionSearch, library, query)
+	s.recordCall(r, actionSearch, library, query, formatSearchCallResult(results))
 	writeJSON(w, http.StatusOK, searchResponse{Results: results})
 }
 
@@ -337,9 +404,9 @@ func (s *Server) handleGetDocument(w http.ResponseWriter, r *http.Request) {
 	}
 	if toc := r.URL.Query().Get("toc"); toc == "1" || toc == "true" {
 		doc.Content = ""
-		s.recordCall(r, actionToc, slug, "")
+		s.recordCall(r, actionToc, slug, "", formatDocCallResult(path, section, doc, true))
 	} else {
-		s.recordCall(r, actionGet, slug, "")
+		s.recordCall(r, actionGet, slug, "", formatDocCallResult(path, section, doc, false))
 	}
 	writeJSON(w, http.StatusOK, documentResponse{Library: slug, Document: doc})
 }
@@ -349,9 +416,9 @@ type callsResponse struct {
 	Total int              `json:"total"`
 }
 
-// handleCalls 处理 GET /api/v1/calls[?limit=50][&offset=0]：分页返回最近的读路径
-// 调用记录（最新在前），total 为全量条数供分页导航；供内置 UI「调用记录」视图展示。
-// limit 缺省 50、上限 1000；offset 缺省 0。
+// handleCalls 处理 GET /api/v1/calls[?limit=200][&offset=0]：分页返回最近的读路径
+// 调用记录（最新在前），total 为全量条数；供内置 UI「调用记录」视图展示。
+// limit 缺省 200、上限 1000；offset 缺省 0。
 func (s *Server) handleCalls(w http.ResponseWriter, r *http.Request) {
 	if !requireMethod(w, r, http.MethodGet) {
 		return

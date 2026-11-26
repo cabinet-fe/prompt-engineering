@@ -1,9 +1,11 @@
-// docs-server 文档 UI：首屏库列表、按 path 层级折叠的目录树与 Markdown 阅读视图。
+// docs-server 文档 UI：首屏库列表、按 path 层级折叠的目录树、Markdown 阅读视图与调用记录虚拟表格。
 // 渲染用的 marked 与 highlight.js 均为 vendored 单文件 ESM，直引同源路径。
 import { marked } from "/vendor/marked.esm.js";
 import hljs from "/vendor/highlight.esm.js";
+import { renderCallsView } from "/calls-view.js";
 
 const state = { library: null, activePath: null };
+let cleanupView = null;
 
 const libraryList = document.getElementById("library-list");
 const docTree = document.getElementById("doc-tree");
@@ -12,6 +14,14 @@ const callsButton = document.getElementById("calls-button");
 
 loadLibraries();
 callsButton.addEventListener("click", openCalls);
+
+function resetViewer(isCalls = false) {
+  if (cleanupView) {
+    cleanupView();
+    cleanupView = null;
+  }
+  viewer.classList.toggle("viewer-calls", isCalls);
+}
 
 async function loadLibraries() {
   let libraries;
@@ -139,139 +149,29 @@ function encodeDocPath(docPath) {
   return docPath.split("/").map(encodeURIComponent).join("/");
 }
 
-// 调用记录动作的展示文案；每页条数与服务端 /api/v1/calls 缺省 limit 一致。
-const callActionLabels = { search: "检索", get: "取文档", toc: "目录" };
-const callsPageSize = 50;
-const callsState = { page: 1 };
-
-// openCalls 在查看区分页展示调用记录（服务端仅保留 7 天）：时间 / 库 / 动作 / 查询词 / IP。
-async function openCalls(page = callsState.page) {
+// openCalls 在查看区以虚拟表格展示最近的调用记录（最多保留 200 条）。
+async function openCalls() {
   callsButton.classList.add("active");
   for (const button of docTree.querySelectorAll("button[data-path]")) {
     button.classList.remove("active");
   }
   let body;
   try {
-    const params = new URLSearchParams({
-      limit: callsPageSize,
-      offset: (page - 1) * callsPageSize,
-    });
-    const res = await fetch(`/api/v1/calls?${params}`);
+    const res = await fetch("/api/v1/calls?limit=200");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     body = await res.json();
   } catch (err) {
     showNotice(viewer, `调用记录加载失败：${err.message}`);
     return;
   }
-  // 记录被滚动清理后当前页可能已空，退回第一页。
-  if (body.calls.length === 0 && page > 1) {
-    openCalls(1);
-    return;
-  }
-  callsState.page = page;
-  renderCalls(body.calls, body.total);
-}
-
-// renderCalls 渲染当前页调用记录表与分页导航：时间转本地时区，库为空表示跨库检索。
-function renderCalls(calls, total) {
-  const wrap = document.createElement("div");
-  wrap.className = "calls";
-
-  const heading = document.createElement("h1");
-  heading.textContent = "调用记录";
-  const start = (callsState.page - 1) * callsPageSize;
-  const meta = document.createElement("p");
-  meta.className = "calls-meta";
-  meta.textContent =
-    total === 0
-      ? "服务端仅保留最近 7 天的调用记录。"
-      : `第 ${start + 1}–${start + calls.length} 条 / 共 ${total} 条（服务端仅保留 7 天）`;
-  wrap.append(heading, meta);
-
-  if (calls.length === 0) {
-    const p = document.createElement("p");
-    p.className = "placeholder";
-    p.textContent = "近 7 天还没有任何检索调用。";
-    wrap.appendChild(p);
-    viewer.replaceChildren(wrap);
-    return;
-  }
-
-  const table = document.createElement("table");
-  table.className = "calls-table";
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  for (const label of ["时间", "库", "动作", "查询词", "IP"]) {
-    const th = document.createElement("th");
-    th.textContent = label;
-    headRow.appendChild(th);
-  }
-  thead.appendChild(headRow);
-  const tbody = document.createElement("tbody");
-  for (const call of calls) {
-    const row = document.createElement("tr");
-    appendCell(row, formatTime(call.created_at));
-    appendCell(row, call.library || "（跨库）");
-    appendCell(row, callActionLabels[call.action] || call.action);
-    appendCell(row, call.query || "—", "wrap");
-    appendCell(row, call.ip);
-    tbody.appendChild(row);
-  }
-  table.append(thead, tbody);
-  wrap.appendChild(table);
-
-  // 分页导航：上一页 / 页码 / 下一页。
-  const pages = Math.max(1, Math.ceil(total / callsPageSize));
-  const nav = document.createElement("div");
-  nav.className = "calls-nav";
-  nav.append(
-    callsNavButton("上一页", callsState.page > 1, () => openCalls(callsState.page - 1)),
-    callsNavLabel(`第 ${callsState.page} / ${pages} 页`),
-    callsNavButton("下一页", callsState.page < pages, () => openCalls(callsState.page + 1)),
-  );
-  wrap.appendChild(nav);
-  viewer.replaceChildren(wrap);
-  viewer.scrollTop = 0;
-}
-
-// callsNavButton 构造分页按钮，不可用时置 disabled。
-function callsNavButton(label, enabled, onClick) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.textContent = label;
-  button.disabled = !enabled;
-  if (enabled) {
-    button.addEventListener("click", onClick);
-  }
-  return button;
-}
-
-// callsNavLabel 构造分页页码文本。
-function callsNavLabel(text) {
-  const span = document.createElement("span");
-  span.className = "calls-nav-label";
-  span.textContent = text;
-  return span;
-}
-
-// appendCell 往表格行追加一个 td，className 可选。
-function appendCell(row, text, className) {
-  const td = document.createElement("td");
-  td.textContent = text;
-  if (className) td.className = className;
-  row.appendChild(td);
-}
-
-// formatTime 把服务端 UTC 时间（RFC3339）转为本地时区显示。
-function formatTime(iso) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso;
-  return date.toLocaleString("zh-CN", { hour12: false });
+  resetViewer(true);
+  cleanupView = renderCallsView(viewer, body.calls, body.total, openCalls);
 }
 
 // renderDocument 把整篇 Markdown 一次性渲染进查看区：marked 裸用（内容自推送管道自控，
 // 无 DOMPurify），渲染后补标题 id、代码高亮与页内 TOC。
 function renderDocument(markdown) {
+  resetViewer(false);
   const article = document.createElement("div");
   article.className = "doc-body";
   article.innerHTML = marked.parse(markdown);
@@ -332,6 +232,7 @@ function buildToc(headings) {
 }
 
 function showPlaceholder(message) {
+  resetViewer(false);
   const p = document.createElement("p");
   p.className = "placeholder";
   p.textContent = message;
@@ -339,6 +240,9 @@ function showPlaceholder(message) {
 }
 
 function showNotice(container, message) {
+  if (container === viewer) {
+    resetViewer(false);
+  }
   const p = document.createElement("p");
   p.className = "notice";
   p.textContent = message;

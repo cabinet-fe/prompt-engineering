@@ -145,14 +145,14 @@ tail -f ./docs-server.log
 docs-server -version   # 或 docs-server version
 ```
 
-原地升级当前二进制（自动匹配当前系统与架构，只替换二进制本身，**不改动任何配置文件与数据库**）：
+原地升级当前二进制（自动匹配当前系统与架构，只替换二进制本身，**不改动任何配置文件与数据库**；默认启用中国大陆加速源并直连兜底）：
 
 ```bash
-# 直连 GitHub 更新到最新版本
+# 默认启用中国大陆加速源按序尝试（直连兜底）
 docs-server update
 
-# 中国大陆服务器使用内置加速源按序尝试（直连兜底）
-docs-server update -cn
+# 若处于可直连 GitHub 的海外环境，可显式禁用大陆加速
+docs-server update -cn=false
 
 # 指定自定义加速代理或指定版本
 docs-server update -proxy https://ghfast.top/
@@ -265,7 +265,7 @@ node --env-file=.env <脚本绝对路径> --clear   # 下架整库
 | GET | `/api/v1/libraries/{slug}/documents` | 免 | 列出该库全部文档的 path 与 title，按 path 排序：`{"library","documents":[...]}` |
 | GET | `/api/v1/libraries/{slug}/documents/{path}` | 免 | 取文档；可选 `?section=` 提取 `## ` 章节、`?toc=1` 只返回元数据与章节列表（省略 content）；返回 `{library,path,title,description,keywords,aliases,sections,content}` |
 | GET | `/api/v1/search?q=关键词&library=slug&limit=20` | 免 | 全文检索，`library`、`limit`（1~50，缺省 20）可选；返回 `{"results":[{library,path,title,description,snippet,sections}]}`，命中词以 `<mark>` 包裹，`sections` 为命中文档的章节名列表；索引覆盖 title / keywords（含 aliases）/ 文档路径 / description / content，文件名与目录词元可直接检索 |
-| GET | `/api/v1/calls?limit=50&offset=0` | 免 | 调用记录分页查询（最新在前）：search / get / toc 每次成功调用记一条 `{action,library,query,ip,created_at}`（`library` 空为跨库；IP 优先取 `X-Forwarded-For` / `X-Real-IP` 透传，直连取连接地址）；仅保留 7 天；返回 `{"calls":[...],"total":总条数}`，`limit` 缺省 50、上限 1000，`offset` 缺省 0 |
+| GET | `/api/v1/calls?limit=200&offset=0` | 免 | 调用记录分页查询（最新在前）：search / get / toc 每次成功调用记一条 `{action,library,query,result,ip,created_at}`（`library` 空为跨库；`result` 为该次调用的返回结果摘要/内容；IP 优先取 `X-Forwarded-For` / `X-Real-IP` 透传，直连取连接地址）；最多保留最近 200 条；返回 `{"calls":[...],"total":总条数}`，`limit` 缺省 200、上限 1000，`offset` 缺省 0 |
 
 ```bash
 # 搜索示例
@@ -281,11 +281,11 @@ curl 'http://localhost:8080/api/v1/search?q=如何分页'
 - **Markdown 渲染**：浏览器端整篇渲染（一次请求拿全文，非流式、非分页），支持 GFM 表格、删除线、任务列表与链接自动识别。
 - **代码高亮**：fenced 代码块按语言用 highlight.js 语法高亮。
 - **页内目录**：正文标题自动生成 TOC，点击滚动定位到对应标题。
-- **调用记录**：顶栏「调用记录」进入，分页展示检索调用（时间 / 库 / 动作 / 查询词 / IP，跨库检索显示「（跨库）」，每页 50 条可翻页），服务端仅保留 7 天。
+- **调用记录**：顶栏「调用记录」进入，以虚拟表格展示最近最多 200 条检索调用（时间 / 库 / 动作 / 查询词 / 查询结果 / IP，跨库检索显示「（跨库）」），查询结果列单行省略展示、鼠标悬停浮层查看完整结果。
 
 实现说明：
 
-- 静态资源（`index.html` / `app.js` / `style.css`）在 `internal/web/static/`，经 go:embed 打进单二进制；marked 与 highlight.js 以 vendored 单文件 ESM 放在 `static/vendor/`，页面只引用同源资源，无 CDN、无前端构建。
+- 静态资源（`index.html` / `app.js` / `calls-view.js` / `style.css`）在 `internal/web/static/`，经 go:embed 打进单二进制；marked 与 highlight.js 以 vendored 单文件 ESM 放在 `static/vendor/`，页面只引用同源资源，无 CDN、无前端构建。
 - UI 与读路径一致免鉴权：不带 Authorization 即可访问；UI 只读，不提供推送、编辑、删除等写操作入口。
 
 ## 检索接入（库使用者）

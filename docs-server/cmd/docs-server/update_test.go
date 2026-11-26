@@ -265,3 +265,76 @@ func TestExecuteUpdateAllSourcesFailKeepsOriginal(t *testing.T) {
 		t.Errorf("失败后目录存在残留临时文件: %v", entries)
 	}
 }
+
+func TestResolveProxies(t *testing.T) {
+	cnList := resolveProxies("", true)
+	if len(cnList) != len(defaultCNProxies)+1 {
+		t.Fatalf("默认大陆模式代理数量 = %d, 期望 %d", len(cnList), len(defaultCNProxies)+1)
+	}
+	if cnList[0] != defaultCNProxies[0] || cnList[len(cnList)-1] != "" {
+		t.Errorf("默认大陆模式应以内置加速源开头、空串直连兜底，实际 %v", cnList)
+	}
+
+	directOnly := resolveProxies("", false)
+	if len(directOnly) != 1 || directOnly[0] != "" {
+		t.Errorf("-cn=false 应仅直连，实际 %v", directOnly)
+	}
+
+	custom := resolveProxies("https://mirror.example.com  https://mirror2.example.com/", true)
+	if len(custom) != 2 || custom[0] != "https://mirror.example.com/" || custom[1] != "https://mirror2.example.com/" {
+		t.Errorf("显式指定代理应规范化末尾斜杠并仅使用给定列表，实际 %v", custom)
+	}
+}
+
+func TestExecuteUpdateReusesWorkingProxyFromLatestCheck(t *testing.T) {
+	dir := t.TempDir()
+	execPath := filepath.Join(dir, "docs-server")
+	if err := os.WriteFile(execPath, []byte("old-binary"), 0o755); err != nil {
+		t.Fatalf("写入旧二进制: %v", err)
+	}
+
+	deadProxy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "dead", http.StatusBadGateway)
+	}))
+	defer deadProxy.Close()
+
+	var requests []string
+	payload := fakeBinaryPayload("linux", "v0.4.0")
+	goodOrigin := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests = append(requests, r.URL.Path)
+		switch r.URL.Path {
+		case "/owner/repo/releases/latest":
+			http.Redirect(w, r, "/owner/repo/releases/tag/v0.4.0", http.StatusFound)
+		case "/owner/repo/releases/latest/download/docs-server-linux-x64":
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(payload)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer goodOrigin.Close()
+
+	// 先列出 deadProxy，再列 ""（直连 goodOrigin）；detectLatestTag 命中 "" 后，下载应直接优先走 ""。
+	var out bytes.Buffer
+	err := executeUpdate(context.Background(), updateOptions{
+		repo:           "owner/repo",
+		baseURL:        goodOrigin.URL,
+		targetVersion:  "latest",
+		proxies:        []string{deadProxy.URL + "/", ""},
+		execPath:       execPath,
+		goos:           "linux",
+		goarch:         "amd64",
+		currentVersion: "v0.3.0",
+		client:         goodOrigin.Client(),
+		out:            &out,
+	})
+	if err != nil {
+		t.Fatalf("executeUpdate: %v", err)
+	}
+	if strings.Contains(out.String(), deadProxy.URL+" 下载失败") {
+		t.Errorf("探测已命中可用源，下载阶段不应再重复尝试已失效代理:\n%s", out.String())
+	}
+	if len(requests) != 2 {
+		t.Errorf("期望仅发 2 次请求到可用源，实际 %v", requests)
+	}
+}

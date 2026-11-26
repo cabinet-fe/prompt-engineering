@@ -48,7 +48,7 @@ func runUpdate(args []string, out io.Writer) error {
 	fs.SetOutput(out)
 	targetVersion := fs.String("version", "latest", "目标版本 tag（如 v0.1.0-beta.7）或 latest")
 	proxyFlag := fs.String("proxy", os.Getenv("GH_PROXY"), "GitHub 加速代理前缀（支持空格分隔多个，默认读取环境变量 GH_PROXY）")
-	useCN := fs.Bool("cn", false, "使用内置中国大陆加速源按序尝试（直连兜底）")
+	useCN := fs.Bool("cn", true, "使用内置中国大陆加速源按序尝试（直连兜底；传 -cn=false 仅直连 GitHub）")
 	fs.Usage = func() {
 		fmt.Fprintf(out, "用法: docs-server update [选项]\n\n原地更新当前 docs-server 二进制文件，不改动配置文件与数据库。\n\n选项:\n")
 		fs.PrintDefaults()
@@ -146,7 +146,7 @@ func executeUpdate(ctx context.Context, opts updateOptions) error {
 	if opts.client == nil {
 		opts.client = &http.Client{
 			Transport: &http.Transport{
-				ResponseHeaderTimeout: 30 * time.Second,
+				ResponseHeaderTimeout: 15 * time.Second,
 			},
 		}
 	}
@@ -181,13 +181,15 @@ func executeUpdate(ctx context.Context, opts updateOptions) error {
 	}()
 
 	var resolvedTag string
+	downloadProxies := opts.proxies
 	if opts.targetVersion == "latest" && opts.currentVersion != "dev" {
-		if tag := detectLatestTag(ctx, opts); tag != "" {
+		if tag, workingProxy := detectLatestTag(ctx, opts); tag != "" {
 			resolvedTag = tag
 			if tag == opts.currentVersion {
 				fmt.Fprintf(opts.out, "当前已是最新版本 (%s)，无需更新。\n", opts.currentVersion)
 				return nil
 			}
+			downloadProxies = prioritizeProxy(downloadProxies, workingProxy)
 		}
 	}
 
@@ -201,7 +203,7 @@ func executeUpdate(ctx context.Context, opts updateOptions) error {
 
 	var lastErr error
 	var downloaded bool
-	for _, proxy := range opts.proxies {
+	for _, proxy := range downloadProxies {
 		targetURL := proxy + downloadSuffix
 		sourceDesc := "直连 GitHub"
 		if proxy != "" {
@@ -256,11 +258,23 @@ func executeUpdate(ctx context.Context, opts updateOptions) error {
 	return nil
 }
 
-// detectLatestTag 通过禁止跟随重定向探测 /releases/latest 指向的 tag；失败时静默返回空字符串。
-func detectLatestTag(ctx context.Context, opts updateOptions) string {
+// prioritizeProxy 把已验证可用的代理放到候选列表首位并去重，保留其余代理作为兜底。
+func prioritizeProxy(proxies []string, preferred string) []string {
+	out := make([]string, 0, len(proxies))
+	out = append(out, preferred)
+	for _, p := range proxies {
+		if p != preferred {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// detectLatestTag 通过禁止跟随重定向探测 /releases/latest 指向的 tag 与命中的代理；失败时返回空字符串。
+func detectLatestTag(ctx context.Context, opts updateOptions) (string, string) {
 	checkClient := &http.Client{
 		Transport: opts.client.Transport,
-		Timeout:   15 * time.Second,
+		Timeout:   8 * time.Second,
 		CheckRedirect: func(*http.Request, []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
@@ -280,10 +294,10 @@ func detectLatestTag(ctx context.Context, opts updateOptions) string {
 		_ = resp.Body.Close()
 
 		if tag := extractTagFromLocation(loc); tag != "" {
-			return tag
+			return tag, proxy
 		}
 	}
-	return ""
+	return "", ""
 }
 
 func extractTagFromLocation(loc string) string {

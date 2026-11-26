@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/api"
 	"github.com/cabinet-fe/prompt-engineering/docs-server/internal/search"
@@ -19,12 +18,6 @@ import (
 
 // version 由构建时 -ldflags "-X main.version=vX.Y.Z" 注入；本地开发默认为 "dev"。
 var version = "dev"
-
-// 调用记录只保留 7 天；启动即清理一次，之后每小时滚动清理。
-const (
-	callLogRetention       = 7 * 24 * time.Hour
-	callLogCleanupInterval = time.Hour
-)
 
 func main() {
 	os.Exit(dispatch(os.Args[1:], os.Stdin, os.Stdout, os.Stderr))
@@ -124,7 +117,12 @@ func run(configFile string) error {
 	}
 	defer store.Close()
 
-	go cleanupCallLogs(ctx, store)
+	// 启动时裁剪一次旧库历史超出上限的调用记录，此后每次写入自动保持最多 200 条。
+	if n, err := store.TrimCallLogs(ctx, search.MaxCallLogs); err != nil {
+		slog.Warn("裁剪历史调用记录失败", "err", err)
+	} else if n > 0 {
+		slog.Info("裁剪超出上限的历史调用记录", "deleted", n, "keep", search.MaxCallLogs)
+	}
 
 	srv := &http.Server{
 		Addr:    cfg.Addr,
@@ -132,20 +130,4 @@ func run(configFile string) error {
 	}
 	slog.Info("HTTP 服务启动", "addr", cfg.Addr, "db", cfg.DBPath)
 	return srv.ListenAndServe()
-}
-
-// cleanupCallLogs 先立即清理一次超过保留期的调用记录，再按间隔滚动清理，直到 ctx 结束。
-func cleanupCallLogs(ctx context.Context, store *search.Store) {
-	for {
-		if n, err := store.CleanupCallLogs(ctx, callLogRetention); err != nil {
-			slog.Error("清理调用记录失败", "err", err)
-		} else if n > 0 {
-			slog.Info("清理过期调用记录", "deleted", n)
-		}
-		select {
-		case <-ctx.Done():
-			return
-		case <-time.After(callLogCleanupInterval):
-		}
-	}
 }

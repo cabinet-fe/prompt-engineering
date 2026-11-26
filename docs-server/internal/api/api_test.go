@@ -459,16 +459,20 @@ func TestGetDocumentTocMode(t *testing.T) {
 
 func TestCallRecording(t *testing.T) {
 	s := newTestServer(t)
+	docContent := "# 入门\n\nsqlite 内容\n\n## 安装\n\n步骤说明\n"
 	if rec := do(t, s, http.MethodPut, "/api/v1/libraries/alpha/documents", testToken,
-		goodDoc("intro.md", "入门", "sqlite 内容")); rec.Code != http.StatusOK {
+		goodDoc("intro.md", "入门", docContent)); rec.Code != http.StatusOK {
 		t.Fatalf("推送失败: %d", rec.Code)
 	}
 
-	// 三类读路径调用各一次：search（带库）、get、toc。
+	// 四次读路径调用：search（无命中）、search（带库命中）、get（按章节）、toc。
+	if rec := do(t, s, http.MethodGet, "/api/v1/search?q=notfoundkeyword", "", ""); rec.Code != http.StatusOK {
+		t.Fatalf("空结果搜索失败: %d", rec.Code)
+	}
 	if rec := do(t, s, http.MethodGet, "/api/v1/search?q=sqlite&library=alpha", "", ""); rec.Code != http.StatusOK {
 		t.Fatalf("搜索失败: %d", rec.Code)
 	}
-	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/intro.md", "", ""); rec.Code != http.StatusOK {
+	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/intro.md?section=安装", "", ""); rec.Code != http.StatusOK {
 		t.Fatalf("取文档失败: %d", rec.Code)
 	}
 	if rec := do(t, s, http.MethodGet, "/api/v1/libraries/alpha/documents/intro.md?toc=1", "", ""); rec.Code != http.StatusOK {
@@ -481,6 +485,7 @@ func TestCallRecording(t *testing.T) {
 			Action    string `json:"action"`
 			Library   string `json:"library"`
 			Query     string `json:"query"`
+			Result    string `json:"result"`
 			IP        string `json:"ip"`
 			CreatedAt string `json:"created_at"`
 		} `json:"calls"`
@@ -493,21 +498,25 @@ func TestCallRecording(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
 		t.Fatalf("解析调用记录响应: %v", err)
 	}
-	if len(body.Calls) != 3 {
-		t.Fatalf("期望 3 条调用记录，实际 %d: %+v", len(body.Calls), body.Calls)
+	if len(body.Calls) != 4 {
+		t.Fatalf("期望 4 条调用记录，实际 %d: %+v", len(body.Calls), body.Calls)
 	}
-	if body.Total != 3 {
-		t.Errorf("total 应为 3，实际 %d", body.Total)
+	if body.Total != 4 {
+		t.Errorf("total 应为 4，实际 %d", body.Total)
 	}
-	want := []struct{ action, library, query string }{
-		{"toc", "alpha", ""},
-		{"get", "alpha", ""},
-		{"search", "alpha", "sqlite"},
+	want := []struct{ action, library, query, resultSub string }{
+		{"toc", "alpha", "", "章节 (1): 安装"},
+		{"get", "alpha", "", "intro.md#安装 — 入门\n## 安装"},
+		{"search", "alpha", "sqlite", "alpha/intro.md — 入门"},
+		{"search", "", "notfoundkeyword", "无命中结果"},
 	}
 	for i, w := range want {
 		got := body.Calls[i]
 		if got.Action != w.action || got.Library != w.library || got.Query != w.query {
 			t.Errorf("第 %d 条应为 %+v，实际 %+v", i, w, got)
+		}
+		if !strings.Contains(got.Result, w.resultSub) {
+			t.Errorf("第 %d 条 result 应包含 %q，实际 %q", i, w.resultSub, got.Result)
 		}
 		if got.CreatedAt == "" {
 			t.Errorf("第 %d 条 created_at 不应为空", i)
@@ -523,8 +532,8 @@ func TestCallRecording(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
 		t.Fatalf("解析分页响应: %v", err)
 	}
-	if len(body.Calls) != 2 || body.Calls[0].Action != "get" || body.Calls[1].Action != "search" || body.Total != 3 {
-		t.Errorf("limit=2&offset=1 应跳过最新一条返回 get/search，total=3，实际 %+v total=%d",
+	if len(body.Calls) != 2 || body.Calls[0].Action != "get" || body.Calls[1].Action != "search" || body.Total != 4 {
+		t.Errorf("limit=2&offset=1 应跳过最新一条返回 get/search，total=4，实际 %+v total=%d",
 			body.Calls, body.Total)
 	}
 

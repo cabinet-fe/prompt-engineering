@@ -250,47 +250,43 @@ body {
   background: var(--bg-soft);
 }
 
-/* 调用记录视图：时间 / 库 / 动作 / 查询词 / IP 列表，表格边框沿用 .viewer th/td */
+/* 调用记录视图：虚拟表格 + 查询结果单行省略与悬停浮层 */
+.viewer.viewer-calls {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px;
+  overflow: hidden;
+}
+
+.calls {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  --calls-cols: 170px 130px 78px 180px minmax(260px, 1fr) 130px;
+}
+
+.calls-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex: none;
+  margin-bottom: 14px;
+}
+
 .calls h1 {
   margin: 0 0 4px;
 }
 
 .calls-meta {
-  margin: 0 0 16px;
+  margin: 0;
   font-size: 14px;
   color: var(--muted);
 }
 
-.calls-table {
-  width: 100%;
-  font-size: 14px;
-}
-
-.calls-table th {
-  background: var(--bg-soft);
-  color: var(--muted);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.calls-table td {
-  vertical-align: top;
-}
-
-.calls-table td.wrap {
-  min-width: 160px;
-  word-break: break-all;
-}
-
-/* 调用记录分页导航 */
-.calls-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-.calls-nav button {
+.calls-refresh {
+  flex: none;
   padding: 5px 14px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -301,18 +297,110 @@ body {
   cursor: pointer;
 }
 
-.calls-nav button:hover:not(:disabled) {
+.calls-refresh:hover {
   background: var(--bg-soft);
 }
 
-.calls-nav button:disabled {
-  opacity: 0.5;
-  cursor: default;
+.calls-vtable-viewport {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  position: relative;
 }
 
-.calls-nav-label {
+.calls-vtable-inner {
+  min-width: 960px;
+}
+
+.calls-vtable-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: var(--calls-cols);
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
   font-size: 14px;
+  font-weight: 600;
   color: var(--muted);
+}
+
+.calls-vtable-th {
+  padding: 8px 12px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.calls-vtable-th:last-child {
+  border-right: 0;
+}
+
+.calls-vtable-body {
+  position: relative;
+}
+
+.calls-vtable-slice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  will-change: transform;
+}
+
+.calls-vtable-row {
+  display: grid;
+  grid-template-columns: var(--calls-cols);
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.calls-vtable-row:hover {
+  background: #fafbfc;
+}
+
+.calls-vtable-td {
+  padding: 0 12px;
+  height: 100%;
+  line-height: 40px;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calls-vtable-td:last-child {
+  border-right: 0;
+}
+
+.calls-vtable-td.has-popover {
+  cursor: help;
+}
+
+.calls-vtable-td.calls-result-cell.has-popover {
+  color: #1f2328;
+}
+
+.calls-popover {
+  position: fixed;
+  z-index: 100;
+  max-width: 560px;
+  max-height: 360px;
+  padding: 10px 12px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #1f2328;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* 页内 TOC：标题锚点点击滚动定位 */

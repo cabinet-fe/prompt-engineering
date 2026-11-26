@@ -6,7 +6,7 @@
 #   INSTALL_DIR=. VERSION=latest curl -fsSL ... | bash
 # 仅下载并安装或覆盖 docs-server 二进制文件，不自动生成配置文件。
 # 首次部署请执行 `docs-server init` 生成当前目录下的 docs-server.yaml；
-# 已安装二进制升级也可直接执行 `docs-server update`（大陆网络加 `-cn`）。
+# 已安装二进制升级也可直接执行 `docs-server update`（已默认启用大陆加速，直连传 `-cn=false`）。
 
 set -e
 
@@ -162,7 +162,7 @@ echo ""
 if [ "$IS_UPGRADE" -eq 1 ]; then
   echo "提示: 本脚本仅替换二进制，未改动任何配置文件与数据库。"
   echo "      若服务正在后台运行，请重启对应进程（如 sudo systemctl restart docs-server）以使新版本生效。"
-  echo "      后续升级也可直接执行: $TARGET_BIN update（大陆网络加 -cn）"
+  echo "      后续升级也可直接执行: $TARGET_BIN update（已默认大陆加速，直连传 -cn=false）"
 else
   echo "下一步:"
   echo "  1. 在你的服务工作目录下生成配置文件（默认生成 ./docs-server.yaml，已存在时会询问是否覆盖）:"
@@ -171,8 +171,8 @@ else
   echo "  2. 使用配置文件启动服务:"
   echo "     docs-server -config ./docs-server.yaml"
   echo ""
-  echo "  3. 后续升级直接原地更新即可（不改动配置与数据）:"
-  echo "     docs-server update        # 大陆网络: docs-server update -cn"
+  echo "  3. 后续升级直接原地更新即可（不改动配置与数据，默认启用大陆加速）:"
+  echo "     docs-server update        # 强制直连 GitHub: docs-server update -cn=false"
 fi
 
 # 8. PATH 检查
