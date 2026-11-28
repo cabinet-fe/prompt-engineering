@@ -63,6 +63,13 @@ node <脚本绝对路径> toc --library <slug> --path <path>
 - stdout 为服务端 JSON，直接读取，不要向用户展示原始 JSON。
 - HTTP 非 2xx 时脚本非零退出，按下方故障表处理；脚本报「找不到配置文件：.pe.jsonc」或「缺少必填字段：docs_server_url」说明第 1 步没做或配置缺失，回到第 1 步补齐后重跑。
 
+### 5. 升级时检索版本破坏性变更
+
+1. 从宿主项目依赖文件（`package.json` / lockfile / `go.mod` 等）读取当前安装版本 `current` 与目标版本 `target`（默认最新）。
+2. 先执行 `toc --library <slug> --path breaking-changes.md` 只取版本号目录；返回 `HTTP 404 not_found` 即无破坏性变更，直接结束。
+3. 从 `sections` 中只保留 `current < v <= target`（未指定 `target` 时 `v > current`）的版本，**丢弃所有 `v <= current` 的旧版本**；过滤为空即本次升级无破坏性变更。
+4. 按版本号升序对过滤后的每个版本执行 `get --library <slug> --path breaking-changes.md --section "<版本号>"`（禁止不带 `--section` 拉取全文）。
+
 ## 宿主项目主动检索
 
 技能靠描述触发，而 AI 不一定知道项目用了哪些内部库：入口指令里没写明，它可能凭训练数据猜测或重复造轮子。宿主项目要在自己的入口指令（AGENTS.md / CLAUDE.md 等）里写明内部库，AI 才会在写代码前主动检索。

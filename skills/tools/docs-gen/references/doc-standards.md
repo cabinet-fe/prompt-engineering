@@ -47,13 +47,14 @@ keywords 写法（与服务端分词配合）：
 ```text
 agent-docs/
 ├── index.md              # 总览：定位、安装、模块 → 文档路径 速查表
+├── breaking-changes.md   # 破坏性变更（可选）：仅存在明确破坏性变更时创建，按 ## v<X.Y.Z> 分节
 ├── guide/                # 指南：installation.md、configuration.md、quick-start.md
 ├── components/ 或 apis/  # API 参考：一个组件 / 类 / 高协同函数组 一篇
 ├── recipes/              # 场景方案：一个端到端场景一篇
-└── troubleshooting/      # 排障：common-errors.md；迁移：migration-v2.md
+└── troubleshooting/      # 排障：common-errors.md
 ```
 
-- 单篇 100~500 行，一主题一篇，按「开发者意图」而非源码文件划分。低于 100 行时检查是否示例缺失或粒度过碎（`index.md` 除外）；超过 500 行拆成 API 参考 + 场景方案
+- 单篇 100~500 行，一主题一篇，按「开发者意图」而非源码文件划分。低于 100 行时检查是否示例缺失或粒度过碎（`index.md` 与 `breaking-changes.md` 除外：`breaking-changes.md` 随版本追加，消费端经 `toc` 按版本节拉取）；超过 500 行拆成 API 参考 + 场景方案
 - 微小函数按逻辑模块合并（`type-guards.md`），不为 2 行函数单建文件；全库 API 不塞一篇
 
 ## 文档类型与章节词表
@@ -67,7 +68,7 @@ agent-docs/
 | 指南 | 安装、配置、快速开始、概念 | `前置条件` `步骤` `完整示例` `验证` `注意事项` | `templates/guide.md` |
 | 场景方案 | 端到端业务场景 | `场景` `完整示例` `要点说明` `注意事项` | `templates/recipe.md` |
 | 排障 | 运行时 / 构建期报错 | 每个问题一节，标题为报错原文（含错误码）或症状短语 | `templates/troubleshooting.md` |
-| 迁移 | 大版本破坏性变更 | `破坏性变更` `迁移步骤` `新旧对照` | `templates/migration.md` |
+| 破坏性变更 | 存在明确破坏性变更的版本记录（`breaking-changes.md`，无破坏性变更时不建） | 每个有破坏性变更的版本一节，标题严格为 `v<X.Y.Z>`（按版本号降序，无其他 `## ` 节），节内用 `### 变更清单` `### 迁移步骤` `### 新旧对照` | `templates/breaking-changes.md` |
 
 「可选」章节无内容时省略，不留空章节。
 
@@ -124,4 +125,4 @@ agent-docs/
 - [ ] 每个示例自包含可运行，无 `// ...`；`## 快速上手` 1 个、`## 典型示例` 2~3 个、指南 / 场景方案有 `## 完整示例`
 - [ ] `## 注意事项` 列出与开源库 / 旧版的差异与禁止用法
 - [ ] 全文无模糊词、无营销语、无内部实现与敏感信息
-- [ ] 单篇 100~500 行；`path` 语义化稳定
+- [ ] 单篇 100~500 行（`index.md`、`breaking-changes.md` 除外）；`path` 语义化稳定

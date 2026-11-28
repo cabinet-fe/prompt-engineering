@@ -28,7 +28,7 @@ description: >
 | --- | --- |
 | [references/server-behavior.md](references/server-behavior.md) | 写 frontmatter / keywords、分章节、定文档粒度前：服务端如何分词、加权、降级、切片、校验，以及每条机制对应的文档写法 |
 | [references/doc-standards.md](references/doc-standards.md) | 撰写或修改任何文档时：frontmatter 硬性规范、文档类型与章节词表、写作规则、示例规则、自检清单 |
-| `references/templates/<类型>.md` | 新建文档时只读对应类型的一份：`overview`（index.md）、`api-reference`、`guide`、`recipe`、`troubleshooting`、`migration` |
+| `references/templates/<类型>.md` | 新建文档时只读对应类型的一份：`overview`（index.md）、`api-reference`、`guide`、`recipe`、`troubleshooting`、`breaking-changes` |
 | [references/golden-sample.md](references/golden-sample.md) | 首次撰写文档前读一次：一篇写满的 API 参考范例，用来对照自己的产出 |
 | [references/change-sync.md](references/change-sync.md) | 库代码改动后：确定改动范围、按判定表判断是否影响文档、定位受影响篇目与章节、输出同步报告 |
 
